@@ -46,7 +46,6 @@ const THEMES = [
 const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'hi', label: 'Hindi' },
-  { code: 'mr', label: 'Marathi' },
 ]
 
 export default function InviteBuilderPage({ params }) {
@@ -272,14 +271,6 @@ function InvitePreview({ theme, content, language }) {
       date_label: 'तारीख और समय',
       rsvp: 'कृपया इस तारीख तक उत्तर दें',
       footer: 'हम आपको अपने साथ उत्सव मनाने के लिए सहर्ष आमंत्रित करते हैं',
-    },
-    mr: {
-      with_family: 'त्यांच्या कुटुंबासह',
-      invite_you: 'लग्न सोहळ्यासाठी आमंत्रित करतात',
-      venue_label: 'ठिकाण',
-      date_label: 'तारीख आणि वेळ',
-      rsvp: 'कृपया या तारखेपर्यंत उत्तर द्या',
-      footer: 'आम्ही तुम्हाला आनंदाने आमंत्रित करतो',
     },
   }
 
