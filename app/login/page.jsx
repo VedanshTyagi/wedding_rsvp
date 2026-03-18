@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'   // add this import at the top
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -25,6 +26,12 @@ export default function LoginPage() {
              type="password" placeholder="Password" />
       {error && <p>{error}</p>}
       <button type="submit">Sign in</button>
+      <p className="text-xs text-gray-400 text-center mt-5">
+        Don't have an account?{' '}
+        <Link href="/signup" className="text-gray-700 underline">
+            Sign up
+        </Link>
+      </p>
     </form>
   )
 }
