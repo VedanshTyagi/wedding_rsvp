@@ -3,7 +3,8 @@
 // app/dashboard/[weddingId]/invites/send/page.jsx
 // Send Invites page — pick template, select guests, choose channel, send
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -23,8 +24,8 @@ const CHANNEL_OPTIONS = [
   { value: "email", label: "Email only" },
 ];
 
-export default function SendInvitesPage({ params }) {
-  const { weddingId } = use(params);
+export default function SendInvitesPage() {
+  const { weddingId } = useParams();
 
   const [guests, setGuests] = useState([]);
   const [selectedGuests, setSelectedGuests] = useState([]);
