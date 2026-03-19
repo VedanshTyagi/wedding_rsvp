@@ -152,7 +152,8 @@ export default async function WeddingProfilePage({ params }) {
         {[
           { label: 'Guests',        desc: 'Add & manage guest list',    href: 'guests' },
           { label: 'RSVP Tracker',  desc: 'Live response dashboard',    href: 'rsvp' },
-          { label: 'Invites',       desc: 'Build & send invitations',   href: 'invites/builder' },
+          { label: 'Invite Templates', desc: 'Design invite templates',    href: 'invites/builder' },
+          { label: 'Send Invites',     desc: 'Select guests & send',       href: 'invites/send' },
           { label: 'Accommodation', desc: 'Room assignments',           href: 'accommodation' },
           { label: 'Seating',       desc: 'Table plan builder',         href: 'seating' },
           { label: 'Check-in',      desc: 'Day-of guest check-in',      href: 'checkin' },
