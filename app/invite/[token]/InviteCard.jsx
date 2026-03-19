@@ -82,7 +82,7 @@ export default function InviteCard({ guest, token, functions, wedding }) {
       `}</style>
 
       <div style={styles.card}>
-
+        
         {/* Top decoration */}
         <p className="invite-fade invite-fade-1" style={styles.tagline}>
           You are cordially invited to celebrate
