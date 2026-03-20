@@ -47,8 +47,7 @@ export default function SeatingPage() {
         .order("full_name"),
       supabase
         .from("seating_assignments")
-        .select("id, table_id, guest_id")
-        .eq("wedding_id", weddingId),
+        .select("id, table_id, guest_id"),
       supabase
         .from("wedding_functions")
         .select("id, name")
@@ -59,6 +58,8 @@ export default function SeatingPage() {
     setGuests(guestsData || []);
     setAssignments(assignData || []);
     setFunctions(fnData || []);
+    console.log("weddingId:", weddingId);
+    console.log("functions fetched:", fnData);
     setLoading(false);
   }
 
@@ -103,7 +104,7 @@ export default function SeatingPage() {
 
     const { data, error } = await supabase
       .from("seating_assignments")
-      .insert({ table_id: tableId, guest_id: selectedGuest, wedding_id: weddingId })
+      .insert({ table_id: tableId, guest_id: selectedGuest })
       .select()
       .single();
 
