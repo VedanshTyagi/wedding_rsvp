@@ -5,6 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, PieChart, Pie, Cell, LabelList,
 } from "recharts";
+import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const COLORS = {
@@ -253,8 +254,8 @@ function OverdueRsvpList({ guests }) {
 }
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
-export default function AnalyticsPage({ params }) {
-  const { weddingId } = params;
+export default function AnalyticsPage() {
+  const { weddingId } = useParams();
   const supabase = createClient();
 
   const [barData,        setBarData]        = useState([]);

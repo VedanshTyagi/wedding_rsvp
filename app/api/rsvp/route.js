@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 export async function POST(request) {
   const { token, dietary, plus_one, children_count, responses } = await request.json()
 
-  const supabase = createClient(
+  const supabase = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
   )

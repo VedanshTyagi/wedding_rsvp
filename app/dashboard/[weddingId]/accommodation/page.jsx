@@ -29,6 +29,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { useParams } from "next/navigation";
 
 // ─── ROOM CARD ────────────────────────────────────────────────────────────────
 /**
@@ -323,8 +324,8 @@ function UnassignedList({ guests }) {
 }
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
-export default function AccommodationPage({ params }) {
-  const { weddingId } = params;
+export default function AccommodationPage() {
+  const { weddingId } = useParams();
 
   /** All rooms with their assigned guests */
   const [rooms, setRooms]   = useState([]);

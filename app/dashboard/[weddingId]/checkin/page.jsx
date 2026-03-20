@@ -1,11 +1,12 @@
-// app/dashboard/[wedding_id]/checkin/page.jsx
+// app/dashboard/[weddingId]/checkin/page.jsx
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export default function CheckInPage({ params }) {
-  const { wedding_id } = params
+export default function CheckInPage() {
+  const { weddingId } = useParams()
   const supabase = createClient()
 
   const [search, setSearch] = useState('')
@@ -25,45 +26,60 @@ export default function CheckInPage({ params }) {
       const { data } = await supabase
         .from('wedding_functions')
         .select('id, name, function_date')
-        .eq('wedding_id', wedding_id)
+        .eq('wedding_id', weddingId)
         .order('function_date')
       setFunctions(data || [])
       if (data?.length > 0) setSelectedFunction(data[0].id)
     }
-    loadFunctions()
-  }, [wedding_id])
+    if (weddingId) loadFunctions()
+  }, [weddingId])
 
   // Load check-in counts + recent arrivals
   const loadStats = useCallback(async () => {
     if (!selectedFunction) return
 
-    const [{ count: total }, { count: checked }, { data: recent }] = await Promise.all([
+    const [{ count: total }, { count: checked }, { data: recentLogs }] = await Promise.all([
       supabase
         .from('guests')
         .select('*', { count: 'exact', head: true })
-        .eq('wedding_id', wedding_id),
+        .eq('wedding_id', weddingId),
       supabase
         .from('checkin_log')
         .select('*', { count: 'exact', head: true })
         .eq('function_id', selectedFunction),
       supabase
         .from('checkin_log')
-        .select('guest_id, checked_in_at, guests(full_name, group_tag)')
+        .select('guest_id, created_at')
         .eq('function_id', selectedFunction)
-        .order('checked_in_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(10),
     ])
 
+    // fetch guest details separately to avoid FK join issue
+    let recentWithGuests = []
+    if (recentLogs?.length > 0) {
+      const guestIds = recentLogs.map(r => r.guest_id).filter(Boolean)
+      const { data: guestDetails } = await supabase
+        .from('guests')
+        .select('id, full_name, group_tag')
+        .in('id', guestIds)
+      const guestMap = Object.fromEntries((guestDetails || []).map(g => [g.id, g]))
+      recentWithGuests = recentLogs.map(r => ({
+        ...r,
+        guests: guestMap[r.guest_id] || null,
+      }))
+    }
+
     setTotalCount(total || 0)
     setCheckedCount(checked || 0)
-    setRecentArrivals(recent || [])
+    setRecentArrivals(recentWithGuests)
 
     const { data: checkedIds } = await supabase
       .from('checkin_log')
       .select('guest_id')
       .eq('function_id', selectedFunction)
     setCheckedIn((checkedIds || []).map(r => r.guest_id))
-  }, [selectedFunction, wedding_id])
+  }, [selectedFunction, weddingId])
 
   useEffect(() => { loadStats() }, [loadStats])
 
@@ -89,25 +105,23 @@ export default function CheckInPage({ params }) {
       setLoading(true)
       const { data } = await supabase
         .from('guests')
-        .select('id, full_name, phone, group_tag, side, dietary_preference')
-        .eq('wedding_id', wedding_id)
+        .select('id, full_name, phone, group_tag, dietary_pref')
+        .eq('wedding_id', weddingId)
         .or(`full_name.ilike.%${search}%,phone.ilike.%${search}%`)
         .limit(8)
       setResults(data || [])
       setLoading(false)
     }, 300)
     return () => clearTimeout(timer)
-  }, [search, wedding_id])
+  }, [search, weddingId])
 
   async function handleCheckIn(guest) {
     if (!selectedFunction) return alert('Please select a function first')
     if (checkedIn.includes(guest.id)) return
     setCheckingIn(guest.id)
-    const { data: { user } } = await supabase.auth.getUser()
     await supabase.from('checkin_log').insert({
       guest_id: guest.id,
       function_id: selectedFunction,
-      checked_in_by: user?.id,
       method: 'manual',
     })
     setCheckingIn(null)
@@ -230,7 +244,7 @@ export default function CheckInPage({ params }) {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {new Date(log.checked_in_at).toLocaleTimeString('en-IN', {
+                  {new Date(log.created_at).toLocaleTimeString('en-IN', {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}

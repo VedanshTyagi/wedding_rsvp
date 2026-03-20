@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
 
-const supabase = createClient(
+const supabase = await createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );

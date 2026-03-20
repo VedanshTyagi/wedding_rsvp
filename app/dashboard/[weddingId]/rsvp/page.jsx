@@ -33,6 +33,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 // ─── DONUT CHART ──────────────────────────────────────────────────────────────
@@ -263,8 +264,9 @@ function RsvpTable({ guests, functions }) {
 }
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
-export default function RsvpPage({ params }) {
-  const { weddingId } = params;
+
+export default function RsvpPage() {
+  const { weddingId } = useParams();
 
   /** All rsvp_responses rows: [{ id, guest_id, function_id, status }] */
   const [responses, setResponses] = useState([]);

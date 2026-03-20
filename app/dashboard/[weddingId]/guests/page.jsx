@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import { useParams } from "next/navigation";
 import Papa from "papaparse";
 
 function StatusBadge({ status }) {
@@ -100,8 +101,8 @@ function HeadcountCards({ guests, functions }) {
   );
 }
 
-export default function GuestsPage({ params }) {
-  const { weddingId } = params;
+export default function GuestsPage() {
+  const { weddingId } = useParams();
 
   const [guests, setGuests]                 = useState([]);
   const [functions, setFunctions]           = useState([]);

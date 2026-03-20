@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 import twilio from "twilio";
 import { Resend } from "resend";
 
-const supabase = createClient(
+const supabase = await createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
