@@ -110,7 +110,7 @@ function Toggle({ value, onChange, label, hint }) {
       </button>
       <div>
         <p className="text-sm font-semibold text-gray-700">{label}</p>
-        {hint && <p className="text-xs text-gray-400 mt-0.5">{hint}</p>}
+        {hint && <p className="text-xs text-steel mt-0.5">{hint}</p>}
       </div>
     </div>
   );
@@ -131,7 +131,7 @@ function FunctionCheckbox({ fn, checked, onToggle }) {
       className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all duration-150
         ${checked
           ? "border-indigo-500 bg-indigo-50 shadow-sm"
-          : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"}`}
+          : "border-sand bg-white hover:border-gray-300 hover:bg-cream"}`}
     >
       <div className="flex items-center gap-3">
         <span className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors
@@ -147,7 +147,7 @@ function FunctionCheckbox({ fn, checked, onToggle }) {
             {fn.name}
           </p>
           {(fn.date || fn.venue) && (
-            <p className="text-xs text-gray-400 mt-0.5 truncate">
+            <p className="text-xs text-steel mt-0.5 truncate">
               {[fn.date, fn.venue].filter(Boolean).join(" · ")}
             </p>
           )}
@@ -341,7 +341,7 @@ export default function NewGuestPage({ params }) {
   // ─── RENDER ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream">
       <div className="max-w-2xl mx-auto px-4 py-10">
 
         {/* Header */}
@@ -349,7 +349,7 @@ export default function NewGuestPage({ params }) {
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4 transition"
+            className="flex items-center gap-1.5 text-sm text-steel hover:text-gray-700 mb-4 transition"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
@@ -357,7 +357,7 @@ export default function NewGuestPage({ params }) {
             Back to Guest List
           </button>
           <h1 className="text-2xl font-bold text-gray-900">Add New Guest</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-steel mt-1">
             Fill in the details and pick which functions to invite this guest to.
           </p>
         </div>
@@ -476,21 +476,21 @@ export default function NewGuestPage({ params }) {
                   </button>
                   <button type="button"
                     onClick={() => setSelectedFunctions(new Set())}
-                    className="text-gray-400 hover:underline">
+                    className="text-steel hover:underline">
                     Clear
                   </button>
                 </div>
               )}
             </div>
 
-            <p className="text-xs text-gray-400 -mt-1">
+            <p className="text-xs text-steel -mt-1">
               A <strong>pending</strong> RSVP response will be seeded for each selected function.
             </p>
 
             {functionsLoading ? (
-              <p className="text-sm text-gray-400 py-4 text-center">Loading functions…</p>
+              <p className="text-sm text-steel py-4 text-center">Loading functions…</p>
             ) : weddingFunctions.length === 0 ? (
-              <p className="text-sm text-gray-400 py-4 text-center">
+              <p className="text-sm text-steel py-4 text-center">
                 No functions found.{" "}
                 <a href={`/dashboard/${weddingId}/functions/new`}
                   className="text-indigo-600 underline">Add one first.</a>
@@ -553,7 +553,7 @@ export default function NewGuestPage({ params }) {
               type="button"
               onClick={() => router.back()}
               className="px-6 py-3 bg-white border border-gray-300 text-gray-700
-                hover:bg-gray-50 font-semibold text-sm rounded-xl transition"
+                hover:bg-cream font-semibold text-sm rounded-xl transition"
             >
               Cancel
             </button>

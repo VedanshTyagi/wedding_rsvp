@@ -78,7 +78,7 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
             <h3 className="font-bold text-gray-900 text-base">{room.name}</h3>
           </div>
           {room.room_type && (
-            <p className="text-xs text-gray-400 mt-0.5 capitalize">{room.room_type}</p>
+            <p className="text-xs text-steel mt-0.5 capitalize">{room.room_type}</p>
           )}
         </div>
 
@@ -94,7 +94,7 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
 
       {/* Capacity bar */}
       <div>
-        <div className="flex justify-between text-xs text-gray-400 mb-1">
+        <div className="flex justify-between text-xs text-steel mb-1">
           <span>{assignedGuests.length} assigned</span>
           <span>{room.capacity} capacity</span>
         </div>
@@ -110,11 +110,11 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
       {/* Assigned guests */}
       {assignedGuests.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Assigned</p>
+          <p className="text-xs font-semibold text-steel uppercase tracking-wide">Assigned</p>
           {assignedGuests.map((guest) => (
             <div key={guest.id}
               className="flex items-center justify-between gap-2 px-3 py-2
-                bg-gray-50 rounded-xl border border-gray-100">
+                bg-cream rounded-xl border border-gray-100">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600
                   text-xs flex items-center justify-center font-bold flex-shrink-0">
@@ -123,7 +123,7 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-gray-800 truncate">{guest.full_name}</p>
                   {guest.phone && (
-                    <p className="text-xs text-gray-400 truncate">{guest.phone}</p>
+                    <p className="text-xs text-steel truncate">{guest.phone}</p>
                   )}
                 </div>
               </div>
@@ -147,7 +147,7 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
           <select
             value={selectedGuest}
             onChange={(e) => setSelectedGuest(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm
+            className="flex-1 px-3 py-2 border border-sand rounded-xl text-sm
               bg-white text-gray-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           >
             <option value="">Assign a guest…</option>
@@ -201,8 +201,8 @@ function AddRoomForm({ onAdd }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl
-          text-sm text-gray-400 hover:border-indigo-300 hover:text-indigo-500
+        className="w-full py-4 border-2 border-dashed border-sand rounded-2xl
+          text-sm text-steel hover:border-indigo-300 hover:text-indigo-500
           flex items-center justify-center gap-2 transition"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -219,7 +219,7 @@ function AddRoomForm({ onAdd }) {
       <h3 className="font-bold text-gray-800 text-sm">New Room</h3>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-semibold text-gray-600">Room Name</label>
+        <label className="text-xs font-semibold text-navy">Room Name</label>
         <input
           type="text"
           value={name}
@@ -232,7 +232,7 @@ function AddRoomForm({ onAdd }) {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-600">Capacity</label>
+          <label className="text-xs font-semibold text-navy">Capacity</label>
           <input
             type="number"
             min="1" max="20"
@@ -243,7 +243,7 @@ function AddRoomForm({ onAdd }) {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-600">Type</label>
+          <label className="text-xs font-semibold text-navy">Type</label>
           <select
             value={roomType}
             onChange={(e) => setRoomType(e.target.value)}
@@ -265,8 +265,8 @@ function AddRoomForm({ onAdd }) {
           {saving ? "Saving…" : "Add Room"}
         </button>
         <button type="button" onClick={() => setOpen(false)}
-          className="px-4 py-2 bg-white border border-gray-300 text-gray-600
-            text-sm rounded-xl hover:bg-gray-50 transition">
+          className="px-4 py-2 bg-white border border-gray-300 text-navy
+            text-sm rounded-xl hover:bg-cream transition">
           Cancel
         </button>
       </div>
@@ -301,7 +301,7 @@ function UnassignedList({ guests }) {
       <div className="divide-y divide-gray-50">
         {guests.map((guest) => (
           <div key={guest.id}
-            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition">
+            className="flex items-center gap-3 px-5 py-3 hover:bg-cream transition">
             <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-600
               text-sm flex items-center justify-center font-bold flex-shrink-0">
               {guest.full_name?.[0]?.toUpperCase() ?? "?"}
@@ -309,11 +309,11 @@ function UnassignedList({ guests }) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-800 truncate">{guest.full_name}</p>
               {guest.travel_city && (
-                <p className="text-xs text-gray-400">✈ from {guest.travel_city}</p>
+                <p className="text-xs text-steel">✈ from {guest.travel_city}</p>
               )}
             </div>
             {guest.phone && (
-              <p className="text-xs text-gray-400 flex-shrink-0">{guest.phone}</p>
+              <p className="text-xs text-steel flex-shrink-0">{guest.phone}</p>
             )}
           </div>
         ))}
@@ -466,8 +466,8 @@ export default function AccommodationPage({ params }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-gray-400">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-steel">
           <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
@@ -484,7 +484,7 @@ export default function AccommodationPage({ params }) {
       {/* ── Header ── */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Accommodation</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-steel mt-1">
           Manage rooms and assign outstation guests.
         </p>
       </div>
@@ -507,7 +507,7 @@ export default function AccommodationPage({ params }) {
           <div key={stat.label}
             className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
             <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
-            <p className="text-xs text-gray-400 mt-1">{stat.label}</p>
+            <p className="text-xs text-steel mt-1">{stat.label}</p>
           </div>
         ))}
       </div>

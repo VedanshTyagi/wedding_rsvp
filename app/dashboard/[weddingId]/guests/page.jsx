@@ -54,25 +54,25 @@ function HeadcountCards({ guests, functions }) {
         const total = guests.length;
 
         return (
-          <div key={fn} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+          <div key={fn} className="bg-white rounded-xl border border-sand shadow-sm p-4">
             <p className="text-sm font-bold text-gray-800 mb-3">{fn}</p>
 
             <div className="grid grid-cols-4 gap-2 text-center">
               <div>
                 <p className="text-lg font-bold text-emerald-600">{counts.confirmed}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Confirmed</p>
+                <p className="text-xs text-steel mt-0.5">Confirmed</p>
               </div>
               <div>
                 <p className="text-lg font-bold text-amber-500">{counts.pending}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Pending</p>
+                <p className="text-xs text-steel mt-0.5">Pending</p>
               </div>
               <div>
                 <p className="text-lg font-bold text-rose-500">{counts.declined}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Declined</p>
+                <p className="text-xs text-steel mt-0.5">Declined</p>
               </div>
               <div>
                 <p className="text-lg font-bold text-gray-700">{total}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Total</p>
+                <p className="text-xs text-steel mt-0.5">Total</p>
               </div>
             </div>
 
@@ -86,7 +86,7 @@ function HeadcountCards({ guests, functions }) {
 
             {/* People actually coming including plus ones and children */}
             <div className="mt-2 flex items-center justify-between">
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-steel">
                 {total > 0 ? Math.round((counts.confirmed / total) * 100) : 0}% confirmed
               </p>
               <p className="text-xs font-semibold text-indigo-600">
@@ -219,7 +219,7 @@ export default function GuestsPage({ params }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Guest List</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-steel mt-0.5">
             {filteredGuests.length} of {guests.length} guests
           </p>
         </div>
@@ -234,7 +234,7 @@ export default function GuestsPage({ params }) {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={importing}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-cream disabled:opacity-50 transition"
           >
             {importing ? (
               <>
@@ -323,7 +323,7 @@ export default function GuestsPage({ params }) {
         {(filterGroup || filterStatus) && (
           <button
             onClick={() => { setFilterGroup(""); setFilterStatus(""); }}
-            className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 underline"
+            className="px-3 py-2 text-sm text-steel hover:text-gray-700 underline"
           >
             Clear filters
           </button>
@@ -332,26 +332,26 @@ export default function GuestsPage({ params }) {
 
       {/* Table */}
       {loading ? (
-        <div className="text-center py-20 text-gray-400 text-sm">Loading guests…</div>
+        <div className="text-center py-20 text-steel text-sm">Loading guests…</div>
       ) : error ? (
         <div className="text-center py-20 text-rose-500 text-sm">⚠️ {error}</div>
       ) : filteredGuests.length === 0 ? (
-        <div className="text-center py-20 text-gray-400 text-sm">No guests match the current filters.</div>
+        <div className="text-center py-20 text-steel text-sm">No guests match the current filters.</div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <div className="overflow-x-auto rounded-xl border border-sand shadow-sm">
           <table className="min-w-full divide-y divide-gray-100 text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-cream">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600 w-8">#</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Name</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Email</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Phone</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Group</th>
+                <th className="px-4 py-3 text-left font-semibold text-navy w-8">#</th>
+                <th className="px-4 py-3 text-left font-semibold text-navy">Name</th>
+                <th className="px-4 py-3 text-left font-semibold text-navy">Email</th>
+                <th className="px-4 py-3 text-left font-semibold text-navy">Phone</th>
+                <th className="px-4 py-3 text-left font-semibold text-navy">Group</th>
                 {/* NEW COLUMN */}
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Coming With</th>
+                <th className="px-4 py-3 text-left font-semibold text-navy">Coming With</th>
                 {functions.map((fn) => (
                   <th key={fn}
-                    className={`px-4 py-3 text-center font-semibold text-gray-600 ${
+                    className={`px-4 py-3 text-center font-semibold text-navy ${
                       filterFunction === fn ? "bg-indigo-50 text-indigo-700" : ""
                     }`}>
                     {fn}
@@ -373,11 +373,11 @@ export default function GuestsPage({ params }) {
                 }
 
                 return (
-                  <tr key={guest.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-400">{idx + 1}</td>
+                  <tr key={guest.id} className="hover:bg-cream transition-colors">
+                    <td className="px-4 py-3 text-steel">{idx + 1}</td>
                     <td className="px-4 py-3 font-medium text-gray-900">{guest.name}</td>
-                    <td className="px-4 py-3 text-gray-500">{guest.email || "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">{guest.phone || "—"}</td>
+                    <td className="px-4 py-3 text-steel">{guest.email || "—"}</td>
+                    <td className="px-4 py-3 text-steel">{guest.phone || "—"}</td>
                     <td className="px-4 py-3">
                       {guest.group_tag ? (
                         <span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium border border-slate-200">
@@ -397,7 +397,7 @@ export default function GuestsPage({ params }) {
                           ))}
                         </div>
                       ) : (
-                        <span className="text-gray-400">—</span>
+                        <span className="text-steel">—</span>
                       )}
                     </td>
 
@@ -416,7 +416,7 @@ export default function GuestsPage({ params }) {
         </div>
       )}
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-steel">
         CSV format: <code className="bg-gray-100 px-1 rounded">Name, Email, Phone, Group</code> — extra columns are ignored.
       </p>
     </div>

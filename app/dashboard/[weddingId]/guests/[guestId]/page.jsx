@@ -115,7 +115,7 @@ function Toggle({ value, onChange, label, hint }) {
       </button>
       <div>
         <p className="text-sm font-semibold text-gray-700">{label}</p>
-        {hint && <p className="text-xs text-gray-400 mt-0.5">{hint}</p>}
+        {hint && <p className="text-xs text-steel mt-0.5">{hint}</p>}
       </div>
     </div>
   );
@@ -139,7 +139,7 @@ function FunctionCheckbox({ fn, checked, onToggle, isNew }) {
       className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all duration-150
         ${checked
           ? "border-indigo-500 bg-indigo-50 shadow-sm"
-          : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"}`}
+          : "border-sand bg-white hover:border-gray-300 hover:bg-cream"}`}
     >
       <div className="flex items-center gap-3">
         <span className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors
@@ -164,7 +164,7 @@ function FunctionCheckbox({ fn, checked, onToggle, isNew }) {
             )}
           </div>
           {(fn.date || fn.venue) && (
-            <p className="text-xs text-gray-400 mt-0.5 truncate">
+            <p className="text-xs text-steel mt-0.5 truncate">
               {[fn.date, fn.venue].filter(Boolean).join(" · ")}
             </p>
           )}
@@ -415,8 +415,8 @@ export default function GuestEditPage({ params }) {
   // ─── LOADING SKELETON ─────────────────────────────────────────────────────
   if (pageLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-gray-400">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-steel">
           <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10"
               stroke="currentColor" strokeWidth="4"/>
@@ -434,7 +434,7 @@ export default function GuestEditPage({ params }) {
 
   // ─── RENDER ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream">
       <div className="max-w-2xl mx-auto px-4 py-10">
 
         {/* ── Header ── */}
@@ -442,7 +442,7 @@ export default function GuestEditPage({ params }) {
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4 transition"
+            className="flex items-center gap-1.5 text-sm text-steel hover:text-gray-700 mb-4 transition"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
@@ -455,7 +455,7 @@ export default function GuestEditPage({ params }) {
               <h1 className="text-2xl font-bold text-gray-900">
                 {form.name || "Edit Guest"}
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-steel mt-1">
                 Edit this guest's details and function invites.
               </p>
             </div>
@@ -603,20 +603,20 @@ export default function GuestEditPage({ params }) {
                   </button>
                   <button type="button"
                     onClick={() => setSelectedFunctions(new Set())}
-                    className="text-gray-400 hover:underline">
+                    className="text-steel hover:underline">
                     Clear
                   </button>
                 </div>
               )}
             </div>
 
-            <p className="text-xs text-gray-400 -mt-1">
+            <p className="text-xs text-steel -mt-1">
               Adding a function seeds a new <strong>pending</strong> RSVP.
               Removing one deletes the invite and its RSVP response.
             </p>
 
             {weddingFunctions.length === 0 ? (
-              <p className="text-sm text-gray-400 py-4 text-center">No functions found.</p>
+              <p className="text-sm text-steel py-4 text-center">No functions found.</p>
             ) : (
               <div className="grid gap-2.5">
                 {weddingFunctions.map((fn) => (
@@ -692,7 +692,7 @@ export default function GuestEditPage({ params }) {
               type="button"
               onClick={() => router.back()}
               className="px-6 py-3 bg-white border border-gray-300 text-gray-700
-                hover:bg-gray-50 font-semibold text-sm rounded-xl transition"
+                hover:bg-cream font-semibold text-sm rounded-xl transition"
             >
               Cancel
             </button>

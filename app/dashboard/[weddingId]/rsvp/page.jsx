@@ -127,7 +127,7 @@ function DonutChart({ counts, total }) {
         ].map((item) => (
           <div key={item.key} className="flex items-center gap-2">
             <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${item.color}`}/>
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-navy">
               {item.label}
               <span className="font-semibold text-gray-800 ml-1">{counts[item.key] ?? 0}</span>
             </span>
@@ -157,7 +157,7 @@ function FunctionCard({ name, counts, total }) {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-gray-900 text-base">{name}</h3>
-        <span className="text-xs text-gray-400">{total} invited</span>
+        <span className="text-xs text-steel">{total} invited</span>
       </div>
 
       {/* Stat pills */}
@@ -191,7 +191,7 @@ function FunctionCard({ name, counts, total }) {
           style={{ width: `${declinedPct}%` }}
         />
       </div>
-      <p className="text-xs text-gray-400 mt-1.5 text-right">
+      <p className="text-xs text-steel mt-1.5 text-right">
         {confirmedPct}% confirmed
       </p>
     </div>
@@ -222,18 +222,18 @@ function RsvpTable({ guests, functions }) {
   };
 
   if (!guests.length) return (
-    <div className="text-center py-10 text-gray-400 text-sm">No guest data yet.</div>
+    <div className="text-center py-10 text-steel text-sm">No guest data yet.</div>
   );
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
       <table className="min-w-full divide-y divide-gray-100 text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-cream">
           <tr>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600">#</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600">Guest</th>
+            <th className="px-4 py-3 text-left font-semibold text-navy">#</th>
+            <th className="px-4 py-3 text-left font-semibold text-navy">Guest</th>
             {functions.map((fn) => (
-              <th key={fn} className="px-4 py-3 text-center font-semibold text-gray-600">
+              <th key={fn} className="px-4 py-3 text-center font-semibold text-navy">
                 {fn}
               </th>
             ))}
@@ -241,8 +241,8 @@ function RsvpTable({ guests, functions }) {
         </thead>
         <tbody className="divide-y divide-gray-50 bg-white">
           {guests.map((guest, idx) => (
-            <tr key={guest.id} className="hover:bg-gray-50 transition-colors">
-              <td className="px-4 py-3 text-gray-400 text-xs">{idx + 1}</td>
+            <tr key={guest.id} className="hover:bg-cream transition-colors">
+              <td className="px-4 py-3 text-steel text-xs">{idx + 1}</td>
               <td className="px-4 py-3 font-medium text-gray-900">{guest.full_name}</td>
               {functions.map((fn) => {
                 const status = guest.rsvp?.[fn] ?? "awaiting";
@@ -475,8 +475,8 @@ export default function RsvpPage({ params }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-gray-400">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-steel">
           <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
@@ -489,7 +489,7 @@ export default function RsvpPage({ params }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <p className="text-rose-500 text-sm">⚠️ {error}</p>
       </div>
     );
@@ -502,7 +502,7 @@ export default function RsvpPage({ params }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">RSVP Tracker</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-steel mt-1">
             {totalResponses} responses across {functions.length} functions
           </p>
         </div>
@@ -515,7 +515,7 @@ export default function RsvpPage({ params }) {
             </span>
           )}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium
-            bg-white border-gray-200 text-gray-600">
+            bg-white border-sand text-navy">
             <span className={`w-2 h-2 rounded-full ${
               realtimeConnected
                 ? "bg-emerald-500 animate-pulse"

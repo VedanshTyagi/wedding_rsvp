@@ -26,7 +26,7 @@ function StatCard({ label, value, sub, color }) {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
       <p className={`text-3xl font-bold ${color ?? "text-gray-900"}`}>{value}</p>
       <p className="text-sm font-semibold text-gray-700 mt-1">{label}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+      {sub && <p className="text-xs text-steel mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -34,7 +34,7 @@ function StatCard({ label, value, sub, color }) {
 // ─── RSVP BAR CHART ───────────────────────────────────────────────────────────
 function RsvpBarChart({ data }) {
   if (!data.length) return (
-    <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+    <div className="flex items-center justify-center h-48 text-steel text-sm">
       No data yet
     </div>
   );
@@ -86,7 +86,7 @@ function OutstationDonut({ outstation, local }) {
   ].filter((d) => d.value > 0);
 
   if (total === 0) return (
-    <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+    <div className="flex items-center justify-center h-48 text-steel text-sm">
       No guest data yet
     </div>
   );
@@ -120,19 +120,19 @@ function OutstationDonut({ outstation, local }) {
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <p className="text-2xl font-bold text-gray-900">{outstationPct}%</p>
-          <p className="text-xs text-gray-400">outstation</p>
+          <p className="text-xs text-steel">outstation</p>
         </div>
       </div>
       <div className="flex gap-6">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-indigo-500"/>
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-navy">
             Outstation <strong>{outstation}</strong>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-lime-400"/>
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-navy">
             Local <strong>{local}</strong>
           </span>
         </div>
@@ -157,17 +157,17 @@ function DietaryTable({ counts, total }) {
     .filter(([, count]) => count > 0);
 
   if (!rows.length) return (
-    <p className="text-sm text-gray-400 text-center py-6">No dietary data yet</p>
+    <p className="text-sm text-steel text-center py-6">No dietary data yet</p>
   );
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-100">
       <table className="w-full text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-cream">
           <tr>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600">Preference</th>
-            <th className="px-4 py-3 text-center font-semibold text-gray-600">Count</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 w-40">Share</th>
+            <th className="px-4 py-3 text-left font-semibold text-navy">Preference</th>
+            <th className="px-4 py-3 text-center font-semibold text-navy">Count</th>
+            <th className="px-4 py-3 text-left font-semibold text-navy w-40">Share</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-50 bg-white">
@@ -175,7 +175,7 @@ function DietaryTable({ counts, total }) {
             const pct  = total > 0 ? Math.round((count / total) * 100) : 0;
             const info = LABELS[key] ?? { label: key, icon: "•" };
             return (
-              <tr key={key} className="hover:bg-gray-50 transition-colors">
+              <tr key={key} className="hover:bg-cream transition-colors">
                 <td className="px-4 py-3 flex items-center gap-2">
                   <span>{info.icon}</span>
                   <span className="font-medium text-gray-800">{info.label}</span>
@@ -192,7 +192,7 @@ function DietaryTable({ counts, total }) {
                         }}
                       />
                     </div>
-                    <span className="text-xs text-gray-400 w-8 text-right">{pct}%</span>
+                    <span className="text-xs text-steel w-8 text-right">{pct}%</span>
                   </div>
                 </td>
               </tr>
@@ -225,18 +225,18 @@ function OverdueRsvpList({ guests }) {
       <div className="divide-y divide-gray-50">
         {guests.map((guest) => (
           <div key={guest.id}
-            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition">
+            className="flex items-center gap-3 px-5 py-3 hover:bg-cream transition">
             <span className="w-8 h-8 rounded-full bg-rose-100 text-rose-500
               text-sm flex items-center justify-center font-bold flex-shrink-0">
               {guest.full_name?.[0]?.toUpperCase() ?? "?"}
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-800 truncate">{guest.full_name}</p>
-              <p className="text-xs text-gray-400">{guest.functions?.join(", ")}</p>
+              <p className="text-xs text-steel">{guest.functions?.join(", ")}</p>
             </div>
             <div className="text-right flex-shrink-0">
               <p className="text-xs font-bold text-rose-500">{guest.days_waiting}d</p>
-              <p className="text-xs text-gray-400">waiting</p>
+              <p className="text-xs text-steel">waiting</p>
             </div>
             {guest.phone && (
               <a href={`tel:${guest.phone}`}
@@ -421,8 +421,8 @@ export default function AnalyticsPage({ params }) {
   // ─── LOADING ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-gray-400">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-steel">
           <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10"
               stroke="currentColor" strokeWidth="4"/>
@@ -436,7 +436,7 @@ export default function AnalyticsPage({ params }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <p className="text-rose-500 text-sm">⚠️ {error}</p>
       </div>
     );
@@ -450,7 +450,7 @@ export default function AnalyticsPage({ params }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-steel mt-1">
             Live data from Supabase — refreshes on page load.
           </p>
         </div>
@@ -489,8 +489,8 @@ export default function AnalyticsPage({ params }) {
           {/* Refresh button */}
           <button
             onClick={fetchAnalytics}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200
-              rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-sand
+              rounded-xl text-sm font-medium text-navy hover:bg-cream
               transition shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -511,7 +511,7 @@ export default function AnalyticsPage({ params }) {
         <StatCard label="Response Rate"   value={`${responseRate}%`}     color="text-indigo-600"
           sub="replied yes or no" />
         <StatCard label="Overdue RSVPs"   value={overdueGuests.length}
-          color={overdueGuests.length > 0 ? "text-rose-500" : "text-gray-400"}
+          color={overdueGuests.length > 0 ? "text-rose-500" : "text-steel"}
           sub="pending > 7 days" />
       </div>
 
@@ -519,7 +519,7 @@ export default function AnalyticsPage({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="text-base font-bold text-gray-800 mb-1">RSVP by Function</h2>
-          <p className="text-xs text-gray-400 mb-5">
+          <p className="text-xs text-steel mb-5">
             Confirmed / Pending / Declined per wedding event
           </p>
           <RsvpBarChart data={barData} />
@@ -528,7 +528,7 @@ export default function AnalyticsPage({ params }) {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6
           flex flex-col items-center justify-center">
           <h2 className="text-base font-bold text-gray-800 mb-1 self-start">Guest Origin</h2>
-          <p className="text-xs text-gray-400 mb-5 self-start">
+          <p className="text-xs text-steel mb-5 self-start">
             Outstation vs local guests
           </p>
           <OutstationDonut outstation={outstation} local={local} />
@@ -538,7 +538,7 @@ export default function AnalyticsPage({ params }) {
       {/* Row 2: Dietary Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h2 className="text-base font-bold text-gray-800 mb-1">Dietary Preferences</h2>
-        <p className="text-xs text-gray-400 mb-5">
+        <p className="text-xs text-steel mb-5">
           Breakdown of food requirements across all guests
         </p>
         <DietaryTable counts={dietaryCounts} total={totalGuests} />
@@ -548,7 +548,7 @@ export default function AnalyticsPage({ params }) {
       <div>
         <h2 className="text-base font-bold text-gray-800 mb-4">
           Overdue RSVPs
-          <span className="text-xs font-normal text-gray-400 ml-2">
+          <span className="text-xs font-normal text-steel ml-2">
             Pending for more than 7 days
           </span>
         </h2>

@@ -11,6 +11,16 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        crimson: "#9A2143",
+        gold:    "#BFA054",
+        sand:    "#EDD498",
+        cream:   "#FBF8F2",
+        steel:   "#9EA1AB",
+        navy:    "#1E2742",
+      },
+      fontFamily: {
+        display: ["var(--font-display)", "serif"],
+        body:    ["var(--font-body)", "sans-serif"],
       },
     },
   },

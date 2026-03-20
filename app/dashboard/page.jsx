@@ -16,11 +16,11 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Your active weddings</p>
+          <p className="text-sm text-steel mt-1">Your active weddings</p>
         </div>
         <Link
           href="/dashboard/new"
-          className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 transition-colors"
+          className="bg-crimson text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 transition-colors"
         >
           + New wedding
         </Link>
@@ -33,12 +33,12 @@ export default async function DashboardPage() {
             <Link
               key={w.id}
               href={`/dashboard/${w.id}`}
-              className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-400 transition-colors block"
+              className="bg-white border border-sand rounded-xl p-5 hover:border-gray-400 transition-colors block"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="font-semibold text-lg">{w.couple_names}</div>
-                  <div className="text-sm text-gray-500 mt-1 flex gap-3">
+                  <div className="text-sm text-steel mt-1 flex gap-3">
                     {w.city && <span>{w.city}</span>}
                     {w.start_date && <span>{w.start_date}</span>}
                     {w.guest_count_est > 0 && (
@@ -52,11 +52,11 @@ export default async function DashboardPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-white border border-dashed border-gray-200 rounded-xl p-12 text-center">
-          <p className="text-gray-400 text-sm mb-4">No weddings yet</p>
+        <div className="bg-white border border-dashed border-sand rounded-xl p-12 text-center">
+          <p className="text-steel text-sm mb-4">No weddings yet</p>
           <Link
             href="/dashboard/new"
-            className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm inline-block"
+            className="bg-crimson text-white px-4 py-2 rounded-lg text-sm inline-block"
           >
             Create your first wedding
           </Link>
