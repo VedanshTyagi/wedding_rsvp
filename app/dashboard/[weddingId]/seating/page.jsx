@@ -1,288 +1,423 @@
-// app/dashboard/[wedding_id]/seating/page.jsx
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+// app/dashboard/[weddingId]/seating/page.jsx
+// Seating plan — tables, capacity, guest assignment, occupied vs available seats
 
-export default function SeatingPage({ params }) {
-  const { wedding_id } = params
-  const supabase = createClient()
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 
-  const [tables, setTables] = useState([])
-  const [guests, setGuests] = useState([])
-  const [unassigned, setUnassigned] = useState([])
-  const [loading, setLoading] = useState(true)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
-  // New table form
-  const [newTableName, setNewTableName] = useState('')
-  const [newTableCapacity, setNewTableCapacity] = useState(8)
-  const [addingTable, setAddingTable] = useState(false)
+export default function SeatingPage() {
+  const { weddingId } = useParams();
 
-  async function fetchData() {
-    setLoading(true)
+  const [tables, setTables] = useState([]);
+  const [guests, setGuests] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [functions, setFunctions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [assigning, setAssigning] = useState(null);
+  const [selectedGuest, setSelectedGuest] = useState("");
+  const [newTable, setNewTable] = useState({ name: "", capacity: 8, functionId: "" });
+  const [addingTable, setAddingTable] = useState(false);
+  const [message, setMessage] = useState(null);
 
-    const [{ data: tablesData }, { data: guestsData }, { data: assignmentsData }] =
-      await Promise.all([
-        supabase
-          .from('seating_tables')
-          .select('*')
-          .eq('wedding_id', wedding_id)
-          .order('created_at'),
-        supabase
-          .from('guests')
-          .select('id, full_name, side, group_tag, dietary_preference')
-          .eq('wedding_id', wedding_id)
-          .order('full_name'),
-        supabase
-          .from('seating_assignments')
-          .select('*')
-          .eq('wedding_id', wedding_id),
-      ])
+  // ── fetch all data ──────────────────────────────────────────────────────────
+  async function fetchAll() {
+    setLoading(true);
 
-    const assignments = assignmentsData || []
-    const assignedGuestIds = new Set(assignments.map(a => a.guest_id))
+    const [
+      { data: tablesData },
+      { data: guestsData },
+      { data: assignData },
+      { data: fnData },
+    ] = await Promise.all([
+      supabase
+        .from("seating_tables")
+        .select("id, table_name, capacity, notes, function_id")
+        .order("created_at"),
+      supabase
+        .from("guests")
+        .select("id, full_name, group_tag")
+        .eq("wedding_id", weddingId)
+        .order("full_name"),
+      supabase
+        .from("seating_assignments")
+        .select("id, table_id, guest_id")
+        .eq("wedding_id", weddingId),
+      supabase
+        .from("wedding_functions")
+        .select("id, name")
+        .eq("wedding_id", weddingId),
+    ]);
 
-    // Attach guests to their tables
-    const tablesWithGuests = (tablesData || []).map(table => ({
-      ...table,
-      guests: assignments
-        .filter(a => a.table_id === table.id)
-        .map(a => (guestsData || []).find(g => g.id === a.guest_id))
-        .filter(Boolean),
-    }))
-
-    setTables(tablesWithGuests)
-    setGuests(guestsData || [])
-    setUnassigned((guestsData || []).filter(g => !assignedGuestIds.has(g.id)))
-    setLoading(false)
+    setTables(tablesData || []);
+    setGuests(guestsData || []);
+    setAssignments(assignData || []);
+    setFunctions(fnData || []);
+    setLoading(false);
   }
 
-  useEffect(() => { fetchData() }, [wedding_id])
+  useEffect(() => {
+    if (weddingId) fetchAll();
+  }, [weddingId]);
 
-  async function handleAddTable(e) {
-    e.preventDefault()
-    if (!newTableName.trim()) return
-    setAddingTable(true)
-    await supabase.from('seating_tables').insert({
-      wedding_id,
-      name: newTableName.trim(),
-      capacity: Number(newTableCapacity),
-    })
-    setNewTableName('')
-    setNewTableCapacity(8)
-    setAddingTable(false)
-    fetchData()
+  // ── helpers ─────────────────────────────────────────────────────────────────
+  function getTableAssignments(tableId) {
+    return assignments.filter((a) => a.table_id === tableId);
   }
 
-  async function handleAssign(guestId, tableId) {
-    if (!tableId) return
-    await supabase.from('seating_assignments').upsert({
-      guest_id: guestId,
-      table_id: tableId,
-      wedding_id,
-    }, { onConflict: 'guest_id,wedding_id' })
-    fetchData()
+  function getGuestById(guestId) {
+    return guests.find((g) => g.id === guestId);
   }
 
-  async function handleUnassign(guestId) {
-    await supabase
-      .from('seating_assignments')
+  function getFunctionName(functionId) {
+    return functions.find((f) => f.id === functionId)?.name || "";
+  }
+
+  function getUnassignedGuests() {
+    const assignedIds = new Set(assignments.map((a) => a.guest_id));
+    return guests.filter((g) => !assignedIds.has(g.id));
+  }
+
+  function showMessage(type, text) {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 3000);
+  }
+
+  // ── assign guest to table ───────────────────────────────────────────────────
+  async function assignGuest(tableId) {
+    if (!selectedGuest) return;
+
+    const table = tables.find((t) => t.id === tableId);
+    const occupied = getTableAssignments(tableId).length;
+
+    if (occupied >= table.capacity) {
+      showMessage("error", "Table is full!");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("seating_assignments")
+      .insert({ table_id: tableId, guest_id: selectedGuest, wedding_id: weddingId })
+      .select()
+      .single();
+
+    if (error) {
+      showMessage("error", "Failed to assign: " + error.message);
+      return;
+    }
+
+    setAssignments((prev) => [...prev, data]);
+    setSelectedGuest("");
+    setAssigning(null);
+    showMessage("success", "Guest assigned successfully.");
+  }
+
+  // ── remove assignment ───────────────────────────────────────────────────────
+  async function removeAssignment(assignmentId) {
+    const { error } = await supabase
+      .from("seating_assignments")
       .delete()
-      .eq('guest_id', guestId)
-      .eq('wedding_id', wedding_id)
-    fetchData()
+      .eq("id", assignmentId);
+
+    if (!error) {
+      setAssignments((prev) => prev.filter((a) => a.id !== assignmentId));
+    }
   }
 
-  async function handleDeleteTable(tableId) {
-    if (!confirm('Delete this table? All assignments will be removed.')) return
-    await supabase.from('seating_tables').delete().eq('id', tableId)
-    fetchData()
+  // ── add table ───────────────────────────────────────────────────────────────
+  async function addTable() {
+    if (!newTable.name || !newTable.functionId) return;
+
+    const { data, error } = await supabase
+      .from("seating_tables")
+      .insert({
+        table_name: newTable.name,
+        capacity: newTable.capacity,
+        function_id: newTable.functionId,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      showMessage("error", "Failed to add table: " + error.message);
+      return;
+    }
+
+    setTables((prev) => [...prev, data]);
+    setNewTable({ name: "", capacity: 8, functionId: "" });
+    setAddingTable(false);
+    showMessage("success", "Table added.");
   }
 
-  const totalSeats = tables.reduce((sum, t) => sum + t.capacity, 0)
-  const totalAssigned = guests.length - unassigned.length
+  // ── summary stats ────────────────────────────────────────────────────────────
+  const totalSeats = tables.reduce((s, t) => s + t.capacity, 0);
+  const totalOccupied = assignments.length;
+  const totalAvailable = totalSeats - totalOccupied;
+  const unassignedGuests = getUnassignedGuests();
 
-  if (loading) return (
-    <div className="text-sm text-muted-foreground py-12 text-center">Loading seating plan...</div>
-  )
-
+  // ── render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6">
+    <div className="max-w-5xl font-body">
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* header */}
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-display font-semibold">Seating Plan</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {totalAssigned} of {guests.length} guests seated · {tables.length} tables · {totalSeats} total seats
+          <h1 className="font-display text-2xl text-navy">Seating Plan</h1>
+          <p className="text-sm text-steel mt-1">
+            Assign guests to tables and manage seat availability
           </p>
         </div>
+        <button
+          onClick={() => setAddingTable(true)}
+          className="bg-crimson text-white text-sm px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+        >
+          + Add table
+        </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* message banner */}
+      {message && (
+        <div className={`mb-4 px-4 py-3 rounded-lg text-sm border ${
+          message.type === "success"
+            ? "bg-green-50 border-green-200 text-green-700"
+            : "bg-red-50 border-red-200 text-red-700"
+        }`}>
+          {message.text}
+        </div>
+      )}
+
+      {/* summary stats */}
+      <div className="grid grid-cols-4 gap-3 mb-6">
         {[
-          { label: 'Total guests', value: guests.length },
-          { label: 'Seated', value: totalAssigned },
-          { label: 'Unassigned', value: unassigned.length },
-          { label: 'Tables', value: tables.length },
-        ].map(s => (
-          <div key={s.label} className="bg-secondary/30 rounded-md p-4">
-            <p className="text-xs text-muted-foreground">{s.label}</p>
-            <p className="text-2xl font-medium mt-1">{s.value}</p>
+          { label: "Tables",       value: tables.length },
+          { label: "Total seats",  value: totalSeats },
+          { label: "Occupied",     value: totalOccupied },
+          { label: "Available",    value: totalAvailable },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-white border border-sand rounded-xl p-4">
+            <div className="text-xs text-steel uppercase tracking-wide mb-1">
+              {stat.label}
+            </div>
+            <div className="font-display text-2xl text-navy">{stat.value}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* ── LEFT: Unassigned guests ── */}
-        <div className="border border-border rounded-xl p-4 space-y-3">
-          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-            Unassigned ({unassigned.length})
-          </h2>
-
-          {unassigned.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">All guests are seated!</p>
-          ) : (
-            <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-              {unassigned.map(guest => (
-                <div key={guest.id} className="flex items-center justify-between gap-2 p-2 border border-border rounded-lg hover:bg-muted/20 transition-colors">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{guest.full_name}</p>
-                    <p className="text-xs text-muted-foreground">{guest.group_tag || guest.side || ''}</p>
-                  </div>
-                  <select
-                    defaultValue=""
-                    onChange={e => handleAssign(guest.id, e.target.value)}
-                    className="text-xs px-2 py-1 border border-border rounded-md bg-background focus:outline-none flex-shrink-0 max-w-[120px]"
-                  >
-                    <option value="" disabled>Assign...</option>
-                    {tables.map(t => (
-                      <option
-                        key={t.id}
-                        value={t.id}
-                        disabled={t.guests.length >= t.capacity}
-                      >
-                        {t.name} ({t.guests.length}/{t.capacity})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* unassigned guests pill */}
+      {unassignedGuests.length > 0 && (
+        <div className="mb-5 px-4 py-3 bg-sand bg-opacity-30 border border-sand rounded-xl flex items-center gap-2 text-sm">
+          <span className="w-2 h-2 rounded-full bg-gold inline-block"></span>
+          <span className="text-navy font-medium">
+            {unassignedGuests.length} guest{unassignedGuests.length !== 1 ? "s" : ""} not yet seated
+          </span>
         </div>
+      )}
 
-        {/* ── RIGHT: Tables ── */}
-        <div className="lg:col-span-2 space-y-4">
+      {/* add table form */}
+      {addingTable && (
+        <div className="mb-5 bg-white border border-sand rounded-xl p-5">
+          <p className="font-display text-navy mb-4">New table</p>
+          <div className="flex gap-3 items-end flex-wrap">
 
-          {/* Add table form */}
-          <form onSubmit={handleAddTable} className="flex gap-2">
-            <input
-              value={newTableName}
-              onChange={e => setNewTableName(e.target.value)}
-              placeholder="Table name (e.g. Table 1, Family)"
-              className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <input
-              type="number"
-              value={newTableCapacity}
-              onChange={e => setNewTableCapacity(e.target.value)}
-              min={1}
-              max={30}
-              className="w-20 px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="Seats"
-            />
-            <button
-              type="submit"
-              disabled={addingTable}
-              className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 whitespace-nowrap"
-            >
-              + Add Table
-            </button>
-          </form>
-
-          {/* Tables grid */}
-          {tables.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground text-sm border border-dashed border-border rounded-xl">
-              No tables yet. Add your first table above.
+            <div className="flex-1 min-w-[160px]">
+              <label className="text-xs text-steel uppercase tracking-wide block mb-1">Table name</label>
+              <input
+                type="text"
+                value={newTable.name}
+                onChange={(e) => setNewTable({ ...newTable, name: e.target.value })}
+                placeholder="e.g. Table 1, Family Table"
+                className="w-full border border-sand rounded-lg px-3 py-2 text-sm text-navy bg-cream focus:outline-none focus:border-gold"
+              />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {tables.map(table => {
-                const occupancy = table.guests.length / table.capacity
-                const isFull = table.guests.length >= table.capacity
 
-                return (
-                  <div key={table.id} className="border border-border rounded-xl p-4 space-y-3">
-                    {/* Table header */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-sm font-medium">{table.name}</h3>
-                        <p className={`text-xs mt-0.5 ${isFull ? 'text-red-500' : 'text-muted-foreground'}`}>
-                          {table.guests.length}/{table.capacity} seats
-                          {isFull && ' · Full'}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleDeleteTable(table.id)}
-                        className="text-xs text-red-400 hover:text-red-600 transition-colors"
-                      >
-                        Delete
-                      </button>
-                    </div>
+            <div className="w-48">
+              <label className="text-xs text-steel uppercase tracking-wide block mb-1">Function</label>
+              <select
+                value={newTable.functionId}
+                onChange={(e) => setNewTable({ ...newTable, functionId: e.target.value })}
+                className="w-full border border-sand rounded-lg px-3 py-2 text-sm text-navy bg-cream focus:outline-none focus:border-gold"
+              >
+                <option value="">Select function...</option>
+                {functions.map((f) => (
+                  <option key={f.id} value={f.id}>{f.name}</option>
+                ))}
+              </select>
+            </div>
 
-                    {/* Capacity bar */}
-                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+            <div className="w-32">
+              <label className="text-xs text-steel uppercase tracking-wide block mb-1">Capacity</label>
+              <input
+                type="number"
+                min="1"
+                max="30"
+                value={newTable.capacity}
+                onChange={(e) => setNewTable({ ...newTable, capacity: +e.target.value })}
+                className="w-full border border-sand rounded-lg px-3 py-2 text-sm text-navy bg-cream focus:outline-none focus:border-gold"
+              />
+            </div>
+
+            <button
+              onClick={addTable}
+              disabled={!newTable.name || !newTable.functionId}
+              className="bg-crimson text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-90 disabled:opacity-40"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setAddingTable(false)}
+              className="border border-sand text-steel px-4 py-2 rounded-lg text-sm hover:border-steel"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* tables grid */}
+      {loading ? (
+        <p className="text-steel text-sm">Loading seating plan...</p>
+      ) : tables.length === 0 ? (
+        <div className="bg-white border border-sand rounded-xl p-10 text-center">
+          <p className="font-display text-navy text-lg mb-2">No tables yet</p>
+          <p className="text-sm text-steel">Add your first table to start building the seating plan.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {tables.map((table) => {
+            const tableAssignments = getTableAssignments(table.id);
+            const occupied = tableAssignments.length;
+            const available = table.capacity - occupied;
+            const isFull = available === 0;
+            const fillPct = Math.round((occupied / table.capacity) * 100);
+
+            return (
+              <div key={table.id}
+                className="bg-white border border-sand rounded-xl p-5 hover:border-gold transition-colors">
+
+                {/* table header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="font-display text-navy text-base">{table.table_name}</h3>
+                    <p className="text-xs text-steel mt-0.5">
+                      {getFunctionName(table.function_id) && (
+                        <span className="text-gold mr-2">{getFunctionName(table.function_id)}</span>
+                      )}
+                      {occupied}/{table.capacity} seats ·{" "}
+                      <span className={isFull ? "text-crimson" : "text-green-600"}>
+                        {isFull ? "Full" : `${available} available`}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-steel mb-1">{fillPct}%</div>
+                    <div className="w-20 h-1.5 bg-sand rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all ${
-                          occupancy >= 1 ? 'bg-red-400' :
-                          occupancy >= 0.8 ? 'bg-amber-400' : 'bg-green-400'
-                        }`}
-                        style={{ width: `${Math.min(occupancy * 100, 100)}%` }}
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${fillPct}%`,
+                          background: isFull ? "#9A2143" : "#BFA054",
+                        }}
                       />
                     </div>
-
-                    {/* Guests at table */}
-                    <div className="space-y-1.5">
-                      {table.guests.length === 0 ? (
-                        <p className="text-xs text-muted-foreground italic">No guests assigned yet</p>
-                      ) : (
-                        table.guests.map(guest => (
-                          <div key={guest.id} className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-medium flex-shrink-0">
-                                {guest.full_name[0]}
-                              </div>
-                              <p className="text-xs truncate">{guest.full_name}</p>
-                            </div>
-                            <button
-                              onClick={() => handleUnassign(guest.id)}
-                              className="text-[10px] text-muted-foreground hover:text-red-500 transition-colors flex-shrink-0"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-
-                    {/* Empty seat indicators */}
-                    {table.guests.length < table.capacity && (
-                      <div className="flex flex-wrap gap-1">
-                        {Array.from({ length: table.capacity - table.guests.length }).map((_, i) => (
-                          <div key={i} className="w-5 h-5 rounded-full border border-dashed border-border" />
-                        ))}
-                      </div>
-                    )}
                   </div>
-                )
-              })}
-            </div>
-          )}
+                </div>
+
+                {/* seat circles visual */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {Array.from({ length: table.capacity }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-6 h-6 rounded-full border text-xs flex items-center justify-center
+                        ${i < occupied
+                          ? "bg-gold border-gold text-white"
+                          : "bg-cream border-sand text-steel"
+                        }`}
+                    >
+                      {i < occupied ? "✓" : ""}
+                    </div>
+                  ))}
+                </div>
+
+                {/* assigned guests list */}
+                {tableAssignments.length > 0 && (
+                  <div className="mb-3 flex flex-col gap-1">
+                    {tableAssignments.map((a) => {
+                      const guest = getGuestById(a.guest_id);
+                      return (
+                        <div key={a.id}
+                          className="flex items-center justify-between px-2 py-1 bg-cream rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-sand flex items-center justify-center text-xs text-navy font-medium">
+                              {guest?.full_name?.[0] || "?"}
+                            </div>
+                            <span className="text-xs text-navy">{guest?.full_name || "Unknown"}</span>
+                            {guest?.group_tag && (
+                              <span className="text-xs text-steel">· {guest.group_tag}</span>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => removeAssignment(a.id)}
+                            className="text-steel hover:text-crimson text-xs transition-colors"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* assign guest dropdown */}
+                {assigning === table.id ? (
+                  <div className="flex gap-2 mt-2">
+                    <select
+                      value={selectedGuest}
+                      onChange={(e) => setSelectedGuest(e.target.value)}
+                      className="flex-1 border border-sand rounded-lg px-2 py-1.5 text-xs text-navy bg-cream focus:outline-none focus:border-gold"
+                    >
+                      <option value="">Select guest...</option>
+                      {getUnassignedGuests().map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.full_name} {g.group_tag ? `(${g.group_tag})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => assignGuest(table.id)}
+                      disabled={!selectedGuest}
+                      className="bg-crimson text-white px-3 py-1.5 rounded-lg text-xs hover:bg-opacity-90 disabled:opacity-40"
+                    >
+                      Assign
+                    </button>
+                    <button
+                      onClick={() => { setAssigning(null); setSelectedGuest(""); }}
+                      className="border border-sand text-steel px-3 py-1.5 rounded-lg text-xs"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  !isFull && (
+                    <button
+                      onClick={() => { setAssigning(table.id); setSelectedGuest(""); }}
+                      disabled={unassignedGuests.length === 0}
+                      className="mt-1 w-full border border-dashed border-sand text-steel text-xs py-1.5 rounded-lg hover:border-gold hover:text-gold transition-colors disabled:opacity-40"
+                    >
+                      + Assign guest
+                    </button>
+                  )
+                )}
+              </div>
+            );
+          })}
         </div>
-      </div>
+      )}
     </div>
-  )
+  );
 }
