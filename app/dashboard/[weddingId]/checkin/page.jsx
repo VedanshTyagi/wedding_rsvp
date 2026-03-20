@@ -45,9 +45,9 @@ export default function CheckInPage() {
       supabase.from('checkin_log').select('*', { count: 'exact', head: true }).eq('function_id', selectedFunction),
       supabase
         .from('checkin_log')
-        .select('guest_id, checked_in_at, guests(full_name, group_tag)')
+        .select('guest_id, created_at')
         .eq('function_id', selectedFunction)
-        .order('checked_in_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(10),
     ])
     setTotalCount(total || 0)

@@ -115,32 +115,32 @@ export default function NewWeddingPage() {
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <Link href="/dashboard"
-          className="text-gray-400 hover:text-gray-600 text-sm">
+          className="text-steel hover:text-navy text-sm">
           ← Dashboard
         </Link>
         <span className="text-gray-200">/</span>
-        <span className="text-sm text-gray-600">New wedding</span>
+        <span className="text-sm text-navy">New wedding</span>
       </div>
 
       <h1 className="text-2xl font-semibold mb-1">Create a wedding</h1>
-      <p className="text-sm text-gray-500 mb-8">
+      <p className="text-sm text-steel mb-8">
         Fill in the details and add the ceremony functions.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-8">
 
         {/* ── Section 1: Wedding details ── */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 flex flex-col gap-4">
+        <div className="bg-white border border-sand rounded-xl p-6 flex flex-col gap-4">
           <h2 className="font-medium text-sm text-gray-700 uppercase tracking-wide">
             Wedding details
           </h2>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 font-medium">
+            <label className="text-xs text-steel font-medium">
               Couple names <span className="text-red-400">*</span>
             </label>
             <input
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
+              className="border border-sand rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
               placeholder="e.g. Priya Sharma & Arjun Kapoor"
               value={coupleNames}
               onChange={e => setCoupleNames(e.target.value)}
@@ -149,9 +149,9 @@ export default function NewWeddingPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 font-medium">Venue name</label>
+            <label className="text-xs text-steel font-medium">Venue name</label>
             <input
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
+              className="border border-sand rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
               placeholder="e.g. Taj Lake Palace"
               value={venue}
               onChange={e => setVenue(e.target.value)}
@@ -160,9 +160,9 @@ export default function NewWeddingPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 font-medium">City</label>
+              <label className="text-xs text-steel font-medium">City</label>
               <select
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400 bg-white"
+                className="border border-sand rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400 bg-white"
                 value={city}
                 onChange={e => setCity(e.target.value)}
               >
@@ -174,11 +174,11 @@ export default function NewWeddingPage() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 font-medium">
+              <label className="text-xs text-steel font-medium">
                 Estimated guest count
               </label>
               <input
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
+                className="border border-sand rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
                 type="number"
                 placeholder="e.g. 350"
                 min="0"
@@ -190,18 +190,18 @@ export default function NewWeddingPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 font-medium">Start date</label>
+              <label className="text-xs text-steel font-medium">Start date</label>
               <input
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
+                className="border border-sand rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500 font-medium">End date</label>
+              <label className="text-xs text-steel font-medium">End date</label>
               <input
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
+                className="border border-sand rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
@@ -211,7 +211,7 @@ export default function NewWeddingPage() {
         </div>
 
         {/* ── Section 2: Functions ── */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 flex flex-col gap-4">
+        <div className="bg-white border border-sand rounded-xl p-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h2 className="font-medium text-sm text-gray-700 uppercase tracking-wide">
               Ceremony functions
@@ -219,7 +219,7 @@ export default function NewWeddingPage() {
             <button
               type="button"
               onClick={addFunction}
-              className="text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:border-gray-400 transition-colors"
+              className="text-xs text-steel border border-sand px-3 py-1.5 rounded-lg hover:border-gray-400 transition-colors"
             >
               + Add function
             </button>
@@ -227,10 +227,10 @@ export default function NewWeddingPage() {
 
           {functions.map((fn, index) => (
             <div key={index}
-              className="border border-gray-100 rounded-lg p-4 flex flex-col gap-3 bg-gray-50"
+              className="border border-gray-100 rounded-lg p-4 flex flex-col gap-3 bg-cream"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-500">
+                <span className="text-xs font-medium text-steel">
                   Function {index + 1}
                 </span>
                 {functions.length > 1 && (
@@ -246,11 +246,11 @@ export default function NewWeddingPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-gray-500 font-medium">
+                  <label className="text-xs text-steel font-medium">
                     Function name
                   </label>
                   <select
-                    className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
+                    className="border border-sand rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
                     value={fn.name}
                     onChange={e => updateFunction(index, 'name', e.target.value)}
                   >
@@ -261,9 +261,9 @@ export default function NewWeddingPage() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-gray-500 font-medium">Date</label>
+                  <label className="text-xs text-steel font-medium">Date</label>
                   <input
-                    className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
+                    className="border border-sand rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
                     type="date"
                     value={fn.date}
                     onChange={e => updateFunction(index, 'date', e.target.value)}
@@ -273,9 +273,9 @@ export default function NewWeddingPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-gray-500 font-medium">Start time</label>
+                  <label className="text-xs text-steel font-medium">Start time</label>
                   <input
-                    className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
+                    className="border border-sand rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
                     type="time"
                     value={fn.time}
                     onChange={e => updateFunction(index, 'time', e.target.value)}
@@ -283,11 +283,11 @@ export default function NewWeddingPage() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-gray-500 font-medium">
+                  <label className="text-xs text-steel font-medium">
                     Venue / hall
                   </label>
                   <input
-                    className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
+                    className="border border-sand rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gray-400"
                     placeholder="e.g. Poolside Lawn"
                     value={fn.venue_detail}
                     onChange={e => updateFunction(index, 'venue_detail', e.target.value)}
@@ -310,12 +310,12 @@ export default function NewWeddingPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-gray-900 text-white px-6 py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-700 transition-colors"
+            className="bg-crimson text-white px-6 py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-700 transition-colors"
           >
             {loading ? 'Creating...' : 'Create wedding'}
           </button>
           <Link href="/dashboard"
-            className="px-6 py-2.5 rounded-lg text-sm text-gray-500 border border-gray-200 hover:border-gray-400 transition-colors"
+            className="px-6 py-2.5 rounded-lg text-sm text-steel border border-sand hover:border-gray-400 transition-colors"
           >
             Cancel
           </Link>
