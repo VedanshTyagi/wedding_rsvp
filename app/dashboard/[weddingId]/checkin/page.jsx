@@ -136,10 +136,16 @@ export default function CheckInPage() {
     <div className="max-w-lg mx-auto space-y-5 pb-10">
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-display font-semibold">Guest Check-in</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Day-of arrival tracking</p>
-      </div>
+<div className="flex items-center justify-between">
+  <div>
+    <h1 className="text-2xl font-display font-semibold">Guest Check-in</h1>
+    <p className="text-sm text-muted-foreground mt-0.5">Day-of arrival tracking</p>
+  </div>
+  <a href={`/dashboard/${weddingId}/checkin/qr`}
+    className="text-sm px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
+    QR Codes
+  </a>
+</div>
 
       {/* Function selector */}
       <select
