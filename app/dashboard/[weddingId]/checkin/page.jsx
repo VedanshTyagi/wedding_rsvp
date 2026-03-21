@@ -9,16 +9,16 @@ export default function CheckInPage() {
   const { weddingId } = useParams()
   const supabase = createClient()
 
-  const [search, setSearch] = useState('')
-  const [results, setResults] = useState([])
-  const [functions, setFunctions] = useState([])
+  const [search,           setSearch]           = useState('')
+  const [results,          setResults]          = useState([])
+  const [functions,        setFunctions]        = useState([])
   const [selectedFunction, setSelectedFunction] = useState('')
-  const [checkedIn, setCheckedIn] = useState([])
-  const [recentArrivals, setRecentArrivals] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [checkedCount, setCheckedCount] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [checkingIn, setCheckingIn] = useState(null)
+  const [checkedIn,        setCheckedIn]        = useState([])
+  const [recentArrivals,   setRecentArrivals]   = useState([])
+  const [totalCount,       setTotalCount]       = useState(0)
+  const [checkedCount,     setCheckedCount]     = useState(0)
+  const [loading,          setLoading]          = useState(false)
+  const [checkingIn,       setCheckingIn]       = useState(null)
 
   // Load functions
   useEffect(() => {
@@ -121,9 +121,9 @@ export default function CheckInPage() {
     if (checkedIn.includes(guest.id)) return
     setCheckingIn(guest.id)
     await supabase.from('checkin_log').insert({
-      guest_id: guest.id,
+      guest_id:    guest.id,
       function_id: selectedFunction,
-      method: 'manual',
+      method:      'manual',
     })
     setCheckingIn(null)
     setSearch('')
@@ -137,22 +137,16 @@ export default function CheckInPage() {
     <div className="max-w-lg mx-auto space-y-5 pb-10">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-display font-semibold">Guest Check-in</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Day-of arrival tracking</p>
-        </div>
-        <a href={`/dashboard/${weddingId}/checkin/qr`}
-          className="text-sm px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
-          QR Codes
-        </a>
+      <div>
+        <h1 className="text-2xl font-semibold">Guest Check-in</h1>
+        <p className="text-sm text-gray-500 mt-0.5">Day-of arrival tracking</p>
       </div>
 
       {/* Function selector */}
       <select
         value={selectedFunction}
         onChange={e => setSelectedFunction(e.target.value)}
-        className="w-full px-3 py-2.5 text-sm border border-sand rounded-lg bg-white text-[#4a3728] focus:outline-none focus:border-[#c9a96e]"
+        className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
       >
         <option value="">Select function...</option>
         {functions.map(f => (
@@ -161,20 +155,20 @@ export default function CheckInPage() {
       </select>
 
       {/* Live counter */}
-      <div className="border border-sand rounded-xl bg-white p-5 space-y-3">
+      <div className="border border-gray-200 rounded-xl p-5 space-y-3">
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-xs text-[#9e8878]">Arrived</p>
-            <p className="text-4xl mt-1 text-[#2c1810]">
+            <p className="text-xs text-gray-400 uppercase tracking-wide">Arrived</p>
+            <p className="text-4xl font-semibold mt-1">
               {checkedCount}
               <span className="text-lg text-gray-400 font-normal"> / {totalCount}</span>
             </p>
           </div>
-          <p className="text-3xl text-[#4a3728]">{percentage}%</p>
+          <p className="text-3xl font-semibold text-gray-700">{percentage}%</p>
         </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-crimson rounded-full transition-all duration-500"
+            className="h-full bg-gray-900 rounded-full transition-all duration-500"
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -187,36 +181,36 @@ export default function CheckInPage() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by name or phone..."
-          className="w-full px-4 py-3 text-base border border-sand rounded-xl text-[#4a3728] focus:outline-none focus:border-[#c9a96e]"
+          className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400"
           autoComplete="off"
         />
 
         {loading && <p className="text-xs text-gray-400 px-1">Searching...</p>}
 
         {results.length > 0 && (
-          <div className="border border-sand rounded-xl overflow-hidden divide-y divide-[#f0e8df] bg-white">
+          <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
             {results.map(guest => {
               const isChecked = checkedIn.includes(guest.id)
               return (
                 <div key={guest.id}
                   className={`flex items-center justify-between px-4 py-3 transition-colors
-                    ${isChecked ? 'bg-[#f6fbf6]' : 'hover:bg-[#fdf5ee]'}`}>
+                    ${isChecked ? 'bg-green-50' : 'hover:bg-gray-50'}`}>
                   <div>
-                    <p className="text-sm text-[#2c1810]">{guest.full_name}</p>
-                    <p className="text-xs text-[#9e8878]">
+                    <p className="text-sm font-medium">{guest.full_name}</p>
+                    <p className="text-xs text-gray-400">
                       {guest.phone || ''}{guest.group_tag ? ` · ${guest.group_tag}` : ''}
                     </p>
                   </div>
                   {isChecked ? (
-                    <span className="text-xs text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                    <span className="text-xs font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
                       Checked in
                     </span>
                   ) : (
                     <button
                       onClick={() => handleCheckIn(guest)}
                       disabled={checkingIn === guest.id}
-                      className="text-sm px-4 py-1.5 bg-crimson text-white rounded-full
-                        hover:opacity-90 transition-opacity disabled:opacity-50 active:scale-95">
+                      className="text-sm px-4 py-1.5 bg-gray-900 text-white rounded-full
+                        hover:bg-gray-700 transition-colors disabled:opacity-50 active:scale-95">
                       {checkingIn === guest.id ? '...' : 'Check in'}
                     </button>
                   )}
@@ -230,17 +224,17 @@ export default function CheckInPage() {
       {/* Recent arrivals */}
       {recentArrivals.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-sm text-[#9e8878]">Recent arrivals</h2>
-          <div className="border border-sand rounded-xl overflow-hidden divide-y divide-[#f0e8df] bg-white">
+          <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide">Recent arrivals</h2>
+          <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
             {recentArrivals.map((log, i) => (
               <div key={i} className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#fdf5ee] flex items-center justify-center text-[#4a3728] text-xs">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-xs font-medium">
                     {log.guests?.full_name?.[0] || '?'}
                   </div>
                   <div>
-                    <p className="text-sm text-[#2c1810]">{log.guests?.full_name || 'Unknown'}</p>
-                    <p className="text-xs text-[#9e8878]">{log.guests?.group_tag || ''}</p>
+                    <p className="text-sm font-medium">{log.guests?.full_name || 'Unknown'}</p>
+                    <p className="text-xs text-gray-400">{log.guests?.group_tag || ''}</p>
                   </div>
                 </div>
                 <p className="text-xs text-gray-400">
@@ -254,6 +248,7 @@ export default function CheckInPage() {
           </div>
         </div>
       )}
+
     </div>
   )
 }
