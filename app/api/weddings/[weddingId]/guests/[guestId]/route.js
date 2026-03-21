@@ -2,13 +2,22 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
+<<<<<<< HEAD
+  const { weddingId, guestId } = params;
+  const supabase = createClient();
+=======
   const { weddingId, guestId } = await params;
   const supabase = await createClient();
+>>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
 
   try {
     const { data: guest, error: guestError } = await supabase
       .from("guests")
+<<<<<<< HEAD
+      .select("id, full_name, phone, email, group_tag, dietary_pref, is_outstation")
+=======
       .select("id, full_name, phone, email, group_tag, dietary_preference, is_outstation")
+>>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
       .eq("id", guestId)
       .eq("wedding_id", weddingId)
       .single();
@@ -26,7 +35,11 @@ export async function GET(request, { params }) {
     return NextResponse.json({
       ...guest,
       name:         guest.full_name,
+<<<<<<< HEAD
+      dietary:      guest.dietary_pref,
+=======
       dietary:      guest.dietary_preference,
+>>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
       outstation:   guest.is_outstation,
       function_ids: invites.map((i) => i.function_id),
     });
@@ -41,8 +54,13 @@ export async function GET(request, { params }) {
 }
 
 export async function PATCH(request, { params }) {
+<<<<<<< HEAD
+  const { weddingId, guestId } = params;
+  const supabase = createClient();
+=======
   const { weddingId, guestId } = await params;
   const supabase = await createClient();
+>>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
 
   try {
     const body = await request.json();
@@ -59,7 +77,11 @@ export async function PATCH(request, { params }) {
         phone:         phone?.trim()  ?? null,
         email:         email?.trim()  ?? null,
         group_tag:     group_tag      ?? null,
+<<<<<<< HEAD
+        dietary_pref:  dietary        ?? null,
+=======
         dietary_preference:  dietary        ?? null,
+>>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
         is_outstation: outstation     ?? false,
       })
       .eq("id", guestId)
