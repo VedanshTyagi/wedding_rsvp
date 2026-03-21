@@ -1,18 +1,16 @@
-/**
- * FILE: app/api/weddings/[weddingId]/accommodation/assign/route.js
- * POST   → assign a guest to a room
- * DELETE → unassign a guest from a room
- */
+// app/api/weddings/[weddingId]/accommodation/assign/route.js
+// POST   — assigns a guest to a room
+// DELETE — removes a guest from a room
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 export async function POST(request, { params }) {
-<<<<<<< HEAD
-  const supabase = createClient();
-=======
-  const supabase = await createClient();
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
+  const { weddingId } = await params;
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
   try {
     const { room_id, guest_id } = await request.json();
@@ -24,38 +22,51 @@ export async function POST(request, { params }) {
       );
     }
 
-    // Check room capacity before assigning
-    const { data: room, error: roomErr } = await supabase
+    // check room belongs to this wedding
+    const { data: room, error: roomError } = await supabase
       .from("rooms")
-      .select("capacity")
+      .select("id, capacity")
       .eq("id", room_id)
+      .eq("wedding_id", weddingId)
       .single();
 
-    if (roomErr) throw roomErr;
+    if (roomError || !room) {
+      return NextResponse.json({ message: "Room not found" }, { status: 404 });
+    }
 
-    const { count, error: countErr } = await supabase
+    // check capacity
+    const { count } = await supabase
       .from("room_assignments")
       .select("*", { count: "exact", head: true })
       .eq("room_id", room_id);
 
-    if (countErr) throw countErr;
-
     if (count >= room.capacity) {
+      return NextResponse.json({ message: "Room is full" }, { status: 409 });
+    }
+
+    // check not already assigned
+    const { data: existing } = await supabase
+      .from("room_assignments")
+      .select("id")
+      .eq("guest_id", guest_id)
+      .maybeSingle();
+
+    if (existing) {
       return NextResponse.json(
-        { message: "Room is full" },
-        { status: 400 }
+        { message: "Guest is already assigned to a room" },
+        { status: 409 }
       );
     }
 
-    // Insert assignment
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("room_assignments")
-      .insert({ room_id, guest_id });
+      .insert({ room_id, guest_id })
+      .select()
+      .single();
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true }, { status: 201 });
-
+    return NextResponse.json({ assignment: data }, { status: 201 });
   } catch (error) {
     console.error("[POST /accommodation/assign]", error);
     return NextResponse.json(
@@ -66,11 +77,8 @@ export async function POST(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-<<<<<<< HEAD
-  const supabase = createClient();
-=======
+  const { weddingId } = await params;
   const supabase = await createClient();
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
 
   try {
     const { room_id, guest_id } = await request.json();
@@ -90,8 +98,7 @@ export async function DELETE(request, { params }) {
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true });
-
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("[DELETE /accommodation/assign]", error);
     return NextResponse.json(
