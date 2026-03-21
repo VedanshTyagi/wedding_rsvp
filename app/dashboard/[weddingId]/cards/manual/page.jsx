@@ -215,8 +215,8 @@ export default function ManualCardPage({ params }) {
           </button>
 
           <div>
-            <h2 className="text-base font-bold text-gray-900">Manual Card Builder</h2>
-            <p className="text-xs text-gray-400 mt-1">
+            <h2 className="text-base text-[#2c1810]">Manual Card Builder</h2>
+            <p className="text-xs text-[#9e8878] mt-1">
               Card for: <span className="font-semibold text-gray-600">{guest?.full_name}</span>
               <br/>Functions: {guestFns.map(f => f.name).join(", ")}
             </p>
@@ -224,14 +224,14 @@ export default function ManualCardPage({ params }) {
 
           {/* ── Style picker ── */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Card Style</p>
+            <p className="text-xs text-[#9e8878] mb-2">Card Style</p>
             <div className="grid grid-cols-3 gap-1.5">
               {Object.entries(STYLES).map(([key, s]) => (
                 <button key={key} onClick={() => setCurStyle(key)}
                   className={`text-xs py-2 px-1 rounded-lg border transition text-center
                     ${curStyle === key
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-700 font-semibold"
-                      : "border-gray-200 text-gray-600 hover:border-gray-300"}`}>
+                      ? "border-[#2c1810] bg-[#fdf5ee] text-[#2c1810]"
+                      : "border-sand text-[#6f5a4a] hover:border-[#c9a96e]"}`}>
                   {s.label.split(" ")[0]}
                 </button>
               ))}
@@ -240,7 +240,7 @@ export default function ManualCardPage({ params }) {
 
           {/* ── Palette ── */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Color Palette</p>
+            <p className="text-xs text-[#9e8878] mb-2">Color Palette</p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(PALETTES).map(([key, p]) => (
                 <button key={key} onClick={() => setCurPalette(key)} title={key}
@@ -254,15 +254,15 @@ export default function ManualCardPage({ params }) {
 
           {/* ── Font ── */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Name Font</p>
+            <p className="text-xs text-[#9e8878] mb-2">Name Font</p>
             <div className="grid grid-cols-2 gap-1.5">
               {Object.entries(FONTS).map(([key, fv]) => (
                 <button key={key} onClick={() => setCurFont(key)}
                   style={{ fontFamily: fv }}
                   className={`py-2 text-sm rounded-lg border transition
                     ${curFont === key
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                      : "border-gray-200 text-gray-600 hover:border-gray-300"}`}>
+                      ? "border-[#2c1810] bg-[#fdf5ee] text-[#2c1810]"
+                      : "border-sand text-[#6f5a4a] hover:border-[#c9a96e]"}`}>
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                 </button>
               ))}
@@ -271,7 +271,7 @@ export default function ManualCardPage({ params }) {
 
           {/* ── Fine-tune Sliders ── */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Fine-tune</p>
+            <p className="text-xs text-[#9e8878] mb-2">Fine-tune</p>
             <div className="space-y-3">
               {[
                 ["Name Size",      nameSize,      setNameSize,      18, 48],

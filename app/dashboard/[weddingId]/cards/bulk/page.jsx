@@ -368,8 +368,8 @@ export default function BulkCardPage({ params }) {
             Back
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Bulk Card Sender</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Design one card style → send to all selected guests with their own functions</p>
+            <h1 className="text-2xl text-[#2c1810]">Bulk Card Sender</h1>
+            <p className="text-sm text-[#9e8878] mt-1">Design one card style → send to all selected guests with their own functions</p>
           </div>
         </div>
 
@@ -379,19 +379,19 @@ export default function BulkCardPage({ params }) {
           <div className="space-y-5">
 
             {/* Style picker */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
-              <h2 className="text-sm font-bold text-gray-800">Card Style</h2>
+            <div className="bg-white rounded-2xl border border-sand p-5 space-y-4">
+              <h2 className="text-sm text-[#2c1810]">Card Style</h2>
               <div className="grid grid-cols-3 gap-1.5">
                 {Object.entries(STYLES).map(([key, s]) => (
                   <button key={key} type="button" onClick={() => setCurStyle(key)}
                     className={`text-xs py-2 px-1 rounded-lg border transition text-center
-                      ${curStyle === key ? "border-indigo-500 bg-indigo-50 text-indigo-700 font-semibold" : "border-gray-200 text-gray-600 hover:border-gray-300"}`}>
+                      ${curStyle === key ? "border-[#2c1810] bg-[#fdf5ee] text-[#2c1810]" : "border-sand text-[#6f5a4a] hover:border-[#c9a96e]"}`}>
                     {s.label.split(" ")[0]}
                   </button>
                 ))}
               </div>
 
-              <h2 className="text-sm font-bold text-gray-800">Palette</h2>
+              <h2 className="text-sm text-[#2c1810]">Palette</h2>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(PALETTES).map(([key, p]) => (
                   <button key={key} type="button" onClick={() => setCurPalette(key)} title={p.label}
@@ -401,13 +401,13 @@ export default function BulkCardPage({ params }) {
                 ))}
               </div>
 
-              <h2 className="text-sm font-bold text-gray-800">Font</h2>
+              <h2 className="text-sm text-[#2c1810]">Font</h2>
               <div className="grid grid-cols-2 gap-1.5">
                 {Object.entries(FONTS).map(([key, f]) => (
                   <button key={key} type="button" onClick={() => setCurFont(key)}
                     style={{ fontFamily: f.value }}
                     className={`py-2 text-sm rounded-lg border transition
-                      ${curFont === key ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-gray-200 text-gray-600 hover:border-gray-300"}`}>
+                      ${curFont === key ? "border-[#2c1810] bg-[#fdf5ee] text-[#2c1810]" : "border-sand text-[#6f5a4a] hover:border-[#c9a96e]"}`}>
                     {f.label}
                   </button>
                 ))}
@@ -415,8 +415,8 @@ export default function BulkCardPage({ params }) {
             </div>
 
             {/* Send method */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-              <h2 className="text-sm font-bold text-gray-800">Send Method</h2>
+            <div className="bg-white rounded-2xl border border-sand p-5 space-y-3">
+              <h2 className="text-sm text-[#2c1810]">Send Method</h2>
               <div className="grid grid-cols-2 gap-3">
                 <button type="button" onClick={() => setSendMode("email")}
                   className={`flex items-center gap-3 p-4 rounded-xl border-2 transition
@@ -445,20 +445,20 @@ export default function BulkCardPage({ params }) {
             </div>
 
             {/* Guest list */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
+            <div className="bg-white rounded-2xl border border-sand p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold text-gray-800">
                   Select Guests <span className="text-gray-400 font-normal">({selected.length} selected)</span>
                 </h2>
                 <button type="button" onClick={toggleAll}
-                  className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition">
+                  className="text-xs px-3 py-1.5 border border-sand rounded-lg text-[#6f5a4a] hover:bg-[#fdf5ee] transition">
                   {selected.length === filteredGuests.length ? "Deselect All" : "Select All"}
                 </button>
               </div>
 
               <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Search guests…"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                className="w-full px-3 py-2 border border-sand rounded-lg text-sm text-[#4a3728] focus:outline-none focus:border-[#c9a96e]"/>
 
               <div className="border border-gray-100 rounded-xl divide-y divide-gray-50 max-h-80 overflow-y-auto">
                 {filteredGuests.length === 0 ? (

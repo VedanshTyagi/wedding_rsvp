@@ -34,17 +34,7 @@ export default async function WeddingProfilePage({ params }) {
     .sort((a, b) => new Date(a.function_date) - new Date(b.function_date))
 
   return (
-    <div className="max-w-3xl font-body">
-
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 mb-6 text-sm">
-        <Link href="/dashboard"
-          className="text-steel hover:text-navy transition-colors">
-          Dashboard
-        </Link>
-        <span className="text-sand">/</span>
-        <span className="text-navy">{wedding.couple_names}</span>
-      </div>
+    <div className="max-w-3xl mx-auto font-body">
 
       {/* Hero header */}
       <div className="bg-white border border-sand rounded-xl p-6 mb-5">
@@ -69,8 +59,8 @@ export default async function WeddingProfilePage({ params }) {
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-4 mt-5 pt-5 border-t border-sand">
           <div>
-            <div className="text-xs text-steel uppercase tracking-wide mb-1">Start date</div>
-            <div className="text-sm font-medium text-navy">
+            <div className="text-xs text-steel mb-1">Start date</div>
+            <div className="text-sm text-navy">
               {wedding.start_date
                 ? new Date(wedding.start_date).toLocaleDateString('en-IN', {
                     day: 'numeric', month: 'short', year: 'numeric'
@@ -79,8 +69,8 @@ export default async function WeddingProfilePage({ params }) {
             </div>
           </div>
           <div>
-            <div className="text-xs text-steel uppercase tracking-wide mb-1">End date</div>
-            <div className="text-sm font-medium text-navy">
+            <div className="text-xs text-steel mb-1">End date</div>
+            <div className="text-sm text-navy">
               {wedding.end_date
                 ? new Date(wedding.end_date).toLocaleDateString('en-IN', {
                     day: 'numeric', month: 'short', year: 'numeric'
@@ -89,8 +79,8 @@ export default async function WeddingProfilePage({ params }) {
             </div>
           </div>
           <div>
-            <div className="text-xs text-steel uppercase tracking-wide mb-1">Est. guests</div>
-            <div className="text-sm font-medium text-navy">
+            <div className="text-xs text-steel mb-1">Est. guests</div>
+            <div className="text-sm text-navy">
               {wedding.guest_count_est || '—'}
             </div>
           </div>
@@ -118,7 +108,7 @@ export default async function WeddingProfilePage({ params }) {
               <div key={fn.id}
                 className="flex items-center gap-4 p-3 rounded-lg border border-sand bg-cream"
               >
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full border
+                <span className={`text-xs px-2.5 py-1 rounded-full border
                   ${FN_COLORS[fn.name] || 'bg-sand text-navy border-sand'}`}>
                   {fn.name}
                 </span>

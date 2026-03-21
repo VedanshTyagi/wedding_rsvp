@@ -24,7 +24,7 @@ const DIETARY_COLORS = [
 // ─── STAT CARD ────────────────────────────────────────────────────────────────
 function StatCard({ label, value, sub, color }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="bg-white rounded-xl border border-sand p-5">
       <p className={`text-3xl font-bold ${color ?? "text-gray-900"}`}>{value}</p>
       <p className="text-sm font-semibold text-gray-700 mt-1">{label}</p>
       {sub && <p className="text-xs text-steel mt-0.5">{sub}</p>}
@@ -126,7 +126,7 @@ function OutstationDonut({ outstation, local }) {
       </div>
       <div className="flex gap-6">
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-indigo-500"/>
+          <span className="w-3 h-3 rounded-full bg-gold"/>
           <span className="text-xs text-navy">
             Outstation <strong>{outstation}</strong>
           </span>
@@ -162,7 +162,7 @@ function DietaryTable({ counts, total }) {
   );
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-100">
+    <div className="overflow-hidden rounded-xl border border-sand">
       <table className="w-full text-sm">
         <thead className="bg-cream">
           <tr>
@@ -215,8 +215,8 @@ function OverdueRsvpList({ guests }) {
   );
 
   return (
-    <div className="bg-white rounded-2xl border border-rose-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-rose-50 flex items-center justify-between">
+    <div className="bg-white rounded-xl border border-sand overflow-hidden">
+      <div className="px-5 py-4 border-b border-sand bg-cream flex items-center justify-between">
         <h3 className="font-bold text-gray-800 text-sm">Overdue RSVPs</h3>
         <span className="px-2 py-0.5 bg-rose-100 text-rose-600 border border-rose-200
           rounded-full text-xs font-semibold">
@@ -241,8 +241,8 @@ function OverdueRsvpList({ guests }) {
             </div>
             {guest.phone && (
               <a href={`tel:${guest.phone}`}
-                className="flex-shrink-0 px-2 py-1 bg-indigo-50 text-indigo-600
-                  rounded-lg text-xs font-medium hover:bg-indigo-100 transition">
+                className="flex-shrink-0 px-2 py-1 bg-cream text-navy border border-sand
+                  rounded-lg text-xs font-medium hover:bg-white transition-colors">
                 Call
               </a>
             )}
@@ -445,12 +445,12 @@ export default function AnalyticsPage() {
 
   // ─── RENDER ───────────────────────────────────────────────────────────────
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+          <h1 className="text-2xl font-semibold text-navy">Analytics</h1>
           <p className="text-sm text-steel mt-1">
             Live data from Supabase — refreshes on page load.
           </p>
@@ -463,9 +463,9 @@ export default function AnalyticsPage() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700
-              disabled:bg-indigo-400 text-white rounded-xl text-sm font-medium
-              transition shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-crimson hover:bg-opacity-90
+              disabled:opacity-60 text-white rounded-lg text-sm font-medium
+              transition-colors"
           >
             {exporting ? (
               <>
@@ -491,8 +491,8 @@ export default function AnalyticsPage() {
           <button
             onClick={fetchAnalytics}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-sand
-              rounded-xl text-sm font-medium text-navy hover:bg-cream
-              transition shadow-sm"
+              rounded-lg text-sm font-medium text-navy hover:bg-cream
+              transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -509,7 +509,7 @@ export default function AnalyticsPage() {
         <StatCard label="Total Guests"    value={totalGuests}            color="text-gray-900"   />
         <StatCard label="Confirmed"       value={totalConfirmed}         color="text-emerald-600"
           sub="across all functions" />
-        <StatCard label="Response Rate"   value={`${responseRate}%`}     color="text-indigo-600"
+        <StatCard label="Response Rate"   value={`${responseRate}%`}     color="text-gold"
           sub="replied yes or no" />
         <StatCard label="Overdue RSVPs"   value={overdueGuests.length}
           color={overdueGuests.length > 0 ? "text-rose-500" : "text-steel"}
@@ -518,17 +518,17 @@ export default function AnalyticsPage() {
 
       {/* Row 1: Bar Chart + Donut */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h2 className="text-base font-bold text-gray-800 mb-1">RSVP by Function</h2>
+        <div className="lg:col-span-2 bg-white rounded-xl border border-sand p-6">
+          <h2 className="text-base font-semibold text-navy mb-1">RSVP by Function</h2>
           <p className="text-xs text-steel mb-5">
             Confirmed / Pending / Declined per wedding event
           </p>
           <RsvpBarChart data={barData} />
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6
+        <div className="bg-white rounded-xl border border-sand p-6
           flex flex-col items-center justify-center">
-          <h2 className="text-base font-bold text-gray-800 mb-1 self-start">Guest Origin</h2>
+          <h2 className="text-base font-semibold text-navy mb-1 self-start">Guest Origin</h2>
           <p className="text-xs text-steel mb-5 self-start">
             Outstation vs local guests
           </p>
@@ -537,8 +537,8 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Row 2: Dietary Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <h2 className="text-base font-bold text-gray-800 mb-1">Dietary Preferences</h2>
+      <div className="bg-white rounded-xl border border-sand p-6">
+        <h2 className="text-base font-semibold text-navy mb-1">Dietary Preferences</h2>
         <p className="text-xs text-steel mb-5">
           Breakdown of food requirements across all guests
         </p>
@@ -547,7 +547,7 @@ export default function AnalyticsPage() {
 
       {/* Row 3: Overdue RSVP list */}
       <div>
-        <h2 className="text-base font-bold text-gray-800 mb-4">
+        <h2 className="text-base font-semibold text-navy mb-4">
           Overdue RSVPs
           <span className="text-xs font-normal text-steel ml-2">
             Pending for more than 7 days
