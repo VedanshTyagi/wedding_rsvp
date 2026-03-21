@@ -34,7 +34,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import { useState, useEffect } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // ─── HELPER COMPONENTS ────────────────────────────────────────────────────────
@@ -179,7 +179,7 @@ const DIETARY_OPTIONS = [
 // ─── MAIN PAGE COMPONENT ──────────────────────────────────────────────────────
 
 export default function NewGuestPage({ params }) {
-  const { weddingId } = params;
+  const { weddingId } = use(params);
   const router = useRouter();
 
   // ── Form field state ───────────────────────────────────────────────────────

@@ -12,7 +12,7 @@
  *   5. Export / Send
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, use, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -45,7 +45,7 @@ const FONTS = {
 };
 
 export default function AICardPage({ params }) {
-  const { weddingId } = params;
+  const { weddingId } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();

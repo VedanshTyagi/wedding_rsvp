@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request, { params }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     const { room_id, guest_id } = await request.json();
@@ -62,7 +62,7 @@ export async function POST(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     const { room_id, guest_id } = await request.json();

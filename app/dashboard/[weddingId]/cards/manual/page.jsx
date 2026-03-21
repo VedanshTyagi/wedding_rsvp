@@ -15,7 +15,7 @@
  * - Send: redirects to /cards/send with card data
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, use, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -58,7 +58,7 @@ const FONTS = {
 };
 
 export default function ManualCardPage({ params }) {
-  const { weddingId } = params;
+  const { weddingId } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();

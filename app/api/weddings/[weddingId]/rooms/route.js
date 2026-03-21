@@ -2,8 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request, { params }) {
-  const { weddingId } = params;
-  const supabase = createClient();
+  const { weddingId } = await params;
+  const supabase = await createClient();
 
   try {
     const { name, capacity, room_type } = await request.json();

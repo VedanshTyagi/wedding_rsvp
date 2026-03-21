@@ -3,16 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
   const { weddingId } = await params;
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   try {
     const { data: guests, error: guestsError } = await supabase
       .from("guests")
-<<<<<<< HEAD
       .select("id, full_name, email, phone, group_tag, dietary_preference, is_outstation, plus_one, plus_one_name, children_count")
-=======
-      .select("id, full_name, email, phone, group_tag, dietary_pref, is_outstation, plus_one, plus_one_name, children_count")
->>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
       .eq("wedding_id", weddingId)
       .order("full_name", { ascending: true });
 
@@ -34,8 +30,7 @@ export async function GET(request, { params }) {
         .in("guest_id", guests.map((g) => g.id));
       if (rsvpError) throw rsvpError;
       rsvpRows = data ?? [];
-}
-
+    }
 
     const rsvpLookup = {};
     for (const row of rsvpRows) {
@@ -51,11 +46,7 @@ export async function GET(request, { params }) {
       return {
         ...guest,
         name:           guest.full_name,
-<<<<<<< HEAD
-        dietary:    guest.dietary_preference,
-=======
-        dietary:        guest.dietary_pref,
->>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
+        dietary:        guest.dietary_preference,
         outstation:     guest.is_outstation,
         plus_one:       guest.plus_one       ?? false,
         plus_one_name:  guest.plus_one_name  ?? null,
@@ -79,12 +70,8 @@ export async function GET(request, { params }) {
 }
 
 export async function POST(request, { params }) {
-  const { weddingId } = params;
-<<<<<<< HEAD
+  const { weddingId } = await params;
   const supabase = await createClient();
-=======
-  const supabase = createClient();
->>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
 
   try {
     const body = await request.json();
@@ -100,17 +87,13 @@ export async function POST(request, { params }) {
     const { data: guest, error: guestError } = await supabase
       .from("guests")
       .insert({
-        wedding_id:    weddingId,
-        full_name:     name.trim(),
-        phone:         phone?.trim()  ?? null,
-        email:         email?.trim()  ?? null,
-        group_tag:     group_tag      ?? null,
-<<<<<<< HEAD
-        dietary_preference: dietary ?? null,
-=======
-        dietary_pref:  dietary        ?? null,
->>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
-        is_outstation: outstation     ?? false,
+        wedding_id:         weddingId,
+        full_name:          name.trim(),
+        phone:              phone?.trim()  ?? null,
+        email:              email?.trim()  ?? null,
+        group_tag:          group_tag      ?? null,
+        dietary_preference: dietary        ?? null,
+        is_outstation:      outstation     ?? false,
       })
       .select("id")
       .single();

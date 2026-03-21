@@ -5,39 +5,36 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 
-const supabase = await createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+// FIX 1: removed `await` — createClient is not async
+const supabase = createClient();
 
 const TEMPLATES = [
   { id: "classic", label: "Classic Elegance", desc: "Warm ivory tones, serif typography" },
-  { id: "modern", label: "Modern Minimal", desc: "Clean lines, sans-serif, monochrome" },
-  { id: "floral", label: "Floral Garden", desc: "Soft pastels, botanical accents" },
+  { id: "modern",  label: "Modern Minimal",   desc: "Clean lines, sans-serif, monochrome" },
+  { id: "floral",  label: "Floral Garden",    desc: "Soft pastels, botanical accents" },
 ];
 
 const CHANNEL_OPTIONS = [
-  { value: "auto", label: "Auto (use guest preference)" },
-  { value: "whatsapp", label: "WhatsApp only" },
-  { value: "email", label: "Email only" },
+  { value: "auto",      label: "Auto (use guest preference)" },
+  { value: "whatsapp",  label: "WhatsApp only" },
+  { value: "email",     label: "Email only" },
 ];
 
 export default function SendInvitesPage() {
   const { weddingId } = useParams();
 
-  const [guests, setGuests] = useState([]);
+  const [guests,         setGuests]         = useState([]);
   const [selectedGuests, setSelectedGuests] = useState([]);
-  const [template, setTemplate] = useState("classic");
-  const [channel, setChannel] = useState("auto");
-  const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
-  const [results, setResults] = useState(null);
-  const [deliveryLog, setDeliveryLog] = useState([]);
-  const [error, setError] = useState(null);
+  const [template,       setTemplate]       = useState("classic");
+  const [channel,        setChannel]        = useState("auto");
+  const [loading,        setLoading]        = useState(false);
+  const [fetching,       setFetching]       = useState(true);
+  const [results,        setResults]        = useState(null);
+  const [deliveryLog,    setDeliveryLog]    = useState([]);
+  const [error,          setError]          = useState(null);
 
-  // fetch guests for this wedding
   useEffect(() => {
     async function fetchGuests() {
       setFetching(true);
@@ -45,7 +42,7 @@ export default function SendInvitesPage() {
         .from("guests")
         .select("id, full_name, email, phone, preferred_channel")
         .eq("wedding_id", weddingId)
-        .order("first_name");
+        .order("full_name", { ascending: true });
 
       if (!error) setGuests(data || []);
       setFetching(false);
@@ -53,12 +50,11 @@ export default function SendInvitesPage() {
     fetchGuests();
   }, [weddingId]);
 
-  // fetch recent delivery log
   useEffect(() => {
     async function fetchLog() {
       const { data } = await supabase
         .from("delivery_log")
-        .select("id, guest_id, channel, status, error_message, sent_at, guests(first_name)")
+        .select("id, guest_id, channel, status, error_message, sent_at, guests(full_name)")
         .order("sent_at", { ascending: false })
         .limit(20);
       setDeliveryLog(data || []);
@@ -87,10 +83,7 @@ export default function SendInvitesPage() {
     try {
       const res = await fetch("/api/invite/send", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           guestIds: selectedGuests,
           template,
@@ -120,47 +113,39 @@ export default function SendInvitesPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
 
-        {/* template picker */}
+        {/* Template picker */}
         <div>
           <p style={labelStyle}>Invite template</p>
           {TEMPLATES.map((t) => (
-            <div
-              key={t.id}
-              onClick={() => setTemplate(t.id)}
+            <div key={t.id} onClick={() => setTemplate(t.id)}
               style={{
                 ...cardStyle,
                 border: template === t.id ? "2px solid #2c1810" : "1px solid #e8ddd0",
-                marginBottom: 8,
-                cursor: "pointer",
-              }}
-            >
+                marginBottom: 8, cursor: "pointer",
+              }}>
               <p style={{ margin: 0, fontWeight: 500, fontSize: 14, color: "#2c1810" }}>{t.label}</p>
               <p style={{ margin: "2px 0 0", fontSize: 12, color: "#9e8878" }}>{t.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* channel picker */}
+        {/* Channel picker */}
         <div>
           <p style={labelStyle}>Channel</p>
           {CHANNEL_OPTIONS.map((c) => (
-            <div
-              key={c.value}
-              onClick={() => setChannel(c.value)}
+            <div key={c.value} onClick={() => setChannel(c.value)}
               style={{
                 ...cardStyle,
                 border: channel === c.value ? "2px solid #2c1810" : "1px solid #e8ddd0",
-                marginBottom: 8,
-                cursor: "pointer",
-              }}
-            >
+                marginBottom: 8, cursor: "pointer",
+              }}>
               <p style={{ margin: 0, fontSize: 14, color: "#2c1810" }}>{c.label}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* guest list */}
+      {/* Guest list */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
           <p style={labelStyle}>Guests ({guests.length})</p>
@@ -174,72 +159,50 @@ export default function SendInvitesPage() {
         ) : (
           <div style={{ maxHeight: 320, overflowY: "auto", border: "1px solid #e8ddd0", borderRadius: 8 }}>
             {guests.map((guest, i) => (
-              <div
-                key={guest.id}
-                onClick={() => toggleGuest(guest.id)}
+              <div key={guest.id} onClick={() => toggleGuest(guest.id)}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "10px 16px",
-                  cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 12,
+                  padding: "10px 16px", cursor: "pointer",
                   borderBottom: i < guests.length - 1 ? "1px solid #f0e8df" : "none",
                   background: selectedGuests.includes(guest.id) ? "#fdf5ee" : "#fff",
-                }}
-              >
+                }}>
                 <div style={{
                   width: 18, height: 18, borderRadius: 4,
                   border: "1.5px solid #c9a96e",
                   background: selectedGuests.includes(guest.id) ? "#2c1810" : "transparent",
-                  flexShrink: 0,
-                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
                   {selectedGuests.includes(guest.id) && (
                     <span style={{ color: "#fff", fontSize: 11 }}>✓</span>
                   )}
                 </div>
                 <div style={{ flex: 1 }}>
-<<<<<<< HEAD
+                  {/* FIX 2: removed merge conflict — using full_name */}
                   <p style={{ margin: 0, fontSize: 14, color: "#2c1810" }}>{guest.full_name}</p>
-=======
-                  <p style={{ margin: 0, fontSize: 14, color: "#2c1810" }}>{guest.first_name}</p>
->>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
                   <p style={{ margin: 0, fontSize: 12, color: "#9e8878" }}>
                     {guest.email || guest.phone} · {guest.preferred_channel}
                   </p>
                 </div>
-                {guest.invite_sent_at && (
-                  <span style={{ fontSize: 11, color: "#c9a96e", background: "#fdf5ee", padding: "2px 8px", borderRadius: 12 }}>
-                    Sent
-                  </span>
-                )}
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* send button */}
-      <button
-        onClick={handleSend}
+      {/* Send button */}
+      <button onClick={handleSend}
         disabled={loading || selectedGuests.length === 0}
         style={{
           background: selectedGuests.length === 0 ? "#ccc" : "#2c1810",
-          color: "#fdf8f3",
-          border: "none",
-          borderRadius: 8,
-          padding: "14px 40px",
-          fontSize: 15,
-          letterSpacing: 2,
+          color: "#fdf8f3", border: "none", borderRadius: 8,
+          padding: "14px 40px", fontSize: 15, letterSpacing: 2,
           cursor: selectedGuests.length === 0 ? "not-allowed" : "pointer",
-          fontFamily: "Georgia, serif",
-          marginBottom: 24,
-        }}
-      >
+          fontFamily: "Georgia, serif", marginBottom: 24,
+        }}>
         {loading ? "Sending..." : `Send to ${selectedGuests.length} guest${selectedGuests.length !== 1 ? "s" : ""}`}
       </button>
 
-      {/* results banner */}
+      {/* Results */}
       {results && (
         <div style={{ background: "#f0faf4", border: "1px solid #b6dfc6", borderRadius: 8, padding: "16px 20px", marginBottom: 24 }}>
           <p style={{ margin: 0, fontSize: 15, color: "#1a5c35" }}>
@@ -254,7 +217,7 @@ export default function SendInvitesPage() {
         </div>
       )}
 
-      {/* delivery log */}
+      {/* Delivery log */}
       <div>
         <p style={labelStyle}>Recent delivery log</p>
         {deliveryLog.length === 0 ? (
@@ -271,7 +234,8 @@ export default function SendInvitesPage() {
             <tbody>
               {deliveryLog.map((log) => (
                 <tr key={log.id} style={{ borderBottom: "1px solid #f5ede5" }}>
-                  <td style={{ padding: "8px 12px", color: "#2c1810" }}>{log.guests?.first_name || log.guest_id}</td>
+                  {/* FIX 3: using full_name instead of first_name */}
+                  <td style={{ padding: "8px 12px", color: "#2c1810" }}>{log.guests?.full_name || log.guest_id}</td>
                   <td style={{ padding: "8px 12px", color: "#4a3728" }}>{log.channel}</td>
                   <td style={{ padding: "8px 12px" }}>
                     <span style={{
@@ -296,27 +260,16 @@ export default function SendInvitesPage() {
 }
 
 const labelStyle = {
-  fontSize: 12,
-  letterSpacing: 2,
-  textTransform: "uppercase",
-  color: "#9e8878",
-  marginBottom: 10,
-  marginTop: 0,
+  fontSize: 12, letterSpacing: 2, textTransform: "uppercase",
+  color: "#9e8878", marginBottom: 10, marginTop: 0,
 };
 
 const cardStyle = {
-  padding: "10px 14px",
-  borderRadius: 8,
-  background: "#fff",
+  padding: "10px 14px", borderRadius: 8, background: "#fff",
 };
 
 const ghostBtn = {
-  background: "transparent",
-  border: "1px solid #e8ddd0",
-  borderRadius: 6,
-  padding: "6px 14px",
-  fontSize: 12,
-  cursor: "pointer",
-  color: "#4a3728",
-  fontFamily: "Georgia, serif",
+  background: "transparent", border: "1px solid #e8ddd0",
+  borderRadius: 6, padding: "6px 14px", fontSize: 12,
+  cursor: "pointer", color: "#4a3728", fontFamily: "Georgia, serif",
 };

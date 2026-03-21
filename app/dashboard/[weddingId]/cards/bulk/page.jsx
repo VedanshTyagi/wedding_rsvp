@@ -11,7 +11,7 @@
  * 4. Send WhatsApp (opens wa.me one by one with message pre-filled)
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, use, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -117,7 +117,7 @@ function CardRenderer({ style, palette, font, wedding, guestFns, innerRef, scale
 }
 
 export default function BulkCardPage({ params }) {
-  const { weddingId } = params;
+  const { weddingId } = use(params);
   const router   = useRouter();
   const supabase = createClient();
 

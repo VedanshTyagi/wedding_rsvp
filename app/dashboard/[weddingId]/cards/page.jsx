@@ -5,12 +5,12 @@
  * Added: Bulk Email Send section — select guests, click send, all get personalised emails
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, use, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function CardsHubPage({ params }) {
-  const { weddingId } = params;
+  const { weddingId } = use(params);
   const router = useRouter();
   const supabase = createClient();
 
