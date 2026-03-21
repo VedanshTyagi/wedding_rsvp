@@ -8,7 +8,11 @@ export async function GET(request, { params }) {
   try {
     const { data: guests, error: guestsError } = await supabase
       .from("guests")
+<<<<<<< HEAD
       .select("id, full_name, email, phone, group_tag, dietary_preference, is_outstation, plus_one, plus_one_name, children_count")
+=======
+      .select("id, full_name, email, phone, group_tag, dietary_pref, is_outstation, plus_one, plus_one_name, children_count")
+>>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
       .eq("wedding_id", weddingId)
       .order("full_name", { ascending: true });
 
@@ -47,7 +51,11 @@ export async function GET(request, { params }) {
       return {
         ...guest,
         name:           guest.full_name,
+<<<<<<< HEAD
         dietary:    guest.dietary_preference,
+=======
+        dietary:        guest.dietary_pref,
+>>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
         outstation:     guest.is_outstation,
         plus_one:       guest.plus_one       ?? false,
         plus_one_name:  guest.plus_one_name  ?? null,
@@ -72,7 +80,11 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
   const { weddingId } = params;
+<<<<<<< HEAD
   const supabase = await createClient();
+=======
+  const supabase = createClient();
+>>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
 
   try {
     const body = await request.json();
@@ -93,7 +105,11 @@ export async function POST(request, { params }) {
         phone:         phone?.trim()  ?? null,
         email:         email?.trim()  ?? null,
         group_tag:     group_tag      ?? null,
+<<<<<<< HEAD
         dietary_preference: dietary ?? null,
+=======
+        dietary_pref:  dietary        ?? null,
+>>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
         is_outstation: outstation     ?? false,
       })
       .select("id")

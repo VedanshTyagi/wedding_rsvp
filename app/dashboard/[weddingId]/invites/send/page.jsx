@@ -199,7 +199,11 @@ export default function SendInvitesPage() {
                   )}
                 </div>
                 <div style={{ flex: 1 }}>
+<<<<<<< HEAD
                   <p style={{ margin: 0, fontSize: 14, color: "#2c1810" }}>{guest.full_name}</p>
+=======
+                  <p style={{ margin: 0, fontSize: 14, color: "#2c1810" }}>{guest.first_name}</p>
+>>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
                   <p style={{ margin: 0, fontSize: 12, color: "#9e8878" }}>
                     {guest.email || guest.phone} · {guest.preferred_channel}
                   </p>
