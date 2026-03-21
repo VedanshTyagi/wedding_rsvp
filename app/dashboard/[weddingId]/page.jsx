@@ -1,4 +1,3 @@
-// app/dashboard/[weddingId]/page.jsx
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'

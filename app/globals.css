@@ -1,4 +1,94 @@
-@import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #FBF8F2;
+    --foreground: #1E2742;
+    --card: #ffffff;
+    --card-foreground: #1E2742;
+    --popover: #ffffff;
+    --popover-foreground: #1E2742;
+    --primary: #9A2143;
+    --primary-foreground: #FBF8F2;
+    --secondary: #EDD498;
+    --secondary-foreground: #1E2742;
+    --muted: #F6F6F6;
+    --muted-foreground: #9EA1AB;
+    --accent: #BFA054;
+    --accent-foreground: #1E2742;
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: #EDD498;
+    --input: #EDD498;
+    --ring: #BFA054;
+    --radius: 0.625rem;
+    --sidebar: #FBF8F2;
+    --sidebar-foreground: #1E2742;
+    --sidebar-primary: #9A2143;
+    --sidebar-primary-foreground: #FBF8F2;
+    --sidebar-accent: #EDD498;
+    --sidebar-accent-foreground: #1E2742;
+    --sidebar-border: #EDD498;
+    --sidebar-ring: #BFA054;
+  }
+
+  .dark {
+    --background: #1E2742;
+    --foreground: #FBF8F2;
+    --card: #2a3454;
+    --card-foreground: #FBF8F2;
+    --popover: #2a3454;
+    --popover-foreground: #FBF8F2;
+    --primary: #9A2143;
+    --primary-foreground: #FBF8F2;
+    --secondary: #BFA054;
+    --secondary-foreground: #FBF8F2;
+    --muted: #2a3454;
+    --muted-foreground: #9EA1AB;
+    --accent: #BFA054;
+    --accent-foreground: #FBF8F2;
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: #BFA054;
+    --sidebar: #2a3454;
+    --sidebar-foreground: #FBF8F2;
+    --sidebar-primary: #9A2143;
+    --sidebar-primary-foreground: #FBF8F2;
+    --sidebar-accent: #BFA054;
+    --sidebar-accent-foreground: #FBF8F2;
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: #BFA054;
+  }
+
+ * {
+  border-color: var(--border);
+}
+
+  body {
+    background-color: #FBF8F2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%23BFA054' stroke-opacity='0.15' stroke-width='1'%3E%3Cpath d='M100 20 C60 40 40 80 50 120 C60 160 100 180 100 180 C100 180 140 160 150 120 C160 80 140 40 100 20Z'/%3E%3Cpath d='M100 20 C100 60 100 120 100 180'/%3E%3Cpath d='M70 60 C85 80 100 90 130 85'/%3E%3Cpath d='M60 100 C75 105 100 108 140 100'/%3E%3Cpath d='M65 130 C80 128 100 125 135 118'/%3E%3Cpath d='M20 80 C40 60 55 50 70 60'/%3E%3Cpath d='M170 40 C160 70 155 85 150 100'/%3E%3Cpath d='M10 150 C30 130 45 120 60 130'/%3E%3Cpath d='M180 160 C165 145 155 135 150 120'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    color: #1E2742;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    color: #1E2742;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}@import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @tailwind base;
 @tailwind components;
