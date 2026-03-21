@@ -1,14 +1,28 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from "next/server";
 
 export async function POST(request, { params }) {
-<<<<<<< HEAD
-  const { weddingId } = params;
-  const supabase = createClient();
-=======
   const { weddingId } = await params;
-  const supabase = await createClient();
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
+  const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // ignore in Server Components
+            }
+          },
+        },
+      }
+    )
 
   try {
     const { name, capacity, room_type } = await request.json();

@@ -8,18 +8,18 @@ import { createClient } from "@/lib/supabase/client";
 function StatusBadge({ status }) {
   const styles = {
     confirmed: "bg-emerald-100 text-emerald-800 border border-emerald-200",
-    declined:  "bg-rose-100 text-rose-800 border border-rose-200",
-    pending:   "bg-amber-100 text-amber-800 border border-amber-200",
-    awaiting:  "bg-slate-100 text-slate-500 border border-slate-200",
+    declined: "bg-rose-100 text-rose-800 border border-rose-200",
+    pending: "bg-amber-100 text-amber-800 border border-amber-200",
+    awaiting: "bg-slate-100 text-slate-500 border border-slate-200",
   };
   const label = {
     confirmed: "✓ Confirmed",
-    declined:  "✗ Declined",
-    pending:   "⏳ Pending",
-    awaiting:  "— Awaiting",
+    declined: "✗ Declined",
+    pending: "⏳ Pending",
+    awaiting: "— Awaiting",
   };
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? styles.awaiting}`}>
+    <span className={`whitespace-nowrap inline-block px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? styles.awaiting}`}>
       {label[status] ?? status}
     </span>
   );
@@ -53,7 +53,7 @@ function HeadcountCards({ guests, functions }) {
             </div>
             <div className="mt-3 h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                style={{ width: total > 0 ? `${(counts.confirmed / total) * 100}%` : "0%" }}/>
+                style={{ width: total > 0 ? `${(counts.confirmed / total) * 100}%` : "0%" }} />
             </div>
             <div className="mt-2 flex items-center justify-between">
               <p className="text-xs text-gray-400">{total > 0 ? Math.round((counts.confirmed / total) * 100) : 0}% confirmed</p>
@@ -72,35 +72,35 @@ export default function GuestsPage({ params }) {
   const { weddingId } = use(params);
   const supabase = createClient();
 
-  const [guests, setGuests]                 = useState([]);
-  const [functions, setFunctions]           = useState([]);
-  const [allFunctions, setAllFunctions]     = useState([]);
-  const [filterGroup, setFilterGroup]       = useState("");
+  const [guests, setGuests] = useState([]);
+  const [functions, setFunctions] = useState([]);
+  const [allFunctions, setAllFunctions] = useState([]);
+  const [filterGroup, setFilterGroup] = useState("");
   const [filterFunction, setFilterFunction] = useState("");
-  const [filterStatus, setFilterStatus]     = useState("");
-  const [loading, setLoading]               = useState(true);
-  const [error, setError]                   = useState(null);
-  const [importing, setImporting]           = useState(false);
-  const [importResult, setImportResult]     = useState(null);
-  const fileInputRef                        = useRef(null);
+  const [filterStatus, setFilterStatus] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  const fileInputRef = useRef(null);
 
   // Add state
-  const [showAddForm, setShowAddForm]     = useState(false);
-  const [addLoading, setAddLoading]       = useState(false);
-  const [addError, setAddError]           = useState("");
-  const [addSuccess, setAddSuccess]       = useState("");
-  const [newGuest, setNewGuest]           = useState({ full_name: "", phone: "", email: "", group_tag: "" });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
+  const [addError, setAddError] = useState("");
+  const [addSuccess, setAddSuccess] = useState("");
+  const [newGuest, setNewGuest] = useState({ full_name: "", phone: "", email: "", group_tag: "" });
   const [selectedFnIds, setSelectedFnIds] = useState([]);
 
   // Edit state
-  const [editingGuest, setEditingGuest]   = useState(null);
-  const [editForm, setEditForm]           = useState({ full_name: "", phone: "", email: "", group_tag: "" });
-  const [editFnIds, setEditFnIds]         = useState([]);
-  const [editLoading, setEditLoading]     = useState(false);
-  const [editError, setEditError]         = useState("");
+  const [editingGuest, setEditingGuest] = useState(null);
+  const [editForm, setEditForm] = useState({ full_name: "", phone: "", email: "", group_tag: "" });
+  const [editFnIds, setEditFnIds] = useState([]);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState("");
 
   // Delete state
-  const [deletingId, setDeletingId]           = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
@@ -139,10 +139,10 @@ export default function GuestsPage({ params }) {
         .from("guests")
         .insert({
           wedding_id: weddingId,
-          full_name:  newGuest.full_name.trim(),
-          phone:      newGuest.phone.trim()     || null,
-          email:      newGuest.email.trim()     || null,
-          group_tag:  newGuest.group_tag.trim() || null,
+          full_name: newGuest.full_name.trim(),
+          phone: newGuest.phone.trim() || null,
+          email: newGuest.email.trim() || null,
+          group_tag: newGuest.group_tag.trim() || null,
         })
         .select("id").single();
       if (guestErr) throw new Error(guestErr.message);
@@ -171,9 +171,9 @@ export default function GuestsPage({ params }) {
     setEditingGuest(guest);
     setEditError("");
     setEditForm({
-      full_name: guest.name      ?? "",
-      phone:     guest.phone     ?? "",
-      email:     guest.email     ?? "",
+      full_name: guest.name ?? "",
+      phone: guest.phone ?? "",
+      email: guest.email ?? "",
       group_tag: guest.group_tag ?? "",
     });
     const { data } = await supabase
@@ -191,8 +191,8 @@ export default function GuestsPage({ params }) {
         .from("guests")
         .update({
           full_name: editForm.full_name.trim(),
-          phone:     editForm.phone.trim()     || null,
-          email:     editForm.email.trim()     || null,
+          phone: editForm.phone.trim() || null,
+          email: editForm.email.trim() || null,
           group_tag: editForm.group_tag.trim() || null,
         })
         .eq("id", editingGuest.id);
@@ -243,7 +243,7 @@ export default function GuestsPage({ params }) {
           setImporting(false); return;
         }
         const COLUMN_MAP = {
-          name:  ["name", "full name", "guest name"],
+          name: ["name", "full name", "guest name"],
           email: ["email", "email address"],
           phone: ["phone", "mobile", "contact", "phone number"],
           group: ["group", "side", "family side", "category"],
@@ -253,7 +253,7 @@ export default function GuestsPage({ params }) {
           return "";
         }
         const mapped = rows.map(row => ({
-          name:  resolveField(row, COLUMN_MAP.name),
+          name: resolveField(row, COLUMN_MAP.name),
           email: resolveField(row, COLUMN_MAP.email),
           phone: resolveField(row, COLUMN_MAP.phone),
           group: resolveField(row, COLUMN_MAP.group),
@@ -281,7 +281,7 @@ export default function GuestsPage({ params }) {
 
   const uniqueGroups = useMemo(() =>
     [...new Set(guests.map(g => g.group_tag).filter(Boolean))].sort()
-  , [guests]);
+    , [guests]);
 
   // ── Shared function toggle buttons ─────────────────────────────────────────
   function FnToggles({ fnIds, setFnIds }) {
@@ -322,16 +322,16 @@ export default function GuestsPage({ params }) {
             onClick={() => { setShowAddForm(v => !v); setAddError(""); setAddSuccess(""); }}
             className="flex items-center gap-2 px-4 py-2 bg-crimson hover:bg-opacity-90 text-white rounded-lg text-sm transition-colors">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             Add Guest
           </button>
-          <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleCSVImport}/>
+          <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleCSVImport} />
           <button type="button" onClick={() => fileInputRef.current?.click()} disabled={importing}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-sand rounded-lg text-sm text-navy hover:bg-cream disabled:opacity-50 transition-colors">
             {importing
-              ? <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Importing…</>
-              : <><svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</>}
+              ? <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>Importing…</>
+              : <><svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>Import CSV</>}
           </button>
         </div>
       </div>
@@ -347,32 +347,32 @@ export default function GuestsPage({ params }) {
                 <input type="text" required value={newGuest.full_name}
                   onChange={e => setNewGuest(g => ({ ...g, full_name: e.target.value }))}
                   placeholder="e.g. Priya Sharma"
-                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-gray-600">Phone</label>
                 <input type="tel" value={newGuest.phone}
                   onChange={e => setNewGuest(g => ({ ...g, phone: e.target.value }))}
                   placeholder="e.g. 9876543210"
-                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-gray-600">Email</label>
                 <input type="email" value={newGuest.email}
                   onChange={e => setNewGuest(g => ({ ...g, email: e.target.value }))}
                   placeholder="e.g. priya@email.com"
-                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-gray-600">Group / Side</label>
                 <input type="text" value={newGuest.group_tag}
                   onChange={e => setNewGuest(g => ({ ...g, group_tag: e.target.value }))}
                   placeholder="e.g. Bride's Side"
-                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
               </div>
             </div>
             <FnToggles fnIds={selectedFnIds} setFnIds={setSelectedFnIds} />
-            {addError   && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">{addError}</p>}
+            {addError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">{addError}</p>}
             {addSuccess && <p className="text-xs text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2">{addSuccess}</p>}
             <div className="flex gap-3">
               <button type="submit" disabled={addLoading}
@@ -402,25 +402,25 @@ export default function GuestsPage({ params }) {
                   <label className="text-xs font-semibold text-gray-600">Full Name <span className="text-rose-500">*</span></label>
                   <input type="text" required value={editForm.full_name}
                     onChange={e => setEditForm(f => ({ ...f, full_name: e.target.value }))}
-                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Phone</label>
                   <input type="tel" value={editForm.phone}
                     onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
-                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Email</label>
                   <input type="email" value={editForm.email}
                     onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
-                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Group / Side</label>
                   <input type="text" value={editForm.group_tag}
                     onChange={e => setEditForm(f => ({ ...f, group_tag: e.target.value }))}
-                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold" />
                 </div>
               </div>
               <FnToggles fnIds={editFnIds} setFnIds={setEditFnIds} />
@@ -529,9 +529,8 @@ export default function GuestsPage({ params }) {
                 <th className="px-4 py-3 text-left font-semibold text-navy">Coming With</th>
                 {functions.map((fn) => (
                   <th key={fn}
-                    className={`px-4 py-3 text-center font-semibold text-navy ${
-                      filterFunction === fn ? "bg-cream text-crimson" : ""
-                    }`}>
+                    className={`px-4 py-3 text-center font-semibold text-navy ${filterFunction === fn ? "bg-cream text-crimson" : ""
+                      }`}>
                     {fn}
                   </th>
                 ))}
@@ -552,14 +551,14 @@ export default function GuestsPage({ params }) {
                     <td className="px-4 py-3 text-steel">{guest.phone || "—"}</td>
                     <td className="px-4 py-3">
                       {guest.group_tag
-                        ? <span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium border border-slate-200">{guest.group_tag}</span>
+                        ? <span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium border border-slate-200 whitespace-nowrap">{guest.group_tag}</span>
                         : "—"}
                     </td>
                     <td className="px-4 py-3">
                       {comingWith.length > 0
                         ? <div className="flex flex-col gap-0.5">{comingWith.map((item, i) => (
-                            <span key={i} className="px-2 py-0.5 bg-cream text-navy rounded-full text-xs font-medium border border-sand w-fit">{item}</span>
-                          ))}</div>
+                          <span key={i} className="whitespace-nowrap px-2 py-0.5 bg-cream text-navy rounded-full text-xs font-medium border border-sand w-fit">{item}</span>
+                        ))}</div>
                         : <span className="text-gray-400">—</span>}
                     </td>
                     {functions.map(fn => (
@@ -570,11 +569,11 @@ export default function GuestsPage({ params }) {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
                         <button type="button" onClick={() => openEdit(guest)}
-                          className="px-2.5 py-1 text-xs font-medium bg-cream text-navy hover:border-gold border border-sand rounded-lg transition-colors">
+                          className="whitespace-nowrap px-2.5 py-1 text-xs font-medium bg-cream text-navy hover:border-gold border border-sand rounded-lg transition-colors">
                           ✏ Edit
                         </button>
                         <button type="button" onClick={() => setConfirmDeleteId(guest.id)}
-                          className="px-2.5 py-1 text-xs font-medium bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-100 rounded-lg transition">
+                          className="whitespace-nowrap px-2.5 py-1 text-xs font-medium bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-100 rounded-lg transition">
                           🗑 Delete
                         </button>
                       </div>

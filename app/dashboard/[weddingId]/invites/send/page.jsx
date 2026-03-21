@@ -12,28 +12,28 @@ const supabase = createClient();
 
 const TEMPLATES = [
   { id: "classic", label: "Classic Elegance", desc: "Warm ivory tones, serif typography" },
-  { id: "modern",  label: "Modern Minimal",   desc: "Clean lines, sans-serif, monochrome" },
-  { id: "floral",  label: "Floral Garden",    desc: "Soft pastels, botanical accents" },
+  { id: "modern", label: "Modern Minimal", desc: "Clean lines, sans-serif, monochrome" },
+  { id: "floral", label: "Floral Garden", desc: "Soft pastels, botanical accents" },
 ];
 
 const CHANNEL_OPTIONS = [
-  { value: "auto",      label: "Auto (use guest preference)" },
-  { value: "whatsapp",  label: "WhatsApp only" },
-  { value: "email",     label: "Email only" },
+  { value: "auto", label: "Auto (use guest preference)" },
+  { value: "whatsapp", label: "WhatsApp only" },
+  { value: "email", label: "Email only" },
 ];
 
 export default function SendInvitesPage() {
   const { weddingId } = useParams();
 
-  const [guests,         setGuests]         = useState([]);
+  const [guests, setGuests] = useState([]);
   const [selectedGuests, setSelectedGuests] = useState([]);
-  const [template,       setTemplate]       = useState("classic");
-  const [channel,        setChannel]        = useState("auto");
-  const [loading,        setLoading]        = useState(false);
-  const [fetching,       setFetching]       = useState(true);
-  const [results,        setResults]        = useState(null);
-  const [deliveryLog,    setDeliveryLog]    = useState([]);
-  const [error,          setError]          = useState(null);
+  const [template, setTemplate] = useState("classic");
+  const [channel, setChannel] = useState("auto");
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [results, setResults] = useState(null);
+  const [deliveryLog, setDeliveryLog] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchGuests() {
@@ -120,7 +120,7 @@ export default function SendInvitesPage() {
             <div key={t.id} onClick={() => setTemplate(t.id)}
               style={{
                 ...cardStyle,
-                border: template === t.id ? "2px solid #2c1810" : "1px solid #e8ddd0",
+                border: template === t.id ? "2px solid #9A2143" : "1px solid #e8ddd0",
                 marginBottom: 8, cursor: "pointer",
               }}>
               <p style={{ margin: 0, fontWeight: 500, fontSize: 14, color: "#2c1810" }}>{t.label}</p>
@@ -136,7 +136,7 @@ export default function SendInvitesPage() {
             <div key={c.value} onClick={() => setChannel(c.value)}
               style={{
                 ...cardStyle,
-                border: channel === c.value ? "2px solid #2c1810" : "1px solid #e8ddd0",
+                border: channel === c.value ? "2px solid #9A2143" : "1px solid #e8ddd0",
                 marginBottom: 8, cursor: "pointer",
               }}>
               <p style={{ margin: 0, fontSize: 14, color: "#2c1810" }}>{c.label}</p>
@@ -169,7 +169,7 @@ export default function SendInvitesPage() {
                 <div style={{
                   width: 18, height: 18, borderRadius: 4,
                   border: "1.5px solid #c9a96e",
-                  background: selectedGuests.includes(guest.id) ? "#2c1810" : "transparent",
+                  background: selectedGuests.includes(guest.id) ? "#9A2143" : "transparent",
                   flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
                   {selectedGuests.includes(guest.id) && (
@@ -193,7 +193,7 @@ export default function SendInvitesPage() {
       <button onClick={handleSend}
         disabled={loading || selectedGuests.length === 0}
         style={{
-          background: selectedGuests.length === 0 ? "#ccc" : "#2c1810",
+          background: selectedGuests.length === 0 ? "#ccc" : "#9A2143",
           color: "#fdf8f3", border: "none", borderRadius: 8,
           padding: "14px 40px", fontSize: 15, letterSpacing: 2,
           cursor: selectedGuests.length === 0 ? "not-allowed" : "pointer",

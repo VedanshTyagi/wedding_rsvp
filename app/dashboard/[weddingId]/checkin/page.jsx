@@ -9,16 +9,16 @@ export default function CheckInPage() {
   const { weddingId } = useParams()
   const supabase = createClient()
 
-  const [search,           setSearch]           = useState('')
-  const [results,          setResults]          = useState([])
-  const [functions,        setFunctions]        = useState([])
+  const [search, setSearch] = useState('')
+  const [results, setResults] = useState([])
+  const [functions, setFunctions] = useState([])
   const [selectedFunction, setSelectedFunction] = useState('')
-  const [checkedIn,        setCheckedIn]        = useState([])
-  const [recentArrivals,   setRecentArrivals]   = useState([])
-  const [totalCount,       setTotalCount]       = useState(0)
-  const [checkedCount,     setCheckedCount]     = useState(0)
-  const [loading,          setLoading]          = useState(false)
-  const [checkingIn,       setCheckingIn]       = useState(null)
+  const [checkedIn, setCheckedIn] = useState([])
+  const [recentArrivals, setRecentArrivals] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [checkedCount, setCheckedCount] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [checkingIn, setCheckingIn] = useState(null)
 
   // Load functions
   useEffect(() => {
@@ -121,9 +121,9 @@ export default function CheckInPage() {
     if (checkedIn.includes(guest.id)) return
     setCheckingIn(guest.id)
     await supabase.from('checkin_log').insert({
-      guest_id:    guest.id,
+      guest_id: guest.id,
       function_id: selectedFunction,
-      method:      'manual',
+      method: 'manual',
     })
     setCheckingIn(null)
     setSearch('')
@@ -137,16 +137,16 @@ export default function CheckInPage() {
     <div className="max-w-lg mx-auto space-y-5 pb-10">
 
       {/* Header */}
-<div className="flex items-center justify-between">
-  <div>
-    <h1 className="text-2xl font-display font-semibold">Guest Check-in</h1>
-    <p className="text-sm text-muted-foreground mt-0.5">Day-of arrival tracking</p>
-  </div>
-  <a href={`/dashboard/${weddingId}/checkin/qr`}
-    className="text-sm px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
-    QR Codes
-  </a>
-</div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-semibold">Guest Check-in</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Day-of arrival tracking</p>
+        </div>
+        <a href={`/dashboard/${weddingId}/checkin/qr`}
+          className="text-sm px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
+          QR Codes
+        </a>
+      </div>
 
       {/* Function selector */}
       <select
@@ -174,7 +174,7 @@ export default function CheckInPage() {
         </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#2c1810] rounded-full transition-all duration-500"
+            className="h-full bg-crimson rounded-full transition-all duration-500"
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -215,8 +215,8 @@ export default function CheckInPage() {
                     <button
                       onClick={() => handleCheckIn(guest)}
                       disabled={checkingIn === guest.id}
-                      className="text-sm px-4 py-1.5 bg-[#2c1810] text-white rounded-full
-                        hover:bg-[#4a3728] transition-colors disabled:opacity-50 active:scale-95">
+                      className="text-sm px-4 py-1.5 bg-crimson text-white rounded-full
+                        hover:opacity-90 transition-opacity disabled:opacity-50 active:scale-95">
                       {checkingIn === guest.id ? '...' : 'Check in'}
                     </button>
                   )}
