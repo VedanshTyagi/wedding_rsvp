@@ -1,3 +1,5 @@
+// app/api/weddings/[weddingId]/guests/route.js
+
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 

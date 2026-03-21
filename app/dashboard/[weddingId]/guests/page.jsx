@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, use, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Papa from "papaparse";
 import { createClient } from "@/lib/supabase/client";
@@ -68,8 +68,8 @@ function HeadcountCards({ guests, functions }) {
 
 // import { use } from "react";
 
-export default function GuestsPage({ params }) {
-  const { weddingId } = use(params);
+export default function GuestsPage() {
+  const { weddingId } = useParams();
   const supabase = createClient();
 
   const [guests, setGuests] = useState([]);
@@ -243,27 +243,50 @@ export default function GuestsPage({ params }) {
           setImporting(false); return;
         }
         const COLUMN_MAP = {
-          name: ["name", "full name", "guest name"],
-          email: ["email", "email address"],
-          phone: ["phone", "mobile", "contact", "phone number"],
-          group: ["group", "side", "family side", "category"],
+          full_name:          ["full_name", "name", "full name", "guest name"],
+          email:              ["email", "email address"],
+          phone:              ["phone", "mobile", "contact", "phone number"],
+          group_tag:          ["group_tag", "group", "side", "family side", "category"],
+          dietary_preference: ["dietary_preference", "dietary", "food preference"],
+          is_outstation:      ["is_outstation", "outstation"],
+          travel_city:        ["travel_city", "city", "travel city", "city of origin"],
+          preferred_channel:  ["preferred_channel", "channel"],
+          plus_one:           ["plus_one", "plus one"],
+          plus_one_name:      ["plus_one_name", "plus one name"],
+          children_count:     ["children_count", "children", "kids"],
+          relationship:       ["relationship"],
         };
         function resolveField(row, aliases) {
           for (const a of aliases) if (row[a] !== undefined) return row[a].trim();
           return "";
         }
         const mapped = rows.map(row => ({
-          name: resolveField(row, COLUMN_MAP.name),
-          email: resolveField(row, COLUMN_MAP.email),
-          phone: resolveField(row, COLUMN_MAP.phone),
-          group: resolveField(row, COLUMN_MAP.group),
-        })).filter(g => g.name);
+          full_name:          resolveField(row, COLUMN_MAP.full_name),
+          email:              resolveField(row, COLUMN_MAP.email),
+          phone:              resolveField(row, COLUMN_MAP.phone),
+          group_tag:          resolveField(row, COLUMN_MAP.group_tag),
+          dietary_preference: resolveField(row, COLUMN_MAP.dietary_preference),
+          is_outstation:      resolveField(row, COLUMN_MAP.is_outstation),
+          travel_city:        resolveField(row, COLUMN_MAP.travel_city),
+          preferred_channel:  resolveField(row, COLUMN_MAP.preferred_channel),
+          plus_one:           resolveField(row, COLUMN_MAP.plus_one),
+          plus_one_name:      resolveField(row, COLUMN_MAP.plus_one_name),
+          children_count:     resolveField(row, COLUMN_MAP.children_count),
+          relationship:       resolveField(row, COLUMN_MAP.relationship),
+        })).filter(g => g.full_name);
         try {
           const res = await fetch(`/api/weddings/${weddingId}/guests/import`, {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ guests: mapped }),
           });
-          setImportResult(await res.json());
+          const result = await res.json();
+          // normalize response shape
+          setImportResult({
+            added:   result.imported ?? 0,
+            skipped: 0,
+            errors:  0,
+            error:   result.message && !res.ok ? result.message : null,
+          });
           await fetchGuests();
         } catch (err) { setImportResult({ error: err.message }); }
         finally { setImporting(false); if (fileInputRef.current) fileInputRef.current.value = ""; }
