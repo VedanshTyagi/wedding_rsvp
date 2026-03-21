@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Kantumruy_Pro } from "next/font/google";
+import { DM_Serif_Display, Kantumruy_Pro, Geist } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const dmSerif = DM_Serif_Display({
   subsets: ["latin"],
@@ -26,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <body className={`${dmSerif.variable} ${kantumruy.variable} antialiased`}>
         {children}
         <Toaster />
