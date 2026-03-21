@@ -28,11 +28,17 @@ function buildInviteLink(token) {
   return `${BASE_URL}/rsvp?token=${token}`;
 }
 
+function guestFirstName(guest) {
+  // use first_name if set, otherwise take first word of full_name
+  return guest.first_name?.trim() || guest.full_name?.split(" ")[0] || "Guest";
+}
+
 function whatsappMessage(guest, link) {
   return (
-    `Hello ${guest.first_name}! 🌸\n\n` +
+    `Hello ${guestFirstName(guest)}! 🌸\n\n` +
     `You're warmly invited to the wedding of *${process.env.COUPLE_NAMES}*.\n\n` +
-    `Please RSVP using your personal link:\n${link}\n\n` +
+    `Please RSVP using your personal link below 👇\n\n` +
+    `${link}\n\n` +
     `We can't wait to celebrate with you! 💍`
   );
 }
@@ -40,8 +46,12 @@ function whatsappMessage(guest, link) {
 // ─── send functions ────────────────────────────────────────────────────────────
 
 async function sendWhatsApp(guest, link) {
+  const from = process.env.TWILIO_WHATSAPP_FROM.startsWith("whatsapp:")
+    ? process.env.TWILIO_WHATSAPP_FROM
+    : `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`;
+
   const message = await twilioClient.messages.create({
-    from: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`, // e.g. whatsapp:+14155238886
+    from,
     to: `whatsapp:${guest.phone}`,
     body: whatsappMessage(guest, link),
   });
@@ -95,7 +105,7 @@ export async function POST(request) {
     // 1. Fetch guests + their invite tokens in one query
     const { data: guests, error: fetchError } = await supabase
       .from("guests")
-      .select("id, first_name, email, phone, preferred_channel, invite_token")
+      .select("id, full_name, first_name, email, phone, preferred_channel, invite_token")
       .in("id", guestIds);
 
     if (fetchError) {
@@ -187,7 +197,7 @@ function buildEmailHtml(guest, link) {
           <tr>
             <td style="padding:40px 48px 32px;">
               <p style="margin:0 0 20px;font-size:18px;color:#2c1810;">
-                Dear ${guest.first_name},
+                Dear ${guestFirstName(guest)},
               </p>
               <p style="margin:0 0 20px;font-size:15px;line-height:1.8;color:#4a3728;">
                 We joyfully request the pleasure of your company as we celebrate

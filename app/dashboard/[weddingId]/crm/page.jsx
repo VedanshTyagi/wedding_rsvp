@@ -1,101 +1,78 @@
 "use client";
 
 // app/dashboard/[weddingId]/crm/page.jsx
-// CRM settings — API key, endpoint URL, last sync time, Sync Now button
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function CRMPage() {
   const { weddingId } = useParams();
 
-  const [crmUrl, setCrmUrl] = useState("");
-  const [crmApiKey, setCrmApiKey] = useState("");
-  const [lastSync, setLastSync] = useState(null);
+  const [crmUrl, setCrmUrl]         = useState("");
+  const [crmApiKey, setCrmApiKey]   = useState("");
+  const [lastSync, setLastSync]     = useState(null);
   const [lastSyncData, setLastSyncData] = useState(null);
-  const [syncing, setSyncing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState(null); // { type: 'success'|'error', text }
+  const [syncing, setSyncing]       = useState(false);
+  const [saving, setSaving]         = useState(false);
+  const [message, setMessage]       = useState(null);
+  const [loading, setLoading]       = useState(true);
 
-  // ── load saved settings + last sync ────────────────────────────────────────
+  // ── load settings via API route ────────────────────────────────────────────
   useEffect(() => {
+    if (!weddingId) return;
     async function load() {
-      // load crm settings from weddings table
-      const { data: wedding } = await supabase
-        .from("weddings")
-        .select("crm_webhook_url, crm_api_key")
-        .eq("id", weddingId)
-        .single();
-
-      if (wedding) {
-        setCrmUrl(wedding.crm_webhook_url || "");
-        setCrmApiKey(wedding.crm_api_key || "");
-      }
-
-      // load last sync log
-      const { data: log } = await supabase
-        .from("crm_sync_log")
-        .select("synced_at, payload, status")
-        .eq("wedding_id", weddingId)
-        .order("synced_at", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (log) {
-        setLastSync(log.synced_at);
-        setLastSyncData(log.payload?.summary || null);
+      try {
+        const res  = await fetch(`/api/weddings/${weddingId}/crm`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        setCrmUrl(data.crm_webhook_url || "");
+        setCrmApiKey(data.crm_api_key  || "");
+        setLastSync(data.last_sync     || null);
+        setLastSyncData(data.last_sync_data || null);
+      } catch (err) {
+        setMessage({ type: "error", text: "Failed to load settings: " + err.message });
+      } finally {
+        setLoading(false);
       }
     }
-
-    if (weddingId) load();
+    load();
   }, [weddingId]);
 
-  // ── save settings ───────────────────────────────────────────────────────────
+  // ── save settings via API route ────────────────────────────────────────────
   async function handleSave() {
     setSaving(true);
     setMessage(null);
-
-    const { error } = await supabase
-      .from("weddings")
-      .update({
-        crm_webhook_url: crmUrl,
-        crm_api_key: crmApiKey,
-      })
-      .eq("id", weddingId);
-
-    setSaving(false);
-    if (error) {
-      setMessage({ type: "error", text: "Failed to save settings: " + error.message });
-    } else {
+    try {
+      const res = await fetch(`/api/weddings/${weddingId}/crm`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ crm_webhook_url: crmUrl, crm_api_key: crmApiKey }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
       setMessage({ type: "success", text: "Settings saved successfully." });
+    } catch (err) {
+      setMessage({ type: "error", text: err.message });
+    } finally {
+      setSaving(false);
     }
   }
 
-  // ── sync now ────────────────────────────────────────────────────────────────
+  // ── sync now ───────────────────────────────────────────────────────────────
   async function handleSync() {
     setSyncing(true);
     setMessage(null);
-
     try {
       const res = await fetch("/api/crm-sync", {
-        method: "POST",
+        method:  "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
         },
         body: JSON.stringify({ weddingId }),
       });
-
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || "Sync failed");
-
       setLastSync(data.syncedAt);
       setLastSyncData(data.summary);
       setMessage({ type: "success", text: "Sync completed successfully." });
@@ -106,7 +83,12 @@ export default function CRMPage() {
     }
   }
 
-  // ── render ──────────────────────────────────────────────────────────────────
+  if (loading) return (
+    <div style={{ padding: "2rem", fontFamily: "Georgia, serif", color: "#9e8878" }}>
+      Loading CRM settings…
+    </div>
+  );
+
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "2rem 1.5rem", fontFamily: "Georgia, serif" }}>
 
@@ -117,7 +99,7 @@ export default function CRMPage() {
         Configure your CRM endpoint to sync confirmed RSVP data.
       </p>
 
-      {/* settings form */}
+      {/* Settings form */}
       <div style={{ background: "#fff", border: "1px solid #e8ddd0", borderRadius: 12, padding: "24px 28px", marginBottom: 24 }}>
         <p style={labelStyle}>Webhook / endpoint URL</p>
         <input
@@ -137,16 +119,12 @@ export default function CRMPage() {
           style={inputStyle}
         />
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          style={{ ...btnStyle, marginTop: 20 }}
-        >
+        <button onClick={handleSave} disabled={saving} style={{ ...btnStyle, marginTop: 20 }}>
           {saving ? "Saving..." : "Save settings"}
         </button>
       </div>
 
-      {/* last sync info */}
+      {/* Last sync */}
       <div style={{ background: "#fdf5ee", border: "1px solid #e8ddd0", borderRadius: 12, padding: "20px 28px", marginBottom: 24 }}>
         <p style={labelStyle}>Last sync</p>
         {lastSync ? (
@@ -156,18 +134,9 @@ export default function CRMPage() {
             </p>
             {lastSyncData && (
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-                <div style={statCard}>
-                  <p style={statLabel}>Events synced</p>
-                  <p style={statValue}>{lastSyncData.totalEvents}</p>
-                </div>
-                <div style={statCard}>
-                  <p style={statLabel}>Confirmed guests</p>
-                  <p style={statValue}>{lastSyncData.totalConfirmedGuests}</p>
-                </div>
-                <div style={statCard}>
-                  <p style={statLabel}>Total headcount</p>
-                  <p style={statValue}>{lastSyncData.totalHeadcount}</p>
-                </div>
+                <div style={statCard}><p style={statLabel}>Events synced</p><p style={statValue}>{lastSyncData.totalEvents}</p></div>
+                <div style={statCard}><p style={statLabel}>Confirmed guests</p><p style={statValue}>{lastSyncData.totalConfirmedGuests}</p></div>
+                <div style={statCard}><p style={statLabel}>Total headcount</p><p style={statValue}>{lastSyncData.totalHeadcount}</p></div>
               </div>
             )}
           </>
@@ -176,17 +145,14 @@ export default function CRMPage() {
         )}
       </div>
 
-      {/* sync now button */}
+      {/* Sync now */}
       <button
         onClick={handleSync}
         disabled={syncing || !crmUrl}
         style={{
           ...btnStyle,
           background: syncing || !crmUrl ? "#ccc" : "#9A2143",
-          width: "100%",
-          padding: "14px",
-          fontSize: 15,
-          letterSpacing: 2,
+          width: "100%", padding: "14px", fontSize: 15, letterSpacing: 2,
           cursor: syncing || !crmUrl ? "not-allowed" : "pointer",
         }}
       >
@@ -199,12 +165,10 @@ export default function CRMPage() {
         </p>
       )}
 
-      {/* message banner */}
+      {/* Message */}
       {message && (
         <div style={{
-          marginTop: 16,
-          padding: "12px 16px",
-          borderRadius: 8,
+          marginTop: 16, padding: "12px 16px", borderRadius: 8,
           background: message.type === "success" ? "#f0faf4" : "#fdf0f0",
           border: `1px solid ${message.type === "success" ? "#b6dfc6" : "#f0b6b6"}`,
           fontSize: 14,
@@ -214,20 +178,15 @@ export default function CRMPage() {
         </div>
       )}
 
-      {/* export link */}
+      {/* Export */}
       <div style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid #e8ddd0" }}>
         <p style={labelStyle}>Export</p>
         <a
           href={`/api/export/fnb?weddingId=${weddingId}`}
           style={{
-            display: "inline-block",
-            padding: "10px 24px",
-            border: "1px solid #e8ddd0",
-            borderRadius: 8,
-            fontSize: 13,
-            color: "#2c1810",
-            textDecoration: "none",
-            fontFamily: "Georgia, serif",
+            display: "inline-block", padding: "10px 24px",
+            border: "1px solid #e8ddd0", borderRadius: 8,
+            fontSize: 13, color: "#2c1810", textDecoration: "none",
           }}
         >
           Download F&B report (.xlsx)
@@ -241,56 +200,9 @@ export default function CRMPage() {
   );
 }
 
-const labelStyle = {
-  fontSize: 12,
-  letterSpacing: 2,
-  textTransform: "uppercase",
-  color: "#9e8878",
-  margin: "0 0 8px",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px 12px",
-  border: "1px solid #e8ddd0",
-  borderRadius: 8,
-  fontSize: 14,
-  fontFamily: "Georgia, serif",
-  color: "#2c1810",
-  background: "#fdf8f3",
-  boxSizing: "border-box",
-};
-
-const btnStyle = {
-  background: "#9A2143",
-  color: "#fdf8f3",
-  border: "none",
-  borderRadius: 8,
-  padding: "10px 24px",
-  fontSize: 14,
-  cursor: "pointer",
-  fontFamily: "Georgia, serif",
-  letterSpacing: 1,
-};
-
-const statCard = {
-  background: "#fff",
-  border: "1px solid #e8ddd0",
-  borderRadius: 8,
-  padding: "10px 14px",
-};
-
-const statLabel = {
-  margin: "0 0 4px",
-  fontSize: 11,
-  color: "#9e8878",
-  textTransform: "uppercase",
-  letterSpacing: 1,
-};
-
-const statValue = {
-  margin: 0,
-  fontSize: 22,
-  fontWeight: 500,
-  color: "#2c1810",
-};
+const labelStyle = { fontSize: 12, letterSpacing: 2, textTransform: "uppercase", color: "#9e8878", margin: "0 0 8px" };
+const inputStyle = { width: "100%", padding: "10px 12px", border: "1px solid #e8ddd0", borderRadius: 8, fontSize: 14, fontFamily: "Georgia, serif", color: "#2c1810", background: "#fdf8f3", boxSizing: "border-box" };
+const btnStyle   = { background: "#9A2143", color: "#fdf8f3", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 14, cursor: "pointer", fontFamily: "Georgia, serif", letterSpacing: 1 };
+const statCard   = { background: "#fff", border: "1px solid #e8ddd0", borderRadius: 8, padding: "10px 14px" };
+const statLabel  = { margin: "0 0 4px", fontSize: 11, color: "#9e8878", textTransform: "uppercase", letterSpacing: 1 };
+const statValue  = { margin: 0, fontSize: 22, fontWeight: 500, color: "#2c1810" };

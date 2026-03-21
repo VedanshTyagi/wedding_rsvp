@@ -4,9 +4,12 @@ import Link from 'next/link'
 export default async function DashboardPage() {
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+
   const { data: weddings, error } = await supabase
     .from('weddings')
     .select('id, couple_names, city, start_date, end_date, guest_count_est')
+    .eq('planner_id', user?.id)
     .order('start_date', { ascending: true })
 
   if (error) console.error(error)
