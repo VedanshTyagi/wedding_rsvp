@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Kantumruy_Pro } from "next/font/google";
+import { Cormorant_Garamond } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
-const dmSerif = DM_Serif_Display({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-display",
-});
-
-const kantumruy = Kantumruy_Pro({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-body",
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-cormorant'
 });
 
 export const metadata: Metadata = {
@@ -26,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${dmSerif.variable} ${kantumruy.variable} antialiased`}>
+    <html lang="en" className={cn("font-serif", cormorant.variable)}>
+      <body className={`${cormorant.variable} antialiased`}>
         {children}
         <Toaster />
       </body>

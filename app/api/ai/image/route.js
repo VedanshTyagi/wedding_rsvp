@@ -5,27 +5,51 @@ export async function POST(request) {
     const { prompt } = await request.json();
     if (!prompt) return NextResponse.json({ error: "No prompt" }, { status: 400 });
 
-    const seed = Math.round(Date.now() + Math.random() * 9999);
-    const url  = `https://enter.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=1024&nologo=true&seed=${seed}&nofeed=true`;
+    const apiKey = process.env.STABILITY_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: "STABILITY_API_KEY not set in .env.local" }, { status: 500 });
+    }
 
-    const res = await fetch(url, {
+    const fullPrompt = `${prompt}, wedding invitation card, portrait format, highly detailed, professional quality, 4k`;
+
+    console.log("Calling Stability AI...");
+
+    const res = await fetch("https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image", {
+      method: "POST",
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Accept": "image/*,*/*",
-      }
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({
+        text_prompts: [
+          { text: fullPrompt, weight: 1 },
+          { text: "blurry, low quality, text, watermark, signature, ugly", weight: -1 },
+        ],
+        cfg_scale: 7,
+        height: 1024,
+        width: 1024,
+        samples: 1,
+        steps: 30,
+      }),
     });
+
+    console.log("Status:", res.status);
 
     if (!res.ok) {
       const text = await res.text();
-      console.error("Pollinations error:", text.slice(0, 300));
-      return NextResponse.json({ error: "Generation failed" }, { status: 500 });
+      console.error("Stability error:", text.slice(0, 500));
+      return NextResponse.json({ error: `Stability AI error: ${res.status} — ${text.slice(0, 200)}` }, { status: 500 });
     }
 
-    const contentType = res.headers.get("content-type") || "image/jpeg";
-    const buffer = await res.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString("base64");
+    const data = await res.json();
+    const base64 = data.artifacts?.[0]?.base64;
 
-    return NextResponse.json({ image: `data:${contentType};base64,${base64}` });
+    if (!base64) {
+      return NextResponse.json({ error: "No image returned from Stability AI" }, { status: 500 });
+    }
+
+    return NextResponse.json({ image: `data:image/png;base64,${base64}` });
 
   } catch (error) {
     console.error("Image route error:", error.message);

@@ -164,7 +164,7 @@ export default function SeatingPage() {
 
   // ── render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="max-w-5xl font-body">
+    <div className="max-w-5xl font-body mx-auto">
 
       {/* header */}
       <div className="flex items-start justify-between mb-6">
@@ -194,7 +194,7 @@ export default function SeatingPage() {
       )}
 
       {/* summary stats */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Tables",       value: tables.length },
           { label: "Total seats",  value: totalSeats },
@@ -212,7 +212,7 @@ export default function SeatingPage() {
 
       {/* unassigned guests pill */}
       {unassignedGuests.length > 0 && (
-        <div className="mb-5 px-4 py-3 bg-sand bg-opacity-30 border border-sand rounded-xl flex items-center gap-2 text-sm">
+        <div className="mb-5 px-4 py-3 bg-cream border border-sand rounded-xl flex items-center gap-2 text-sm">
           <span className="w-2 h-2 rounded-full bg-gold inline-block"></span>
           <span className="text-navy font-medium">
             {unassignedGuests.length} guest{unassignedGuests.length !== 1 ? "s" : ""} not yet seated
@@ -284,7 +284,7 @@ export default function SeatingPage() {
       {loading ? (
         <p className="text-steel text-sm">Loading seating plan...</p>
       ) : tables.length === 0 ? (
-        <div className="bg-white border border-sand rounded-xl p-10 text-center">
+        <div className="bg-white border border-dashed border-sand rounded-xl p-10 text-center">
           <p className="font-display text-navy text-lg mb-2">No tables yet</p>
           <p className="text-sm text-steel">Add your first table to start building the seating plan.</p>
         </div>
@@ -299,7 +299,7 @@ export default function SeatingPage() {
 
             return (
               <div key={table.id}
-                className="bg-white border border-sand rounded-xl p-5 hover:border-gold transition-colors">
+                className="bg-white border border-sand rounded-xl p-5 hover:border-gold hover:shadow-sm transition-all">
 
                 {/* table header */}
                 <div className="flex items-start justify-between mb-3">
@@ -408,7 +408,7 @@ export default function SeatingPage() {
                     <button
                       onClick={() => { setAssigning(table.id); setSelectedGuest(""); }}
                       disabled={unassignedGuests.length === 0}
-                      className="mt-1 w-full border border-dashed border-sand text-steel text-xs py-1.5 rounded-lg hover:border-gold hover:text-gold transition-colors disabled:opacity-40"
+                      className="mt-1 w-full border border-dashed border-sand text-steel text-xs py-1.5 rounded-lg hover:border-gold hover:text-navy transition-colors disabled:opacity-40"
                     >
                       + Assign guest
                     </button>

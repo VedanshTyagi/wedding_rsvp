@@ -182,7 +182,7 @@ export default function CRMPage() {
         disabled={syncing || !crmUrl}
         style={{
           ...btnStyle,
-          background: syncing || !crmUrl ? "#ccc" : "#2c1810",
+          background: syncing || !crmUrl ? "#ccc" : "#9A2143",
           width: "100%",
           padding: "14px",
           fontSize: 15,
@@ -262,7 +262,7 @@ const inputStyle = {
 };
 
 const btnStyle = {
-  background: "#2c1810",
+  background: "#9A2143",
   color: "#fdf8f3",
   border: "none",
   borderRadius: 8,
