@@ -2,11 +2,12 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function CheckInPage() {
   const { weddingId } = useParams()
+  const router = useRouter()
   const supabase = createClient()
 
   const [search,           setSearch]           = useState('')
@@ -137,9 +138,39 @@ export default function CheckInPage() {
     <div className="max-w-lg mx-auto space-y-5 pb-10">
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold">Guest Check-in</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Day-of arrival tracking</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Guest Check-in</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Day-of arrival tracking</p>
+        </div>
+        <button
+          onClick={() => router.push(`/dashboard/${weddingId}/checkin/qr`)}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          {/* QR code icon */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="6" y="6" width="1" height="1" fill="currentColor" />
+            <rect x="17" y="6" width="1" height="1" fill="currentColor" />
+            <rect x="6" y="17" width="1" height="1" fill="currentColor" />
+            <path d="M14 14h3v3h-3z" />
+            <path d="M17 17h3v3h-3z" />
+            <path d="M14 17h1" />
+            <path d="M17 14h1" />
+          </svg>
+          QR Codes
+        </button>
       </div>
 
       {/* Function selector */}
