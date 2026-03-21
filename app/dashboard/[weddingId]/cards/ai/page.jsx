@@ -137,25 +137,36 @@ Respond ONLY with valid JSON (no markdown, no backticks):
 }`;
 
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/ai/card", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 800,
-          messages: [{ role: "user", content: prompt }],
-        }),
+        body: JSON.stringify({ prompt }),
       });
 
       const data = await res.json();
       const text = data.content?.[0]?.text ?? "";
 
-      let parsed;
-      try {
-        parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
-      } catch {
-        throw new Error("AI returned invalid JSON. Please try again.");
-      }
+    let parsed;
+    try {
+      // Extract JSON from response — handles markdown code blocks and extra text
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON found");
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch {
+      // If JSON fails, use fallback values based on vision text
+      parsed = {
+        style:          "royal",
+        palette:        "redgold",
+        font:           "playfair",
+        shloka:         "ॐ गणेशाय नमः",
+        subtitle:       "— शुभ विवाह —",
+        topOrnament:    "🪔 ॐ 🪔",
+        bottomOrnament: "❋ ✦ ❋",
+        andWord:        "weds",
+        extraLine:      "",
+        vision:         "A classic Indian wedding invitation in rich red and gold, adorned with traditional motifs.",
+      };
+    }
 
       // Apply AI choices
       if (parsed.style    && STYLES[parsed.style])    setCurStyle(parsed.style);
