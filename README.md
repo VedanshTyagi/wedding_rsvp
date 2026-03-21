@@ -201,36 +201,74 @@ Open [http://localhost:3000](http://localhost:3000) and sign up for a planner ac
 ## 📁 Project Structure
 
 ```
-app/
-├── api/
-│   ├── invite/send/          # WhatsApp + email invite dispatcher
-│   ├── remind/               # Reminder sender
-│   ├── rsvp/                 # Public RSVP read/write
-│   ├── export/fnb/           # F&B Excel export
-│   ├── crm-sync/             # CRM webhook sync
-│   └── weddings/[weddingId]/
-│       ├── guests/           # Guest CRUD + CSV import
-│       ├── rooms/            # Room management
-│       ├── accommodation/    # Room assignments
-│       ├── functions/        # Wedding sub-events
-│       └── crm/              # CRM settings
-├── dashboard/
-│   ├── page.jsx              # Wedding list
-│   └── [weddingId]/
-│       ├── guests/           # Guest list + import
-│       ├── invites/send/     # Send invites UI
-│       ├── rsvp/             # Live RSVP tracker
-│       ├── seating/          # Seating plan
-│       ├── accommodation/    # Room manager
-│       ├── checkin/          # Staff + self check-in
-│       ├── analytics/        # Charts + F&B export
-│       └── crm/              # CRM integration
-├── rsvp/                     # Public guest RSVP form
-└── invite/[token]/           # Tokenised invite landing page
-
-components/                   # Shared UI components
-lib/supabase/                 # Server + client Supabase factories
-middleware.js                 # Auth guard for /dashboard
+├── middleware.js
+│
+├── app/
+│   ├── login/
+│   ├── signup/
+│   ├── rsvp/
+│   ├── invite/
+│   │   └── [token]/
+│   │       └── rsvp/
+│   │
+│   ├── dashboard/
+│   │   ├── new/
+│   │   └── [weddingId]/
+│   │       ├── guests/
+│   │       │   ├── new/
+│   │       │   └── [guestId]/
+│   │       ├── invites/
+│   │       │   ├── send/
+│   │       │   └── builder/
+│   │       ├── rsvp/
+│   │       ├── analytics/
+│   │       ├── seating/
+│   │       ├── accommodation/
+│   │       ├── checkin/
+│   │       │   ├── qr/
+│   │       │   └── guest/
+│   │       │       └── [guestId]/
+│   │       ├── cards/
+│   │       │   ├── ai/
+│   │       │   ├── image/
+│   │       │   ├── manual/
+│   │       │   ├── bulk/
+│   │       │   └── send/
+│   │       └── crm/
+│   │
+│   └── api/
+│       ├── rsvp/
+│       ├── invite/
+│       │   ├── send/
+│       │   └── guest/
+│       ├── remind/
+│       ├── crm-sync/
+│       ├── guest/
+│       ├── send-bulk-invites/
+│       ├── send-invite-email/
+│       ├── export/
+│       │   └── fnb/
+│       ├── ai/
+│       │   ├── card/
+│       │   └── image/
+│       └── weddings/
+│           └── [weddingId]/
+│               ├── guests/
+│               │   ├── import/
+│               │   └── [guestId]/
+│               ├── rooms/
+│               │   └── [roomId]/
+│               ├── accommodation/
+│               │   └── assign/
+│               ├── functions/
+│               └── crm/
+│
+├── components/
+│   ├── guests/
+│   └── ui/
+│
+└── lib/
+    └── supabase/
 ```
 
 ---
