@@ -130,8 +130,7 @@ export default function CardsHubPage({ params }) {
   }
 
   function goAI(guest) {
-    const fnIds = guest.invited_functions.map(f => f.id).join(",");
-    router.push(`/dashboard/${weddingId}/cards/ai?guestId=${guest.id}&fnIds=${fnIds}`);
+    router.push(`/dashboard/${weddingId}/cards/image?guestId=${guest.id}`);
   }
 
   // ── Bulk send helpers ──────────────────────────────────────────────────────
@@ -539,12 +538,12 @@ export default function CardsHubPage({ params }) {
                   hover:border-amber-400 hover:bg-amber-50 rounded-2xl transition group text-center">
                 <div className="w-12 h-12 rounded-2xl bg-gray-100 group-hover:bg-amber-100 flex items-center justify-center text-2xl transition">✨</div>
                 <div>
-                  <p className="font-bold text-gray-900 text-sm">AI Card Generator</p>
+                  <p className="font-bold text-gray-900 text-sm">AI Image Card Generator</p>
                   <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                    Describe your vibe — AI builds the full card. Customize after.
+                    AI generates a real illustrated card image. Share directly after.
                   </p>
                 </div>
-                <span className="text-xs text-amber-600 font-semibold">Generate with AI →</span>
+                <span className="text-xs text-amber-600 font-semibold">Generate Image Card →</span>
               </button>
             </div>
           )}
