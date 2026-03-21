@@ -24,13 +24,8 @@ export default function SeatingPage() {
   const [selectedGuest, setSelectedGuest] = useState("");
   const [newTable, setNewTable] = useState({ name: "", capacity: 8, functionId: "" });
   const [addingTable, setAddingTable] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null); // tableId pending delete
   const [message, setMessage] = useState(null);
-
-  // ── edit state ───────────────────────────────────────────────────────────────
-  const [editingTable, setEditingTable] = useState(null); // tableId being edited
-  const [editForm, setEditForm] = useState({ name: "", capacity: 8, functionId: "" });
-  const [savingEdit, setSavingEdit] = useState(false);
-  const [deletingTable, setDeletingTable] = useState(null); // tableId being deleted
 
   // ── fetch all data ──────────────────────────────────────────────────────────
   async function fetchAll() {
@@ -160,82 +155,26 @@ export default function SeatingPage() {
     showMessage("success", "Table added.");
   }
 
-  // ── edit table ──────────────────────────────────────────────────────────────
-  function startEdit(table) {
-    setEditingTable(table.id);
-    setEditForm({
-      name:       table.table_name,
-      capacity:   table.capacity,
-      functionId: table.function_id ?? "",
-    });
-    // close assign panel if open for this table
-    if (assigning === table.id) setAssigning(null);
-  }
-
-  function cancelEdit() {
-    setEditingTable(null);
-    setEditForm({ name: "", capacity: 8, functionId: "" });
-  }
-
-  async function saveEdit(tableId) {
-    if (!editForm.name.trim()) return;
-    setSavingEdit(true);
-
-    const { data, error } = await supabase
-      .from("seating_tables")
-      .update({
-        table_name:  editForm.name.trim(),
-        capacity:    Number(editForm.capacity),
-        function_id: editForm.functionId || null,
-      })
-      .eq("id", tableId)
-      .select()
-      .single();
-
-    setSavingEdit(false);
-
-    if (error) {
-      showMessage("error", "Failed to update table: " + error.message);
-      return;
-    }
-
-    setTables((prev) => prev.map((t) => (t.id === tableId ? data : t)));
-    cancelEdit();
-    showMessage("success", "Table updated.");
-  }
-
-  // ── delete table ────────────────────────────────────────────────────────────
-  async function deleteTable(tableId, tableName) {
-    if (!confirm(`Delete "${tableName}"? All guest assignments for this table will also be removed.`)) return;
-    setDeletingTable(tableId);
-
-    // remove assignments first
-    const { error: assignError } = await supabase
-      .from("seating_assignments")
-      .delete()
-      .eq("table_id", tableId);
-
-    if (assignError) {
-      showMessage("error", "Failed to remove assignments: " + assignError.message);
-      setDeletingTable(null);
-      return;
-    }
+  // ── delete table ─────────────────────────────────────────────────────────────
+  async function deleteTable(tableId) {
+    // Delete assignments first to satisfy FK constraints
+    await supabase.from("seating_assignments").delete().eq("table_id", tableId);
 
     const { error } = await supabase
       .from("seating_tables")
       .delete()
       .eq("id", tableId);
 
-    setDeletingTable(null);
-
     if (error) {
-      showMessage("error", "Failed to delete table: " + error.message);
+      showMessage("error", "Failed to remove table: " + error.message);
+      setConfirmDelete(null);
       return;
     }
 
     setTables((prev) => prev.filter((t) => t.id !== tableId));
     setAssignments((prev) => prev.filter((a) => a.table_id !== tableId));
-    showMessage("success", `"${tableName}" deleted.`);
+    setConfirmDelete(null);
+    showMessage("success", "Table removed.");
   }
 
   // ── summary stats ────────────────────────────────────────────────────────────
@@ -278,24 +217,27 @@ export default function SeatingPage() {
       {/* summary stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
-          { label: "Tables",      value: tables.length },
-          { label: "Total seats", value: totalSeats },
-          { label: "Occupied",    value: totalOccupied },
-          { label: "Available",   value: totalAvailable },
-        ].map((s) => (
-          <div key={s.label} className="bg-white border border-sand rounded-xl p-4 text-center">
-            <p className="font-display text-2xl text-navy">{s.value}</p>
-            <p className="text-xs text-steel mt-1">{s.label}</p>
+          { label: "Tables",       value: tables.length },
+          { label: "Total seats",  value: totalSeats },
+          { label: "Occupied",     value: totalOccupied },
+          { label: "Available",    value: totalAvailable },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-white border border-sand rounded-xl p-4">
+            <div className="text-xs text-steel uppercase tracking-wide mb-1">
+              {stat.label}
+            </div>
+            <div className="font-display text-2xl text-navy">{stat.value}</div>
           </div>
         ))}
       </div>
 
-      {/* unassigned guests */}
+      {/* unassigned guests pill */}
       {unassignedGuests.length > 0 && (
-        <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-          <p className="text-sm text-amber-700 font-medium">
-            {unassignedGuests.length} guest{unassignedGuests.length > 1 ? "s" : ""} not yet seated
-          </p>
+        <div className="mb-5 px-4 py-3 bg-cream border border-sand rounded-xl flex items-center gap-2 text-sm">
+          <span className="w-2 h-2 rounded-full bg-gold inline-block"></span>
+          <span className="text-navy font-medium">
+            {unassignedGuests.length} guest{unassignedGuests.length !== 1 ? "s" : ""} not yet seated
+          </span>
         </div>
       )}
 
@@ -371,229 +313,173 @@ export default function SeatingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {tables.map((table) => {
             const tableAssignments = getTableAssignments(table.id);
-            const occupied  = tableAssignments.length;
+            const occupied = tableAssignments.length;
             const available = table.capacity - occupied;
-            const isFull    = available === 0;
-            const fillPct   = Math.round((occupied / table.capacity) * 100);
-            const isEditing = editingTable === table.id;
-            const isDeleting = deletingTable === table.id;
+            const isFull = available === 0;
+            const fillPct = Math.round((occupied / table.capacity) * 100);
+            const isPendingDelete = confirmDelete === table.id;
 
             return (
               <div key={table.id}
-                className="bg-white border border-sand rounded-xl p-5 hover:border-gold hover:shadow-sm transition-all">
+                className={`bg-white border rounded-xl p-5 transition-all
+                  ${isPendingDelete
+                    ? "border-crimson shadow-sm"
+                    : "border-sand hover:border-gold hover:shadow-sm"
+                  }`}>
 
-                {/* ── EDIT MODE ── */}
-                {isEditing ? (
-                  <div className="flex flex-col gap-3">
-                    <p className="font-display text-navy text-sm">Edit table</p>
-
-                    <div>
-                      <label className="text-xs text-steel uppercase tracking-wide block mb-1">Table name</label>
-                      <input
-                        type="text"
-                        value={editForm.name}
-                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                        className="w-full border border-sand rounded-lg px-3 py-2 text-sm text-navy bg-cream focus:outline-none focus:border-gold"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-xs text-steel uppercase tracking-wide block mb-1">Function</label>
-                        <select
-                          value={editForm.functionId}
-                          onChange={(e) => setEditForm({ ...editForm, functionId: e.target.value })}
-                          className="w-full border border-sand rounded-lg px-3 py-2 text-sm text-navy bg-cream focus:outline-none focus:border-gold"
-                        >
-                          <option value="">None</option>
-                          {functions.map((f) => (
-                            <option key={f.id} value={f.id}>{f.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-xs text-steel uppercase tracking-wide block mb-1">Capacity</label>
-                        <input
-                          type="number"
-                          min="1"
-                          max="30"
-                          value={editForm.capacity}
-                          onChange={(e) => setEditForm({ ...editForm, capacity: +e.target.value })}
-                          className="w-full border border-sand rounded-lg px-3 py-2 text-sm text-navy bg-cream focus:outline-none focus:border-gold"
+                {/* table header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="font-display text-navy text-base">{table.table_name}</h3>
+                    <p className="text-xs text-steel mt-0.5">
+                      {getFunctionName(table.function_id) && (
+                        <span className="text-gold mr-2">{getFunctionName(table.function_id)}</span>
+                      )}
+                      {occupied}/{table.capacity} seats ·{" "}
+                      <span className={isFull ? "text-crimson" : "text-green-600"}>
+                        {isFull ? "Full" : `${available} available`}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <div className="text-xs text-steel mb-1">{fillPct}%</div>
+                      <div className="w-20 h-1.5 bg-sand rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${fillPct}%`,
+                            background: isFull ? "#9A2143" : "#BFA054",
+                          }}
                         />
                       </div>
                     </div>
-
-                    <div className="flex gap-2">
+                    {/* delete button */}
+                    {!isPendingDelete && (
                       <button
-                        onClick={() => saveEdit(table.id)}
-                        disabled={savingEdit || !editForm.name.trim()}
-                        className="flex-1 bg-crimson text-white py-2 rounded-lg text-sm hover:bg-opacity-90 disabled:opacity-40"
+                        onClick={() => setConfirmDelete(table.id)}
+                        className="text-steel hover:text-crimson transition-colors p-1 rounded"
+                        title="Remove table"
                       >
-                        {savingEdit ? "Saving…" : "Save"}
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* delete confirmation inline */}
+                {isPendingDelete && (
+                  <div className="mb-3 px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between gap-3">
+                    <p className="text-xs text-red-700">
+                      Remove <span className="font-medium">{table.table_name}</span>?
+                      {occupied > 0 && ` This will unassign ${occupied} guest${occupied !== 1 ? "s" : ""}.`}
+                    </p>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => deleteTable(table.id)}
+                        className="bg-crimson text-white text-xs px-3 py-1 rounded-lg hover:bg-opacity-90"
+                      >
+                        Remove
                       </button>
                       <button
-                        onClick={cancelEdit}
-                        className="px-4 py-2 border border-sand text-steel rounded-lg text-sm hover:border-steel"
+                        onClick={() => setConfirmDelete(null)}
+                        className="border border-sand text-steel text-xs px-3 py-1 rounded-lg hover:border-steel"
                       >
                         Cancel
                       </button>
                     </div>
                   </div>
-                ) : (
-                  <>
-                    {/* ── NORMAL VIEW ── */}
+                )}
 
-                    {/* table header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="font-display text-navy text-base">{table.table_name}</h3>
-                        <p className="text-xs text-steel mt-0.5">
-                          {getFunctionName(table.function_id) && (
-                            <span className="text-gold mr-2">{getFunctionName(table.function_id)}</span>
-                          )}
-                          {occupied}/{table.capacity} seats ·{" "}
-                          <span className={isFull ? "text-crimson" : "text-green-600"}>
-                            {isFull ? "Full" : `${available} available`}
-                          </span>
-                        </p>
-                      </div>
-
-                      {/* right side: fill bar + edit/delete buttons */}
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="text-right">
-                          <div className="text-xs text-steel mb-1">{fillPct}%</div>
-                          <div className="w-20 h-1.5 bg-sand rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all"
-                              style={{
-                                width: `${fillPct}%`,
-                                background: isFull ? "#9A2143" : "#BFA054",
-                              }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* edit + delete buttons */}
-                        <div className="flex gap-1.5">
-                          <button
-                            onClick={() => startEdit(table)}
-                            className="w-7 h-7 rounded-lg bg-sand/30 text-navy hover:bg-sand flex items-center justify-center transition"
-                            title="Edit table"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => deleteTable(table.id, table.table_name)}
-                            disabled={isDeleting}
-                            className="w-7 h-7 rounded-lg bg-rose-50 text-rose-400 hover:bg-rose-100 hover:text-rose-600 flex items-center justify-center transition disabled:opacity-50"
-                            title="Delete table"
-                          >
-                            {isDeleting ? (
-                              <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                              </svg>
-                            ) : (
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                              </svg>
-                            )}
-                          </button>
-                        </div>
-                      </div>
+                {/* seat circles visual */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {Array.from({ length: table.capacity }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-6 h-6 rounded-full border text-xs flex items-center justify-center
+                        ${i < occupied
+                          ? "bg-gold border-gold text-white"
+                          : "bg-cream border-sand text-steel"
+                        }`}
+                    >
+                      {i < occupied ? "✓" : ""}
                     </div>
+                  ))}
+                </div>
 
-                    {/* seat circles visual */}
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {Array.from({ length: table.capacity }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-6 h-6 rounded-full border text-xs flex items-center justify-center
-                            ${i < occupied
-                              ? "bg-gold border-gold text-white"
-                              : "bg-cream border-sand text-steel"
-                            }`}
-                        >
-                          {i < occupied ? "✓" : ""}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* assigned guests list */}
-                    {tableAssignments.length > 0 && (
-                      <div className="mb-3 flex flex-col gap-1">
-                        {tableAssignments.map((a) => {
-                          const guest = getGuestById(a.guest_id);
-                          return (
-                            <div key={a.id}
-                              className="flex items-center justify-between px-2 py-1 bg-cream rounded-lg">
-                              <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded-full bg-sand flex items-center justify-center text-xs text-navy font-medium">
-                                  {guest?.full_name?.[0] || "?"}
-                                </div>
-                                <span className="text-xs text-navy">{guest?.full_name || "Unknown"}</span>
-                                {guest?.group_tag && (
-                                  <span className="text-xs text-steel">· {guest.group_tag}</span>
-                                )}
-                              </div>
-                              <button
-                                onClick={() => removeAssignment(a.id)}
-                                className="text-steel hover:text-crimson text-xs transition-colors"
-                              >
-                                ✕
-                              </button>
+                {/* assigned guests list */}
+                {tableAssignments.length > 0 && (
+                  <div className="mb-3 flex flex-col gap-1">
+                    {tableAssignments.map((a) => {
+                      const guest = getGuestById(a.guest_id);
+                      return (
+                        <div key={a.id}
+                          className="flex items-center justify-between px-2 py-1 bg-cream rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-sand flex items-center justify-center text-xs text-navy font-medium">
+                              {guest?.full_name?.[0] || "?"}
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                            <span className="text-xs text-navy">{guest?.full_name || "Unknown"}</span>
+                            {guest?.group_tag && (
+                              <span className="text-xs text-steel">· {guest.group_tag}</span>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => removeAssignment(a.id)}
+                            className="text-steel hover:text-crimson text-xs transition-colors"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
-                    {/* assign guest dropdown */}
-                    {assigning === table.id ? (
-                      <div className="flex gap-2 mt-2">
-                        <select
-                          value={selectedGuest}
-                          onChange={(e) => setSelectedGuest(e.target.value)}
-                          className="flex-1 border border-sand rounded-lg px-2 py-1.5 text-xs text-navy bg-cream focus:outline-none focus:border-gold"
-                        >
-                          <option value="">Select guest...</option>
-                          {getUnassignedGuests().map((g) => (
-                            <option key={g.id} value={g.id}>
-                              {g.full_name} {g.group_tag ? `(${g.group_tag})` : ""}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => assignGuest(table.id)}
-                          disabled={!selectedGuest}
-                          className="bg-crimson text-white px-3 py-1.5 rounded-lg text-xs hover:bg-opacity-90 disabled:opacity-40"
-                        >
-                          Assign
-                        </button>
-                        <button
-                          onClick={() => { setAssigning(null); setSelectedGuest(""); }}
-                          className="border border-sand text-steel px-3 py-1.5 rounded-lg text-xs"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      !isFull && (
-                        <button
-                          onClick={() => { setAssigning(table.id); setSelectedGuest(""); }}
-                          disabled={unassignedGuests.length === 0}
-                          className="mt-1 w-full border border-dashed border-sand text-steel text-xs py-1.5 rounded-lg hover:border-gold hover:text-navy transition-colors disabled:opacity-40"
-                        >
-                          + Assign guest
-                        </button>
-                      )
-                    )}
-                  </>
+                {/* assign guest dropdown */}
+                {assigning === table.id ? (
+                  <div className="flex gap-2 mt-2">
+                    <select
+                      value={selectedGuest}
+                      onChange={(e) => setSelectedGuest(e.target.value)}
+                      className="flex-1 border border-sand rounded-lg px-2 py-1.5 text-xs text-navy bg-cream focus:outline-none focus:border-gold"
+                    >
+                      <option value="">Select guest...</option>
+                      {getUnassignedGuests().map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.full_name} {g.group_tag ? `(${g.group_tag})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => assignGuest(table.id)}
+                      disabled={!selectedGuest}
+                      className="bg-crimson text-white px-3 py-1.5 rounded-lg text-xs hover:bg-opacity-90 disabled:opacity-40"
+                    >
+                      Assign
+                    </button>
+                    <button
+                      onClick={() => { setAssigning(null); setSelectedGuest(""); }}
+                      className="border border-sand text-steel px-3 py-1.5 rounded-lg text-xs"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  !isFull && (
+                    <button
+                      onClick={() => { setAssigning(table.id); setSelectedGuest(""); }}
+                      disabled={unassignedGuests.length === 0}
+                      className="mt-1 w-full border border-dashed border-sand text-steel text-xs py-1.5 rounded-lg hover:border-gold hover:text-navy transition-colors disabled:opacity-40"
+                    >
+                      + Assign guest
+                    </button>
+                  )
                 )}
               </div>
             );
