@@ -28,16 +28,6 @@ export default function DashboardLayout({
       ),
     },
     {
-      label: "Add Guest",
-      href: `${base}/guests/new`,
-      icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-        </svg>
-      ),
-    },
-    {
       label: "RSVP Tracker",
       href: `${base}/rsvp`,
       icon: (
@@ -48,12 +38,52 @@ export default function DashboardLayout({
       ),
     },
     {
+      label: "Invite Templates",
+      href: `${base}/cards`,
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Send Invites",
+      href: `${base}/invites/send`,
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+      ),
+    },
+    {
       label: "Accommodation",
       href: `${base}/accommodation`,
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Seating",
+      href: `${base}/seating`,
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Check-in",
+      href: `${base}/checkin`,
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       ),
     },
@@ -70,38 +100,28 @@ export default function DashboardLayout({
       ),
     },
     {
-      label: "Invitation Cards",
-      href: `${base}/cards`,
+      label: "CRM Sync",
+      href: `${base}/crm`,
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
-      ),
-    },
-    {
-      label: "Bulk Send Cards",
-      href: `${base}/cards/bulk`,
-      icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
       ),
     },
   ];
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href: string) =>
+    pathname === href || (pathname.startsWith(href + "/") && href !== base);
+
+  const isHome = pathname === base || pathname === base + "/";
 
   return (
     <div className="flex min-h-screen bg-gray-50">
 
       {/* Mobile overlay */}
       {open && (
-        <div
-          className="fixed inset-0 bg-black/40 z-20 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/40 z-20 lg:hidden" onClick={() => setOpen(false)}/>
       )}
 
       {/* SIDEBAR */}
@@ -113,19 +133,21 @@ export default function DashboardLayout({
       `}>
         {/* Logo */}
         <div className="px-5 py-5 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
+          <Link href={base} onClick={() => setOpen(false)}>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+              </div>
+              <span className="font-bold text-gray-900 text-sm">WedRSVP</span>
             </div>
-            <span className="font-bold text-gray-900 text-sm">WedRSVP</span>
-          </div>
-          <p className="text-xs text-gray-400 mt-1 truncate">Wedding Dashboard</p>
+          </Link>
+          <p className="text-xs text-gray-400 mt-1">Wedding Dashboard</p>
         </div>
 
-        {/* Nav links */}
+        {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => (
             <Link
@@ -147,13 +169,11 @@ export default function DashboardLayout({
           ))}
         </nav>
 
-        {/* Bottom: back to weddings */}
+        {/* Bottom */}
         <div className="px-3 py-4 border-t border-gray-100">
-          <Link
-            href="/dashboard"
+          <Link href="/dashboard"
             className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400
-              hover:text-gray-600 rounded-lg hover:bg-gray-50 transition"
-          >
+              hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
             </svg>
@@ -162,15 +182,12 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-100">
-          <button
-            onClick={() => setOpen(true)}
-            className="p-1.5 rounded-lg hover:bg-gray-100 transition"
-          >
+          <button onClick={() => setOpen(true)} className="p-1.5 rounded-lg hover:bg-gray-100 transition">
             <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
@@ -178,11 +195,7 @@ export default function DashboardLayout({
           <span className="font-semibold text-gray-900 text-sm">WedRSVP</span>
         </div>
 
-        {/* Page content */}
-        <main className="flex-1">
-          {children}
-        </main>
-
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );

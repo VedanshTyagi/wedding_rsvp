@@ -7,15 +7,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
-<<<<<<< HEAD
-const supabase = await createClient(
-=======
-<<<<<<< HEAD
-const supabase = await createClient(
-=======
 const supabase = createClient(
->>>>>>> 7613dc71cc2ccab772290dfa36803a5a8e43dd5f
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );

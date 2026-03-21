@@ -291,7 +291,7 @@ export default function AnalyticsPage() {
 
         supabase
           .from("guests")
-          .select("id, full_name, phone, email, is_outstation, dietary_pref, created_at")
+          .select("id, full_name, phone, email, is_outstation, dietary_preference, created_at")
           .eq("wedding_id", weddingId),
       ]);
 
@@ -332,7 +332,7 @@ export default function AnalyticsPage() {
       // 3. Dietary counts
       const dietary = {};
       for (const g of guests) {
-        const key = g.dietary_pref ?? "other";
+        const key = g.dietary_preference ?? "other";
         dietary[key] = (dietary[key] ?? 0) + 1;
       }
       setDietaryCounts(dietary);
