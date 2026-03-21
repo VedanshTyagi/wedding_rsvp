@@ -4,7 +4,9 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const dmSerif = DM_Serif_Display({ weight: "400", subsets: ['latin'], variable: '--font-display' });
+const kantumruy = Kantumruy_Pro({ subsets: ['latin'], variable: '--font-body' });
 
 export const metadata: Metadata = {
   title: "Wedding Planner",
