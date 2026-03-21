@@ -13,6 +13,7 @@ export default function DashboardRootLayout({
     const pathname = usePathname();
     const router = useRouter();
     const [open, setOpen] = useState(false);
+    const [desktopOpen, setDesktopOpen] = useState(true);
     const [signingOut, setSigningOut] = useState(false);
 
     const handleSignOut = async () => {
@@ -61,14 +62,14 @@ export default function DashboardRootLayout({
             )}
 
             {/* ── SIDEBAR ─────────────────────────────────────── */}
-            <aside className={`
+      <aside className={`
         fixed top-0 left-0 h-full w-64 z-30 flex flex-col
-        transition-transform duration-300
+        transition-all duration-300 ease-in-out
         rounded-br-[2rem] overflow-hidden
         border-r border-b border-[#c9a040]/50
         shadow-[4px_0_40px_rgba(201,160,64,0.13)]
-        ${open ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0 lg:static lg:z-auto
+        ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        ${desktopOpen ? "lg:static lg:ml-0" : "lg:absolute lg:-translate-x-full lg:opacity-0"}
       `}
                 style={{ background: "linear-gradient(175deg, #fffef5 0%, #fdf7ec 55%, #f8edcf 100%)" }}
             >
@@ -153,10 +154,18 @@ export default function DashboardRootLayout({
 
             {/* ── MAIN ────────────────────────────────────────── */}
             <div className="flex-1 flex flex-col min-w-0 relative">
-                {/* Mobile top bar */}
-                <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-[#c9a040]/30"
-                    style={{ background: "linear-gradient(90deg, #fffef5, #fdf7ec)" }}>
-                    <button onClick={() => setOpen(true)} className="p-1.5 rounded-lg transition"
+                {/* Mobile & Desktop top bar */}
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-[#c9a040]/30"
+                    style={{ background: "linear-gradient(90deg, #fffef5, #fdf7ec)", position: "sticky", top: 0, zIndex: 30 }}>
+                    {/* Mobile toggle */}
+                    <button onClick={() => setOpen(true)} className="p-1.5 rounded-lg transition lg:hidden"
+                        style={{ color: "#8a7060" }}>
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    {/* Desktop toggle */}
+                    <button onClick={() => setDesktopOpen(!desktopOpen)} className="p-1.5 rounded-lg transition hidden lg:block hover:bg-[#c9a040]/10"
                         style={{ color: "#8a7060" }}>
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -166,7 +175,11 @@ export default function DashboardRootLayout({
                         style={{ color: "#2c1810", fontFamily: "'Cormorant Garamond', serif" }}>WedRSVP</span>
                 </div>
 
-                <main className="flex-1 px-4 py-5 lg:px-8 lg:py-8 relative z-10">{children}</main>
+                <div className="page-frame" style={{ flex: 1 }}>
+                    <div className="decorative-border-left" aria-hidden="true" />
+                    <main className="page-frame-content px-4 py-5 lg:px-8 lg:py-8 relative z-10">{children}</main>
+                    <div className="decorative-border-right" aria-hidden="true" />
+                </div>
             </div>
         </div>
     );

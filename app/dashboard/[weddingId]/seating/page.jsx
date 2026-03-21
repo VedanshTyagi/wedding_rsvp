@@ -24,6 +24,7 @@ export default function SeatingPage() {
   const [selectedGuest, setSelectedGuest] = useState("");
   const [newTable, setNewTable] = useState({ name: "", capacity: 8, functionId: "" });
   const [addingTable, setAddingTable] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null); // tableId pending delete
   const [message, setMessage] = useState(null);
 
   // ── fetch all data ──────────────────────────────────────────────────────────
@@ -58,8 +59,6 @@ export default function SeatingPage() {
     setGuests(guestsData || []);
     setAssignments(assignData || []);
     setFunctions(fnData || []);
-    console.log("weddingId:", weddingId);
-    console.log("functions fetched:", fnData);
     setLoading(false);
   }
 
@@ -156,6 +155,28 @@ export default function SeatingPage() {
     showMessage("success", "Table added.");
   }
 
+  // ── delete table ─────────────────────────────────────────────────────────────
+  async function deleteTable(tableId) {
+    // Delete assignments first to satisfy FK constraints
+    await supabase.from("seating_assignments").delete().eq("table_id", tableId);
+
+    const { error } = await supabase
+      .from("seating_tables")
+      .delete()
+      .eq("id", tableId);
+
+    if (error) {
+      showMessage("error", "Failed to remove table: " + error.message);
+      setConfirmDelete(null);
+      return;
+    }
+
+    setTables((prev) => prev.filter((t) => t.id !== tableId));
+    setAssignments((prev) => prev.filter((a) => a.table_id !== tableId));
+    setConfirmDelete(null);
+    showMessage("success", "Table removed.");
+  }
+
   // ── summary stats ────────────────────────────────────────────────────────────
   const totalSeats = tables.reduce((s, t) => s + t.capacity, 0);
   const totalOccupied = assignments.length;
@@ -167,7 +188,7 @@ export default function SeatingPage() {
     <div className="max-w-5xl font-body mx-auto">
 
       {/* header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-sand shadow-sm">
         <div>
           <h1 className="font-display text-2xl text-navy">Seating Plan</h1>
           <p className="text-sm text-steel mt-1">
@@ -296,10 +317,15 @@ export default function SeatingPage() {
             const available = table.capacity - occupied;
             const isFull = available === 0;
             const fillPct = Math.round((occupied / table.capacity) * 100);
+            const isPendingDelete = confirmDelete === table.id;
 
             return (
               <div key={table.id}
-                className="bg-white border border-sand rounded-xl p-5 hover:border-gold hover:shadow-sm transition-all">
+                className={`bg-white border rounded-xl p-5 transition-all
+                  ${isPendingDelete
+                    ? "border-crimson shadow-sm"
+                    : "border-sand hover:border-gold hover:shadow-sm"
+                  }`}>
 
                 {/* table header */}
                 <div className="flex items-start justify-between mb-3">
@@ -315,19 +341,60 @@ export default function SeatingPage() {
                       </span>
                     </p>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs text-steel mb-1">{fillPct}%</div>
-                    <div className="w-20 h-1.5 bg-sand rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${fillPct}%`,
-                          background: isFull ? "#9A2143" : "#BFA054",
-                        }}
-                      />
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <div className="text-xs text-steel mb-1">{fillPct}%</div>
+                      <div className="w-20 h-1.5 bg-sand rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${fillPct}%`,
+                            background: isFull ? "#9A2143" : "#BFA054",
+                          }}
+                        />
+                      </div>
                     </div>
+                    {/* delete button */}
+                    {!isPendingDelete && (
+                      <button
+                        onClick={() => setConfirmDelete(table.id)}
+                        className="text-steel hover:text-crimson transition-colors p-1 rounded"
+                        title="Remove table"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </div>
+
+                {/* delete confirmation inline */}
+                {isPendingDelete && (
+                  <div className="mb-3 px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between gap-3">
+                    <p className="text-xs text-red-700">
+                      Remove <span className="font-medium">{table.table_name}</span>?
+                      {occupied > 0 && ` This will unassign ${occupied} guest${occupied !== 1 ? "s" : ""}.`}
+                    </p>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => deleteTable(table.id)}
+                        className="bg-crimson text-white text-xs px-3 py-1 rounded-lg hover:bg-opacity-90"
+                      >
+                        Remove
+                      </button>
+                      <button
+                        onClick={() => setConfirmDelete(null)}
+                        className="border border-sand text-steel text-xs px-3 py-1 rounded-lg hover:border-steel"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* seat circles visual */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
