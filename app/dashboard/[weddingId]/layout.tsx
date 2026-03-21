@@ -9,6 +9,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname  = usePathname();
   const weddingId = params.weddingId as string;
   const [open, setOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(true);
 
   const base = `/dashboard/${weddingId}`;
 
@@ -85,9 +86,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         flexDirection: "column",
         zIndex: 50,
         transform: open ? "translateX(0)" : "translateX(-100%)",
-        transition: "transform 0.25s ease",
+        transition: "all 0.3s ease-in-out",
       }}
-      className="lg:translate-x-0 lg:static lg:z-auto"
+      className={`lg:z-auto ${!desktopOpen ? 'lg:-translate-x-full lg:opacity-0' : 'lg:translate-x-0 lg:opacity-100'}`}
       >
         {/* Logo */}
         <div style={{
@@ -181,7 +182,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}
         className="lg:ml-60">
 
-        {/* Mobile topbar */}
+        {/* Mobile & Desktop topbar */}
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -193,15 +194,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           top: 0,
           zIndex: 30,
         }}
-        className="lg:hidden"
         >
+          {/* Mobile toggle */}
           <button
             onClick={() => setOpen(true)}
+            className="lg:hidden"
             style={{
               background: "none", border: "1px solid #EDD498",
               borderRadius: 8, padding: "6px 8px",
               cursor: "pointer", color: "#9A2143",
               display: "flex", alignItems: "center",
+            }}
+          >
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          
+          {/* Desktop toggle */}
+          <button
+            onClick={() => setDesktopOpen(!desktopOpen)}
+            className="hidden lg:flex"
+            style={{
+              background: "none", border: "1px solid #EDD498",
+              borderRadius: 8, padding: "6px 8px",
+              cursor: "pointer", color: "#9A2143",
+              alignItems: "center",
             }}
           >
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -225,21 +243,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        {/* Page content */}
-        <main style={{ flex: 1, padding: "24px 20px", maxWidth: "100%" }}
-          className="sm:p-8">
-          {children}
-        </main>
+        {/* Page content with decorative borders */}
+        <div className="page-frame" style={{ flex: 1 }}>
+          <div className="decorative-border-left" aria-hidden="true" />
+          <main className="page-frame-content sm:p-8 relative z-10" style={{ padding: "24px 20px" }}>
+            {children}
+          </main>
+          <div className="decorative-border-right" aria-hidden="true" />
+        </div>
       </div>
 
       {/* Sidebar spacer for lg screens */}
       <style>{`
         @media (min-width: 1024px) {
-          aside { transform: translateX(0) !important; position: fixed !important; }
-          .lg\\:ml-60 { margin-left: 240px; }
+          aside { 
+            transform: ${desktopOpen ? "translateX(0)" : "translateX(-100%)"} !important; 
+            position: ${desktopOpen ? "static" : "absolute"} !important; 
+            margin-left: ${desktopOpen ? "0px" : "-240px"} !important;
+          }
+          .lg\\:ml-60 { margin-left: 0 !important; }
           .lg\\:hidden { display: none !important; }
-          .lg\\:translate-x-0 { transform: translateX(0) !important; }
-          .lg\\:static { position: fixed !important; }
         }
         @media (max-width: 1023px) {
           .lg\\:ml-60 { margin-left: 0 !important; }

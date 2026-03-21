@@ -3,6 +3,7 @@ import { Cormorant_Garamond } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import DecorativeFrame from "@/components/DecorativeFrame";
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -23,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-serif", cormorant.variable)}>
       <body className={`${cormorant.variable} antialiased`}>
-        {children}
+        <DecorativeFrame>
+          {children}
+        </DecorativeFrame>
         <Toaster />
       </body>
     </html>

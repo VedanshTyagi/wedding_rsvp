@@ -21,6 +21,7 @@
     --input: #EDD498;
     --ring: #BFA054;
     --radius: 0.625rem;
+    --deco-border-width: 250px;
   }
 
   * {
@@ -35,10 +36,6 @@
 
   body {
     background-color: #FBF8F2;
-    background-image: url('/mandala_gold.png');
-    background-repeat: repeat;
-    background-size: 340px 340px;
-    background-attachment: fixed;
     color: #2c1810;
     font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
     font-size: 16px;
@@ -46,16 +43,6 @@
     position: relative;
     margin: 0;
     padding: 0;
-  }
-
-  /* Cream overlay so mandala stays subtle */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: rgba(251, 248, 242, 0.88);
-    pointer-events: none;
-    z-index: 0;
   }
 
   body > * {
@@ -198,4 +185,85 @@
   display: inline-block;
   animation: petalFloat 6s ease-in-out infinite;
   opacity: 0.7;
+}
+
+/* ── Page frame (flex wrapper for non-overlapping borders) ── */
+.page-frame {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.page-frame-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow-x: hidden;
+  z-index: 10;
+}
+
+/* ── Liquid Glass for Dashboard Foreground Cards ("aage wala") ── */
+.page-frame-content .bg-white {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.35) 100%) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  border-width: 1px !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ── Decorative side borders (absolute background watermarks) ── */
+.decorative-border-left,
+.decorative-border-right {
+  width: var(--deco-border-width, 250px);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-image: url('/DESIGN%20copy.png');
+  background-repeat: repeat-y;
+  background-size: var(--deco-border-width, 250px) auto;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+}
+
+.decorative-border-left {
+  left: 0;
+  background-position: left top;
+}
+
+.decorative-border-right {
+  right: 0;
+  background-position: left top;
+  transform: scaleX(-1);
+  transform-origin: center;
+}
+
+/* ── Scattered Mandalas ── */
+.mandala-scatter {
+  position: absolute;
+  background-image: url('/mandala%20(1).png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+.mandala-1 { top: 5%; left: -5%; width: 450px; height: 450px; opacity: 0.3; }
+.mandala-2 { top: 25%; right: -2%; width: 700px; height: 700px; opacity: 0.4; }
+.mandala-3 { top: 55%; left: 10%; width: 600px; height: 600px; opacity: 0.35; }
+.mandala-4 { top: 85%; right: 5%; width: 400px; height: 400px; opacity: 0.35; }
+
+/* Hide borders on mobile */
+@media (max-width: 767px) {
+  :root {
+    --deco-border-width: 0px;
+  }
+  .decorative-border-left,
+  .decorative-border-right {
+    display: none;
+  }
+  .mandala-scatter {
+    display: none;
+  }
 }

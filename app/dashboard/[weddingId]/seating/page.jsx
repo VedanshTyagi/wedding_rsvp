@@ -188,7 +188,7 @@ export default function SeatingPage() {
     <div className="max-w-5xl font-body mx-auto">
 
       {/* header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-sand shadow-sm">
         <div>
           <h1 className="font-display text-2xl text-navy">Seating Plan</h1>
           <p className="text-sm text-steel mt-1">
