@@ -28,7 +28,7 @@ export default async function DashboardPage() {
 
           <Link
             href="/dashboard/new"
-            className="rounded-lg border border-[#2c1810] bg-[#2c1810] px-5 py-3 text-sm text-[#fdf8f3] transition-colors hover:bg-[#4a3728]"
+            className="rounded-lg border border-crimson bg-crimson px-5 py-3 text-sm text-white transition-opacity hover:opacity-90"
           >
             Create new wedding
           </Link>
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
           <p className="mb-4 text-base text-[#6f5a4a]">No weddings yet</p>
           <Link
             href="/dashboard/new"
-            className="inline-block rounded-lg border border-[#2c1810] bg-[#2c1810] px-5 py-3 text-sm text-[#fdf8f3] transition-colors hover:bg-[#4a3728]"
+            className="inline-block rounded-lg border border-crimson bg-crimson px-5 py-3 text-sm text-white transition-opacity hover:opacity-90"
           >
             Create your first wedding
           </Link>

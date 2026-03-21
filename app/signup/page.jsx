@@ -5,21 +5,20 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export default function SignupPage() {
-  const [fullName, setFullName]   = useState('')
-  const [email, setEmail]         = useState('')
-  const [password, setPassword]   = useState('')
-  const [confirm, setConfirm]     = useState('')
-  const [error, setError]         = useState(null)
-  const [loading, setLoading]     = useState(false)
-  const [done, setDone]           = useState(false)
-  const router   = useRouter()
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
+  const router = useRouter()
   const supabase = createClient()
 
   async function handleSignup(e) {
     e.preventDefault()
     setError(null)
 
-    // Basic validation
     if (password !== confirm) {
       setError('Passwords do not match')
       return
@@ -30,15 +29,11 @@ export default function SignupPage() {
     }
 
     setLoading(true)
-
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: { full_name: fullName }  // stored in raw_user_meta_data
-      }                                // trigger copies it to profiles table
+      options: { data: { full_name: fullName } }
     })
-
     setLoading(false)
 
     if (error) {
@@ -46,110 +41,84 @@ export default function SignupPage() {
       return
     }
 
-    // Show success state — tell them to check email if confirm is on,
-    // or redirect straight to dashboard if confirm is off (dev mode)
-    if (!error) {
-        router.push('/dashboard')   // straight to dashboard, no email step
-    }
-  }
-
-  if (done) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-xl border border-gray-200 w-full max-w-sm text-center">
-          <div className="text-2xl mb-3">✓</div>
-          <h2 className="text-lg font-semibold mb-2">Account created</h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Check your email to confirm your account,
-            then sign in to get started.
-          </p>
-          <Link href="/login"
-            className="block bg-gray-900 text-white py-2 rounded-lg text-sm">
-            Go to login
-          </Link>
-        </div>
-      </div>
-    )
+    router.push('/dashboard')
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-xl border border-gray-200 w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center bg-cream relative overflow-hidden py-10 font-serif">
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 z-0"
+        style={{ backgroundImage: "url('/mandala_gold.png')", backgroundSize: '400px', backgroundRepeat: 'repeat' }} />
+      <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-[#f3dfc8]/40 blur-3xl pointer-events-none z-0" />
+      <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-[#edd498]/30 blur-3xl pointer-events-none z-0" />
 
-        <h1 className="text-2xl font-semibold mb-1">WedRSVP</h1>
-        <p className="text-sm text-gray-500 mb-6">Create your planner account</p>
+      <div className="relative z-10 w-full max-w-lg p-6 sm:p-8">
+        <div className="royal-card bg-white p-8 md:p-10 text-center shadow-2xl">
 
-        <form onSubmit={handleSignup} className="flex flex-col gap-3">
-
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 font-medium">Full name</label>
-            <input
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
-              type="text"
-              placeholder="Sneha Agarwal"
-              value={fullName}
-              onChange={e => setFullName(e.target.value)}
-              required
-            />
+          <div className="mx-auto w-12 h-12 rounded-xl flex items-center justify-center shadow-lg mb-4 border border-gold/30"
+            style={{ background: "linear-gradient(135deg, #9A2143, #6b1430)" }}>
+            <svg className="w-6 h-6" fill="#e8c76a" viewBox="0 0 24 24">
+              <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 font-medium">Email</label>
-            <input
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
-              type="email"
-              placeholder="you@weddingco.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
-          </div>
+          <h1 className="text-3xl font-semibold text-navy mb-2 tracking-wide font-display">WedRSVP</h1>
+          <p className="text-sm text-steel mb-8 tracking-widest uppercase">✦ Create your planner account ✦</p>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 font-medium">Password</label>
-            <input
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
-              type="password"
-              placeholder="Min. 6 characters"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <form onSubmit={handleSignup} className="flex flex-col gap-4 text-left">
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 font-medium">Confirm password</label>
-            <input
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
-              type="password"
-              placeholder="Repeat password"
-              value={confirm}
-              onChange={e => setConfirm(e.target.value)}
-              required
-            />
-          </div>
+            <div className="grid grid-cols-1 gap-5">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Full Name <span className="text-crimson">*</span></label>
+                <input type="text" placeholder="e.g. Sneha Agarwal" required
+                  value={fullName} onChange={e => setFullName(e.target.value)}
+                  className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+              </div>
 
-          {error && (
-            <p className="text-red-500 text-xs bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-              {error}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Email <span className="text-crimson">*</span></label>
+                <input type="email" placeholder="you@weddingco.com" required
+                  value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Password <span className="text-crimson">*</span></label>
+                  <input type="password" placeholder="Min. 6 chars" required
+                    value={password} onChange={e => setPassword(e.target.value)}
+                    className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Confirm <span className="text-crimson">*</span></label>
+                  <input type="password" placeholder="Repeat" required
+                    value={confirm} onChange={e => setConfirm(e.target.value)}
+                    className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-rose-600 text-xs bg-rose-50 border border-rose-100 rounded-lg px-3 py-2.5 mt-2 text-center font-sans">
+                {error}
+              </p>
+            )}
+
+            <button type="submit" disabled={loading}
+              className="w-full mt-4 bg-crimson hover:opacity-90 disabled:opacity-70 text-white py-4 rounded-xl text-[13px] font-bold tracking-[0.2em] uppercase transition-all shadow-md active:scale-[0.98]">
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </button>
+          </form>
+
+          <div className="mt-8 pt-6 border-t border-sand/50">
+            <p className="text-sm text-steel font-sans">
+              Already have an account?{' '}
+              <Link href="/login" className="text-crimson font-semibold hover:text-[#6b1430] hover:underline underline-offset-4 transition-colors">
+                Sign in Document
+              </Link>
             </p>
-          )}
+          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-gray-900 text-white py-2 rounded-lg text-sm mt-1 disabled:opacity-50"
-          >
-            {loading ? 'Creating account...' : 'Create account'}
-          </button>
-
-        </form>
-
-        <p className="text-xs text-gray-400 text-center mt-5">
-          Already have an account?{' '}
-          <Link href="/login" className="text-gray-700 underline">Sign in</Link>
-        </p>
-
+        </div>
       </div>
     </div>
   )
