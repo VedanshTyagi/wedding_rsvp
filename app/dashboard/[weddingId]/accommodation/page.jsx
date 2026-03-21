@@ -1,56 +1,21 @@
 "use client";
 
-/**
- * ─────────────────────────────────────────────────────────────────────────────
- * FILE:    app/dashboard/[weddingId]/accommodation/page.jsx
- * ROUTE:   /dashboard/[weddingId]/accommodation
- * PURPOSE: Room manager for outstation guests.
- *
- * FEATURES:
- *   1. fetchRooms()           — loads all rooms for this wedding
- *   2. fetchGuests()          — loads outstation guests + their room assignments
- *   3. RoomCard               — shows room name, capacity, assigned/available count
- *   4. AssignDropdown         — dropdown to assign an unassigned guest to a room
- *   5. UnassignedList         — lists outstation guests with no room yet
- *   6. handleAssign()         — assigns a guest to a room (PATCH API)
- *   7. handleUnassign()       — removes a guest from a room (PATCH API)
- *
- * SUPABASE TABLES USED:
- *   rooms                — id, wedding_id, name, capacity, room_type
- *   room_assignments     — id, room_id, guest_id
- *   guests               — id, full_name, is_outstation, phone
- *
- * API ROUTES NEEDED:
- *   GET  /api/weddings/[weddingId]/rooms          → list rooms + assignments
- *   POST /api/weddings/[weddingId]/rooms          → add a new room
- *   POST /api/weddings/[weddingId]/rooms/assign   → assign guest to room
- *   DELETE /api/weddings/[weddingId]/rooms/assign → unassign guest from room
- * ─────────────────────────────────────────────────────────────────────────────
- */
-
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 
 // ─── ROOM CARD ────────────────────────────────────────────────────────────────
-/**
- * RoomCard
- * Displays one room with its capacity, assigned guests, and available spots.
- * Each assigned guest has an X button to unassign them.
- * Has a dropdown to assign a new guest from the unassigned list.
- *
- * @param {object}   room             - { id, name, capacity, room_type }
- * @param {Array}    assignedGuests   - guests currently in this room
- * @param {Array}    unassignedGuests - guests not yet assigned to any room
- * @param {Function} onAssign         - (roomId, guestId) => void
- * @param {Function} onUnassign       - (roomId, guestId) => void
- */
-function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign }) {
+function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign, onDelete, onEdit }) {
   const [selectedGuest, setSelectedGuest] = useState("");
   const [assigning, setAssigning]         = useState(false);
+  const [deleting, setDeleting]           = useState(false);
+  const [editing, setEditing]             = useState(false);
+  const [editName, setEditName]           = useState(room.name);
+  const [editCapacity, setEditCapacity]   = useState(room.capacity);
+  const [editType, setEditType]           = useState(room.room_type ?? "double");
+  const [saving, setSaving]               = useState(false);
 
   const available = room.capacity - assignedGuests.length;
   const isFull    = available <= 0;
-  const [assignError, setAssignError] = useState("");
 
   async function handleAssign() {
     if (!selectedGuest) return;
@@ -60,13 +25,99 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
     setAssigning(false);
   }
 
+  async function handleDelete() {
+    if (!confirm(`Delete "${room.name}"? This will also remove all guest assignments for this room.`)) return;
+    setDeleting(true);
+    await onDelete(room.id);
+    setDeleting(false);
+  }
+
+  async function handleEditSave() {
+    if (!editName.trim()) return;
+    setSaving(true);
+    await onEdit(room.id, {
+      name:      editName.trim(),
+      capacity:  Number(editCapacity),
+      room_type: editType,
+    });
+    setSaving(false);
+    setEditing(false);
+  }
+
   const ROOM_TYPE_ICON = {
-    single:  "🛏",
-    double:  "🛏🛏",
-    suite:   "🏨",
+    single:    "🛏",
+    double:    "🛏🛏",
+    suite:     "🏨",
     dormitory: "🏠",
   };
 
+  // ── Edit mode ──────────────────────────────────────────────────────────────
+  if (editing) {
+    return (
+      <div className="bg-white rounded-xl border border-gold p-5 flex flex-col gap-4">
+        <h3 className="font-bold text-gray-800 text-sm">Edit Room</h3>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold text-navy">Room Name</label>
+          <input
+            type="text"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            className="px-3 py-2 border border-sand rounded-lg text-sm bg-cream
+              focus:outline-none focus:border-gold"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-navy">Capacity</label>
+            <input
+              type="number"
+              min="1" max="20"
+              value={editCapacity}
+              onChange={(e) => setEditCapacity(e.target.value)}
+              className="px-3 py-2 border border-sand rounded-lg text-sm bg-cream
+                focus:outline-none focus:border-gold"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-navy">Type</label>
+            <select
+              value={editType}
+              onChange={(e) => setEditType(e.target.value)}
+              className="px-3 py-2 border border-sand rounded-lg text-sm
+                bg-cream focus:outline-none focus:border-gold"
+            >
+              <option value="single">Single</option>
+              <option value="double">Double</option>
+              <option value="suite">Suite</option>
+              <option value="dormitory">Dormitory</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={handleEditSave}
+            disabled={saving || !editName.trim()}
+            className="flex-1 py-2 bg-crimson hover:bg-opacity-90 disabled:opacity-50
+              text-white text-sm font-semibold rounded-xl transition-colors"
+          >
+            {saving ? "Saving…" : "Save"}
+          </button>
+          <button
+            onClick={() => { setEditing(false); setEditName(room.name); setEditCapacity(room.capacity); setEditType(room.room_type ?? "double"); }}
+            className="px-4 py-2 bg-white border border-sand text-navy
+              text-sm rounded-xl hover:bg-cream transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Normal view ────────────────────────────────────────────────────────────
   return (
     <div className={`bg-white rounded-xl border p-5 flex flex-col gap-4
       ${isFull ? "border-rose-200" : "border-sand"}`}>
@@ -83,13 +134,53 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
           )}
         </div>
 
-        {/* Capacity badge */}
-        <div className={`flex-shrink-0 text-center px-3 py-1.5 rounded-xl border text-xs font-semibold
-          ${isFull
-            ? "bg-rose-50 border-rose-200 text-rose-600"
-            : "bg-emerald-50 border-emerald-200 text-emerald-700"}`}>
-          <p className="text-lg font-bold leading-none">{available}</p>
-          <p className="mt-0.5">{isFull ? "Full" : "Free"}</p>
+        {/* Action buttons + capacity badge */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Edit button */}
+          <button
+            onClick={() => setEditing(true)}
+            className="w-7 h-7 rounded-lg bg-sand/30 text-navy hover:bg-sand
+              flex items-center justify-center transition"
+            title="Edit room"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5
+                   m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+          </button>
+
+          {/* Delete button */}
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="w-7 h-7 rounded-lg bg-rose-50 text-rose-400
+              hover:bg-rose-100 hover:text-rose-600 flex items-center justify-center
+              transition disabled:opacity-50"
+            title="Delete room"
+          >
+            {deleting ? (
+              <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+              </svg>
+            ) : (
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5
+                     4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            )}
+          </button>
+
+          {/* Capacity badge */}
+          <div className={`text-center px-3 py-1.5 rounded-xl border text-xs font-semibold
+            ${isFull
+              ? "bg-rose-50 border-rose-200 text-rose-600"
+              : "bg-emerald-50 border-emerald-200 text-emerald-700"}`}>
+            <p className="text-lg font-bold leading-none">{available}</p>
+            <p className="mt-0.5">{isFull ? "Full" : "Free"}</p>
+          </div>
         </div>
       </div>
 
@@ -175,16 +266,12 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
 }
 
 // ─── ADD ROOM FORM ────────────────────────────────────────────────────────────
-/**
- * AddRoomForm
- * Inline form to add a new room to the wedding.
- */
 function AddRoomForm({ onAdd }) {
-  const [open, setOpen]       = useState(false);
-  const [name, setName]       = useState("");
+  const [open, setOpen]         = useState(false);
+  const [name, setName]         = useState("");
   const [capacity, setCapacity] = useState(2);
   const [roomType, setRoomType] = useState("double");
-  const [saving, setSaving]   = useState(false);
+  const [saving, setSaving]     = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -276,10 +363,6 @@ function AddRoomForm({ onAdd }) {
 }
 
 // ─── UNASSIGNED LIST ──────────────────────────────────────────────────────────
-/**
- * UnassignedList
- * Shows all outstation guests who haven't been assigned to a room yet.
- */
 function UnassignedList({ guests }) {
   if (guests.length === 0) {
     return (
@@ -327,30 +410,13 @@ function UnassignedList({ guests }) {
 export default function AccommodationPage() {
   const { weddingId } = useParams();
 
-  /** All rooms with their assigned guests */
-  const [rooms, setRooms]   = useState([]);
-
-  /** All outstation guests */
+  const [rooms, setRooms]                     = useState([]);
   const [outstationGuests, setOutstationGuests] = useState([]);
+  const [assignments, setAssignments]           = useState([]);
+  const [loading, setLoading]                   = useState(true);
+  const [error, setError]                       = useState(null);
+  const [assignError, setAssignError]           = useState("");
 
-  /** room_assignments: [{ id, room_id, guest_id }] */
-  const [assignments, setAssignments] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
-  const [assignError, setAssignError] = useState("");
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // fetchData
-  // GET /api/weddings/[weddingId]/accommodation
-  //
-  // Expected response:
-  // {
-  //   rooms: [{ id, name, capacity, room_type }],
-  //   assignments: [{ id, room_id, guest_id }],
-  //   outstation_guests: [{ id, full_name, phone, travel_city }]
-  // }
-  // ─────────────────────────────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -370,15 +436,6 @@ export default function AccommodationPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // handleAssign
-  // Assigns a guest to a room.
-  // POST /api/weddings/[weddingId]/accommodation/assign
-  // Body: { room_id, guest_id }
-  //
-  // Optimistic update: adds assignment to local state immediately,
-  // then refreshes from server to confirm.
-  // ─────────────────────────────────────────────────────────────────────────
   async function handleAssign(roomId, guestId) {
     try {
       const res = await fetch(`/api/weddings/${weddingId}/accommodation/assign`, {
@@ -387,19 +444,13 @@ export default function AccommodationPage() {
         body:    JSON.stringify({ room_id: roomId, guest_id: guestId }),
       });
       if (!res.ok) throw new Error("Failed to assign guest");
-      await fetchData(); // refresh
+      await fetchData();
     } catch (err) {
       setAssignError(err.message);
       setTimeout(() => setAssignError(""), 4000);
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // handleUnassign
-  // Removes a guest from a room.
-  // DELETE /api/weddings/[weddingId]/accommodation/assign
-  // Body: { room_id, guest_id }
-  // ─────────────────────────────────────────────────────────────────────────
   async function handleUnassign(roomId, guestId) {
     try {
       const res = await fetch(`/api/weddings/${weddingId}/accommodation/assign`, {
@@ -408,19 +459,13 @@ export default function AccommodationPage() {
         body:    JSON.stringify({ room_id: roomId, guest_id: guestId }),
       });
       if (!res.ok) throw new Error("Failed to unassign guest");
-      await fetchData(); // refresh
+      await fetchData();
     } catch (err) {
       setAssignError(err.message);
       setTimeout(() => setAssignError(""), 4000);
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // handleAddRoom
-  // Adds a new room to the wedding.
-  // POST /api/weddings/[weddingId]/rooms
-  // Body: { name, capacity, room_type }
-  // ─────────────────────────────────────────────────────────────────────────
   async function handleAddRoom(roomData) {
     try {
       const res = await fetch(`/api/weddings/${weddingId}/rooms`, {
@@ -436,13 +481,40 @@ export default function AccommodationPage() {
     }
   }
 
-  // ── Derived: build per-room guest list + unassigned guests ────────────────
+  // ── NEW: handleDeleteRoom ──────────────────────────────────────────────────
+  async function handleDeleteRoom(roomId) {
+    try {
+      const res = await fetch(`/api/weddings/${weddingId}/rooms/${roomId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete room");
+      await fetchData();
+    } catch (err) {
+      setAssignError(err.message);
+      setTimeout(() => setAssignError(""), 4000);
+    }
+  }
 
-  // Map guest_id → guest object for quick lookup
+  // ── NEW: handleEditRoom ────────────────────────────────────────────────────
+  async function handleEditRoom(roomId, roomData) {
+    try {
+      const res = await fetch(`/api/weddings/${weddingId}/rooms/${roomId}`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(roomData),
+      });
+      if (!res.ok) throw new Error("Failed to update room");
+      await fetchData();
+    } catch (err) {
+      setAssignError(err.message);
+      setTimeout(() => setAssignError(""), 4000);
+    }
+  }
+
+  // ── Derived state ──────────────────────────────────────────────────────────
   const guestMap = {};
   for (const g of outstationGuests) guestMap[g.id] = g;
 
-  // Map room_id → [guest, ...] using assignments
   const roomGuestMap = {};
   const assignedGuestIds = new Set();
   for (const a of assignments) {
@@ -454,16 +526,12 @@ export default function AccommodationPage() {
     }
   }
 
-  // Unassigned = outstation guests not in any room
   const unassignedGuests = outstationGuests.filter((g) => !assignedGuestIds.has(g.id));
 
-  // Stats
   const totalRooms     = rooms.length;
   const totalCapacity  = rooms.reduce((sum, r) => sum + (r.capacity ?? 0), 0);
   const totalAssigned  = assignedGuestIds.size;
   const totalAvailable = totalCapacity - totalAssigned;
-
-  // ─── RENDER ──────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -482,46 +550,40 @@ export default function AccommodationPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
 
-      {/* ── Header ── */}
       <div>
         <h1 className="text-2xl font-semibold text-navy">Accommodation</h1>
-        <p className="text-sm text-steel mt-1">
-          Manage rooms and assign outstation guests.
-        </p>
+        <p className="text-sm text-steel mt-1">Manage rooms and assign outstation guests.</p>
       </div>
 
       {error && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-600 text-sm
-          rounded-xl px-4 py-3">
+        <div className="bg-rose-50 border border-rose-200 text-rose-600 text-sm rounded-xl px-4 py-3">
           ⚠️ {error}
         </div>
       )}
 
-      {/* ── Summary Stats ── */}
+      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Total Rooms",      value: totalRooms,                color: "text-gray-800"   },
-          { label: "Total Capacity",   value: totalCapacity,             color: "text-gold" },
-          { label: "Guests Assigned",  value: totalAssigned,             color: "text-emerald-600"},
-          { label: "Spots Available",  value: totalAvailable,            color: "text-amber-500"  },
+          { label: "Total Rooms",     value: totalRooms,     color: "text-gray-800"    },
+          { label: "Total Capacity",  value: totalCapacity,  color: "text-gold"        },
+          { label: "Guests Assigned", value: totalAssigned,  color: "text-emerald-600" },
+          { label: "Spots Available", value: totalAvailable, color: "text-amber-500"   },
         ].map((stat) => (
-          <div key={stat.label}
-            className="bg-white rounded-xl border border-sand p-4 text-center">
+          <div key={stat.label} className="bg-white rounded-xl border border-sand p-4 text-center">
             <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
             <p className="text-xs text-steel mt-1">{stat.label}</p>
           </div>
         ))}
       </div>
 
-      {/* ── Unassigned outstation guests ── */}
       <UnassignedList guests={unassignedGuests} />
+
       {assignError && (
         <div className="bg-rose-50 border border-rose-200 text-rose-600 text-sm rounded-xl px-4 py-3">
           ⚠️ {assignError}
         </div>
       )}
 
-      {/* ── Rooms grid ── */}
       <div>
         <h2 className="text-base font-bold text-gray-800 mb-4">Rooms</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -533,9 +595,10 @@ export default function AccommodationPage() {
               unassignedGuests={unassignedGuests}
               onAssign={handleAssign}
               onUnassign={handleUnassign}
+              onDelete={handleDeleteRoom}
+              onEdit={handleEditRoom}
             />
           ))}
-          {/* Add room form */}
           <AddRoomForm onAdd={handleAddRoom} />
         </div>
       </div>
