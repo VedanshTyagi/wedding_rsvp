@@ -1,28 +1,45 @@
 'use client'
 
 // app/rsvp/page.jsx
-// Public RSVP page — guests land here from their invite link
-// URL: /rsvp?token=<invite_token>
-
+import { Suspense } from 'react'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
+// ── Default export: ONLY the Suspense wrapper ──────────────────────────────
 export default function RSVPPage() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        minHeight: '100vh', background: '#FBF8F2',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: 'Georgia, serif',
+      }}>
+        <p style={{ color: '#BFA054', fontSize: 14, letterSpacing: 2 }}>
+          Loading your invitation…
+        </p>
+      </div>
+    }>
+      <RSVPForm />
+    </Suspense>
+  )
+}
+
+// ── All logic lives here — useSearchParams is safe inside Suspense ─────────
+function RSVPForm() {
   const searchParams  = useSearchParams()
   const token         = searchParams.get('token')
 
-  const [step, setStep]         = useState('loading') // loading | form | success | error | already
-  const [guest, setGuest]       = useState(null)
-  const [functions, setFunctions] = useState([])
-  const [responses, setResponses] = useState({}) // { [functionId]: 'confirmed' | 'declined' }
-  const [dietary, setDietary]   = useState('')
-  const [plusOne, setPlusOne]   = useState(false)
+  const [step, setStep]               = useState('loading')
+  const [guest, setGuest]             = useState(null)
+  const [functions, setFunctions]     = useState([])
+  const [responses, setResponses]     = useState({})
+  const [dietary, setDietary]         = useState('')
+  const [plusOne, setPlusOne]         = useState(false)
   const [plusOneName, setPlusOneName] = useState('')
-  const [children, setChildren] = useState(0)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError]       = useState('')
+  const [children, setChildren]       = useState(0)
+  const [submitting, setSubmitting]   = useState(false)
+  const [error, setError]             = useState('')
 
-  // ── Load guest info from token ─────────────────────────────────────────────
   useEffect(() => {
     if (!token) { setStep('error'); setError('Invalid invite link.'); return }
 
@@ -44,14 +61,12 @@ export default function RSVPPage() {
         setPlusOneName(data.guest.plus_one_name || '')
         setChildren(data.guest.children_count || 0)
 
-        // pre-fill existing responses
         const existing = {}
         for (const fn of data.functions) {
           existing[fn.id] = fn.rsvp_status || 'pending'
         }
         setResponses(existing)
 
-        // check if already fully responded
         const allResponded = data.functions.every(
           (fn) => fn.rsvp_status === 'confirmed' || fn.rsvp_status === 'declined'
         )
@@ -65,7 +80,6 @@ export default function RSVPPage() {
     load()
   }, [token])
 
-  // ── Submit RSVP ────────────────────────────────────────────────────────────
   async function handleSubmit() {
     const unanswered = functions.filter(
       (fn) => !responses[fn.id] || responses[fn.id] === 'pending'
@@ -84,10 +98,10 @@ export default function RSVPPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token,
-          responses,         // { [functionId]: 'confirmed' | 'declined' }
+          responses,
           dietary,
-          plus_one:      plusOne,
-          plus_one_name: plusOneName,
+          plus_one:       plusOne,
+          plus_one_name:  plusOneName,
           children_count: Number(children),
         }),
       })
@@ -102,65 +116,49 @@ export default function RSVPPage() {
     }
   }
 
-  // ── Styles ─────────────────────────────────────────────────────────────────
+  // ── Shared styles ────────────────────────────────────────────────────────
   const page = {
-    minHeight: '100vh',
-    background: '#FBF8F2',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '2rem 1rem',
+    minHeight: '100vh', background: '#FBF8F2',
+    display: 'flex', alignItems: 'center',
+    justifyContent: 'center', padding: '2rem 1rem',
     fontFamily: 'Georgia, serif',
   }
-
   const card = {
-    background: '#fff',
-    border: '1px solid #EDD498',
-    borderRadius: 16,
-    padding: '2.5rem 2rem',
-    maxWidth: 480,
-    width: '100%',
+    background: '#fff', border: '1px solid #EDD498',
+    borderRadius: 16, padding: '2.5rem 2rem',
+    maxWidth: 480, width: '100%',
   }
-
   const label = {
-    fontSize: 11,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    color: '#9EA1AB',
-    marginBottom: 6,
-    display: 'block',
+    fontSize: 11, letterSpacing: 2, textTransform: 'uppercase',
+    color: '#9EA1AB', marginBottom: 6, display: 'block',
   }
-
   const input = {
-    width: '100%',
-    padding: '10px 12px',
-    border: '1px solid #EDD498',
-    borderRadius: 8,
-    fontSize: 14,
-    fontFamily: 'Georgia, serif',
-    color: '#1E2742',
-    background: '#FBF8F2',
-    boxSizing: 'border-box',
+    width: '100%', padding: '10px 12px',
+    border: '1px solid #EDD498', borderRadius: 8,
+    fontSize: 14, fontFamily: 'Georgia, serif',
+    color: '#1E2742', background: '#FBF8F2', boxSizing: 'border-box',
   }
 
-  // ── Loading ────────────────────────────────────────────────────────────────
+  // ── States ───────────────────────────────────────────────────────────────
   if (step === 'loading') return (
     <div style={page}>
-      <p style={{ color: '#BFA054', fontSize: 14, letterSpacing: 2 }}>Loading your invitation…</p>
+      <p style={{ color: '#BFA054', fontSize: 14, letterSpacing: 2 }}>
+        Loading your invitation…
+      </p>
     </div>
   )
 
-  // ── Error ──────────────────────────────────────────────────────────────────
   if (step === 'error') return (
     <div style={page}>
       <div style={{ ...card, textAlign: 'center' }}>
-        <p style={{ color: '#9A2143', fontSize: 18, marginBottom: 8 }}>Something went wrong</p>
+        <p style={{ color: '#9A2143', fontSize: 18, marginBottom: 8 }}>
+          Something went wrong
+        </p>
         <p style={{ color: '#9EA1AB', fontSize: 14 }}>{error}</p>
       </div>
     </div>
   )
 
-  // ── Already responded ──────────────────────────────────────────────────────
   if (step === 'already') return (
     <div style={page}>
       <div style={{ ...card, textAlign: 'center' }}>
@@ -177,13 +175,13 @@ export default function RSVPPage() {
     </div>
   )
 
-  // ── Success ────────────────────────────────────────────────────────────────
   if (step === 'success') return (
     <div style={page}>
       <div style={{ ...card, textAlign: 'center' }}>
         <div style={{
-          width: 64, height: 64, borderRadius: '50%', background: '#BFA054',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 64, height: 64, borderRadius: '50%',
+          background: '#BFA054', display: 'flex',
+          alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 1.5rem', fontSize: 28, color: '#fff',
         }}>✓</div>
         <h1 style={{ fontSize: 26, fontWeight: 400, color: '#1E2742', marginBottom: 8 }}>
@@ -197,12 +195,11 @@ export default function RSVPPage() {
     </div>
   )
 
-  // ── RSVP Form ──────────────────────────────────────────────────────────────
+  // ── Form ─────────────────────────────────────────────────────────────────
   return (
     <div style={page}>
       <div style={card}>
 
-        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <p style={{ color: '#BFA054', fontSize: 18, letterSpacing: 4, marginBottom: 8 }}>✦ ✦ ✦</p>
           <h1 style={{ fontSize: 26, fontWeight: 400, color: '#1E2742', marginBottom: 4 }}>
@@ -213,13 +210,13 @@ export default function RSVPPage() {
           </p>
         </div>
 
-        {/* Functions */}
         <div style={{ marginBottom: '1.5rem' }}>
           <span style={label}>Functions</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {functions.map((fn) => (
               <div key={fn.id} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between',
                 padding: '12px 16px', border: '1px solid #EDD498',
                 borderRadius: 10, background: '#FBF8F2',
               }}>
@@ -228,7 +225,8 @@ export default function RSVPPage() {
                   {fn.function_date && (
                     <p style={{ margin: 0, fontSize: 12, color: '#9EA1AB', marginTop: 2 }}>
                       {new Date(fn.function_date).toLocaleDateString('en-IN', {
-                        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+                        weekday: 'short', day: 'numeric',
+                        month: 'short', year: 'numeric'
                       })}
                       {fn.start_time ? ` · ${fn.start_time}` : ''}
                     </p>
@@ -240,12 +238,9 @@ export default function RSVPPage() {
                       key={status}
                       onClick={() => setResponses(r => ({ ...r, [fn.id]: status }))}
                       style={{
-                        padding: '6px 14px',
-                        borderRadius: 20,
-                        border: '1px solid',
-                        fontSize: 12,
-                        cursor: 'pointer',
-                        fontFamily: 'Georgia, serif',
+                        padding: '6px 14px', borderRadius: 20,
+                        border: '1px solid', fontSize: 12,
+                        cursor: 'pointer', fontFamily: 'Georgia, serif',
                         borderColor: responses[fn.id] === status
                           ? (status === 'confirmed' ? '#2a7a4a' : '#9A2143')
                           : '#EDD498',
@@ -267,7 +262,6 @@ export default function RSVPPage() {
           </div>
         </div>
 
-        {/* Dietary */}
         <div style={{ marginBottom: '1.2rem' }}>
           <label style={label}>Dietary preference</label>
           <select value={dietary} onChange={(e) => setDietary(e.target.value)} style={input}>
@@ -279,44 +273,33 @@ export default function RSVPPage() {
           </select>
         </div>
 
-        {/* Plus one */}
         {guest?.plus_one && (
           <div style={{ marginBottom: '1.2rem' }}>
             <label style={label}>Plus one</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-              <input
-                type="checkbox"
-                checked={plusOne}
+              <input type="checkbox" checked={plusOne}
                 onChange={(e) => setPlusOne(e.target.checked)}
                 style={{ width: 16, height: 16 }}
               />
               <span style={{ fontSize: 14, color: '#1E2742' }}>Bringing a plus one</span>
             </div>
             {plusOne && (
-              <input
-                type="text"
-                value={plusOneName}
+              <input type="text" value={plusOneName}
                 onChange={(e) => setPlusOneName(e.target.value)}
-                placeholder="Plus one's name"
-                style={input}
+                placeholder="Plus one's name" style={input}
               />
             )}
           </div>
         )}
 
-        {/* Children */}
         <div style={{ marginBottom: '1.5rem' }}>
           <label style={label}>Number of children attending</label>
-          <input
-            type="number"
-            min="0" max="10"
-            value={children}
-            onChange={(e) => setChildren(e.target.value)}
+          <input type="number" min="0" max="10"
+            value={children} onChange={(e) => setChildren(e.target.value)}
             style={{ ...input, width: 80 }}
           />
         </div>
 
-        {/* Error */}
         {error && (
           <div style={{
             padding: '10px 14px', borderRadius: 8, marginBottom: '1rem',
@@ -327,19 +310,14 @@ export default function RSVPPage() {
           </div>
         )}
 
-        {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          disabled={submitting}
-          style={{
-            width: '100%', padding: '14px',
-            background: submitting ? '#ccc' : '#9A2143',
-            color: '#fff', border: 'none', borderRadius: 10,
-            fontFamily: 'Georgia, serif', fontSize: 15,
-            cursor: submitting ? 'not-allowed' : 'pointer',
-            letterSpacing: 1,
-          }}
-        >
+        <button onClick={handleSubmit} disabled={submitting} style={{
+          width: '100%', padding: '14px',
+          background: submitting ? '#ccc' : '#9A2143',
+          color: '#fff', border: 'none', borderRadius: 10,
+          fontFamily: 'Georgia, serif', fontSize: 15,
+          cursor: submitting ? 'not-allowed' : 'pointer',
+          letterSpacing: 1,
+        }}>
           {submitting ? 'Submitting…' : 'Confirm RSVP'}
         </button>
 
