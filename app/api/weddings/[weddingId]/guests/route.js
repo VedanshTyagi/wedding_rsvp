@@ -3,20 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
   const { weddingId } = await params;
-<<<<<<< HEAD
-  const supabase = await createClient()
-=======
   const supabase = await createClient();
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
 
   try {
     const { data: guests, error: guestsError } = await supabase
       .from("guests")
-<<<<<<< HEAD
-      .select("id, full_name, email, phone, group_tag, dietary_pref, is_outstation, plus_one, plus_one_name, children_count")
-=======
       .select("id, full_name, email, phone, group_tag, dietary_preference, is_outstation, plus_one, plus_one_name, children_count")
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
       .eq("wedding_id", weddingId)
       .order("full_name", { ascending: true });
 
@@ -38,12 +30,7 @@ export async function GET(request, { params }) {
         .in("guest_id", guests.map((g) => g.id));
       if (rsvpError) throw rsvpError;
       rsvpRows = data ?? [];
-<<<<<<< HEAD
-}
-
-=======
     }
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
 
     const rsvpLookup = {};
     for (const row of rsvpRows) {
@@ -59,11 +46,7 @@ export async function GET(request, { params }) {
       return {
         ...guest,
         name:           guest.full_name,
-<<<<<<< HEAD
-        dietary:        guest.dietary_pref,
-=======
         dietary:        guest.dietary_preference,
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
         outstation:     guest.is_outstation,
         plus_one:       guest.plus_one       ?? false,
         plus_one_name:  guest.plus_one_name  ?? null,
@@ -87,13 +70,8 @@ export async function GET(request, { params }) {
 }
 
 export async function POST(request, { params }) {
-<<<<<<< HEAD
-  const { weddingId } = params;
-  const supabase = createClient();
-=======
   const { weddingId } = await params;
   const supabase = await createClient();
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
 
   try {
     const body = await request.json();
@@ -109,15 +87,6 @@ export async function POST(request, { params }) {
     const { data: guest, error: guestError } = await supabase
       .from("guests")
       .insert({
-<<<<<<< HEAD
-        wedding_id:    weddingId,
-        full_name:     name.trim(),
-        phone:         phone?.trim()  ?? null,
-        email:         email?.trim()  ?? null,
-        group_tag:     group_tag      ?? null,
-        dietary_pref:  dietary        ?? null,
-        is_outstation: outstation     ?? false,
-=======
         wedding_id:         weddingId,
         full_name:          name.trim(),
         phone:              phone?.trim()  ?? null,
@@ -125,7 +94,6 @@ export async function POST(request, { params }) {
         group_tag:          group_tag      ?? null,
         dietary_preference: dietary        ?? null,
         is_outstation:      outstation     ?? false,
->>>>>>> 42b877f20b36d0a141e5fb7c36bc88bb1a1da2e1
       })
       .select("id")
       .single();
