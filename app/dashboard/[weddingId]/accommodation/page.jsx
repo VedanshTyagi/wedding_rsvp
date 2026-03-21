@@ -68,8 +68,8 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
   };
 
   return (
-    <div className={`bg-white rounded-2xl border shadow-sm p-5 flex flex-col gap-4
-      ${isFull ? "border-rose-100" : "border-gray-100"}`}>
+    <div className={`bg-white rounded-xl border p-5 flex flex-col gap-4
+      ${isFull ? "border-rose-200" : "border-sand"}`}>
 
       {/* Room header */}
       <div className="flex items-start justify-between gap-2">
@@ -115,9 +115,9 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
           {assignedGuests.map((guest) => (
             <div key={guest.id}
               className="flex items-center justify-between gap-2 px-3 py-2
-                bg-cream rounded-xl border border-gray-100">
+                bg-cream rounded-xl border border-sand">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600
+                <span className="w-6 h-6 rounded-full bg-white text-crimson border border-sand
                   text-xs flex items-center justify-center font-bold flex-shrink-0">
                   {guest.full_name?.[0]?.toUpperCase() ?? "?"}
                 </span>
@@ -149,7 +149,7 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
             value={selectedGuest}
             onChange={(e) => setSelectedGuest(e.target.value)}
             className="flex-1 px-3 py-2 border border-sand rounded-xl text-sm
-              bg-white text-gray-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              bg-cream text-navy focus:outline-none focus:border-gold"
           >
             <option value="">Assign a guest…</option>
             {unassignedGuests.map((g) => (
@@ -159,8 +159,8 @@ function RoomCard({ room, assignedGuests, unassignedGuests, onAssign, onUnassign
           <button
             onClick={handleAssign}
             disabled={!selectedGuest || assigning}
-            className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300
-              text-white text-sm font-semibold rounded-xl transition"
+            className="px-3 py-2 bg-crimson hover:bg-opacity-90 disabled:opacity-50
+              text-white text-sm font-semibold rounded-xl transition-colors"
           >
             {assigning ? "…" : "Assign"}
           </button>
@@ -202,8 +202,8 @@ function AddRoomForm({ onAdd }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full py-4 border-2 border-dashed border-sand rounded-2xl
-          text-sm text-steel hover:border-indigo-300 hover:text-indigo-500
+        className="w-full py-4 border-2 border-dashed border-sand rounded-xl
+          text-sm text-steel hover:border-gold hover:text-navy
           flex items-center justify-center gap-2 transition"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -216,7 +216,7 @@ function AddRoomForm({ onAdd }) {
 
   return (
     <form onSubmit={handleSubmit}
-      className="bg-white rounded-2xl border border-indigo-100 shadow-sm p-5 space-y-4">
+      className="bg-white rounded-xl border border-sand p-5 space-y-4">
       <h3 className="font-bold text-gray-800 text-sm">New Room</h3>
 
       <div className="flex flex-col gap-1.5">
@@ -226,8 +226,8 @@ function AddRoomForm({ onAdd }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Room 101, Garden Suite"
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm
-            focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          className="px-3 py-2 border border-sand rounded-lg text-sm bg-cream
+            focus:outline-none focus:border-gold"
         />
       </div>
 
@@ -239,8 +239,8 @@ function AddRoomForm({ onAdd }) {
             min="1" max="20"
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm
-              focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            className="px-3 py-2 border border-sand rounded-lg text-sm bg-cream
+              focus:outline-none focus:border-gold"
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -248,8 +248,8 @@ function AddRoomForm({ onAdd }) {
           <select
             value={roomType}
             onChange={(e) => setRoomType(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm
-              bg-white focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            className="px-3 py-2 border border-sand rounded-lg text-sm
+              bg-cream focus:outline-none focus:border-gold"
           >
             <option value="single">Single</option>
             <option value="double">Double</option>
@@ -261,13 +261,13 @@ function AddRoomForm({ onAdd }) {
 
       <div className="flex gap-2">
         <button type="submit" disabled={saving || !name.trim()}
-          className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300
-            text-white text-sm font-semibold rounded-xl transition">
+          className="flex-1 py-2 bg-crimson hover:bg-opacity-90 disabled:opacity-50
+            text-white text-sm font-semibold rounded-xl transition-colors">
           {saving ? "Saving…" : "Add Room"}
         </button>
         <button type="button" onClick={() => setOpen(false)}
-          className="px-4 py-2 bg-white border border-gray-300 text-navy
-            text-sm rounded-xl hover:bg-cream transition">
+          className="px-4 py-2 bg-white border border-sand text-navy
+            text-sm rounded-xl hover:bg-cream transition-colors">
           Cancel
         </button>
       </div>
@@ -291,10 +291,10 @@ function UnassignedList({ guests }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-amber-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-amber-50 flex items-center justify-between">
+    <div className="bg-white rounded-xl border border-sand overflow-hidden">
+      <div className="px-5 py-4 border-b border-sand bg-cream flex items-center justify-between">
         <h3 className="font-bold text-gray-800 text-sm">Unassigned Outstation Guests</h3>
-        <span className="px-2 py-0.5 bg-amber-100 text-amber-700 border border-amber-200
+        <span className="px-2 py-0.5 bg-white text-navy border border-sand
           rounded-full text-xs font-semibold">
           {guests.length} need rooms
         </span>
@@ -303,7 +303,7 @@ function UnassignedList({ guests }) {
         {guests.map((guest) => (
           <div key={guest.id}
             className="flex items-center gap-3 px-5 py-3 hover:bg-cream transition">
-            <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-600
+            <span className="w-8 h-8 rounded-full bg-white text-crimson border border-sand
               text-sm flex items-center justify-center font-bold flex-shrink-0">
               {guest.full_name?.[0]?.toUpperCase() ?? "?"}
             </span>
@@ -480,11 +480,11 @@ export default function AccommodationPage() {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
 
       {/* ── Header ── */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Accommodation</h1>
+        <h1 className="text-2xl font-semibold text-navy">Accommodation</h1>
         <p className="text-sm text-steel mt-1">
           Manage rooms and assign outstation guests.
         </p>
@@ -501,12 +501,12 @@ export default function AccommodationPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: "Total Rooms",      value: totalRooms,                color: "text-gray-800"   },
-          { label: "Total Capacity",   value: totalCapacity,             color: "text-indigo-600" },
+          { label: "Total Capacity",   value: totalCapacity,             color: "text-gold" },
           { label: "Guests Assigned",  value: totalAssigned,             color: "text-emerald-600"},
           { label: "Spots Available",  value: totalAvailable,            color: "text-amber-500"  },
         ].map((stat) => (
           <div key={stat.label}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+            className="bg-white rounded-xl border border-sand p-4 text-center">
             <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
             <p className="text-xs text-steel mt-1">{stat.label}</p>
           </div>

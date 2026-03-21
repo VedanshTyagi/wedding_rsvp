@@ -260,8 +260,8 @@ Respond ONLY with valid JSON (no markdown, no backticks):
           </button>
 
           <div>
-            <h2 className="text-base font-bold text-gray-900">AI Card Generator</h2>
-            <p className="text-xs text-gray-400 mt-1">
+            <h2 className="text-base text-[#2c1810]">AI Card Generator</h2>
+            <p className="text-xs text-[#9e8878] mt-1">
               For: <span className="font-semibold text-gray-600">{guest?.full_name}</span>
               <br/>Functions: {guestFns.map(f => f.name).join(", ")}
             </p>
@@ -271,7 +271,7 @@ Respond ONLY with valid JSON (no markdown, no backticks):
           {!aiDone && (
             <div className="space-y-3">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-gray-600">Describe your card vision</label>
+                <label className="text-xs text-[#9e8878]">Describe your card vision</label>
                 <textarea
                   value={vision}
                   onChange={e => setVision(e.target.value)}
@@ -285,7 +285,7 @@ Respond ONLY with valid JSON (no markdown, no backticks):
                 onClick={generateWithAI}
                 disabled={generating}
                 className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300
-                  text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-2">
+                  text-white text-sm rounded-xl transition flex items-center justify-center gap-2">
                 {generating ? (
                   <>
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -305,7 +305,7 @@ Respond ONLY with valid JSON (no markdown, no backticks):
           {/* AI Vision result */}
           {aiDone && aiVision && (
             <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 space-y-2">
-              <p className="text-xs font-semibold text-amber-700">✦ AI Design Vision</p>
+              <p className="text-xs text-amber-700">✦ AI Design Vision</p>
               <p className="text-xs text-amber-800 leading-relaxed">{aiVision}</p>
               <button onClick={() => { setAiDone(false); setAiVision(""); }}
                 className="text-xs text-amber-600 underline">
@@ -318,7 +318,7 @@ Respond ONLY with valid JSON (no markdown, no backticks):
           {aiDone && (
             <>
               <div className="border-t border-gray-100 pt-4">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <p className="text-xs text-[#9e8878] mb-3">
                   Customize Further
                 </p>
 
@@ -330,8 +330,8 @@ Respond ONLY with valid JSON (no markdown, no backticks):
                       <button key={key} onClick={() => setCurStyle(key)}
                         className={`text-xs py-1.5 px-1 rounded-lg border transition
                           ${curStyle === key
-                            ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                            : "border-gray-200 text-gray-500 hover:border-gray-300"}`}>
+                            ? "border-[#2c1810] bg-[#fdf5ee] text-[#2c1810]"
+                            : "border-sand text-[#6f5a4a] hover:border-[#c9a96e]"}`}>
                         {key.charAt(0).toUpperCase() + key.slice(1)}
                       </button>
                     ))}
@@ -361,8 +361,8 @@ Respond ONLY with valid JSON (no markdown, no backticks):
                         style={{ fontFamily: fv }}
                         className={`py-1.5 text-xs rounded-lg border transition
                           ${curFont === key
-                            ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                            : "border-gray-200 text-gray-500"}`}>
+                            ? "border-[#2c1810] bg-[#fdf5ee] text-[#2c1810]"
+                            : "border-sand text-[#6f5a4a]"}`}>
                         {key}
                       </button>
                     ))}

@@ -194,7 +194,7 @@ export default function CardsHubPage({ params }) {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-cream flex items-center justify-center">
       <div className="flex flex-col items-center gap-3 text-gray-400">
         <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
@@ -206,11 +206,11 @@ export default function CardsHubPage({ params }) {
   );
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
 
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Invitation Cards</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-semibold text-navy">Invitation Cards</h1>
+        <p className="text-sm text-steel mt-1">
           Set up wedding details → Bulk send emails → Or build a custom card per guest.
         </p>
       </div>
@@ -222,15 +222,15 @@ export default function CardsHubPage({ params }) {
       )}
 
       {/* ── SECTION 1: Wedding Details ── */}
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <section className="bg-white rounded-xl border border-sand p-6 space-y-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+            <span className="w-6 h-6 rounded-full bg-crimson text-white text-xs flex items-center justify-center font-bold">1</span>
             Wedding Details
           </h2>
           <button type="button" onClick={saveWeddingDetails} disabled={saving}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400
-              text-white text-sm font-semibold rounded-xl transition">
+            className="px-4 py-2 bg-crimson hover:bg-opacity-90 disabled:opacity-60
+              text-white text-sm font-semibold rounded-lg transition-colors">
             {saving ? "Saving…" : saved ? "✓ Saved!" : "Save Details"}
           </button>
         </div>
@@ -257,8 +257,8 @@ export default function CardsHubPage({ params }) {
               <input type="text" value={wedding[key]}
                 onChange={e => setWedding(w => ({ ...w, [key]: e.target.value }))}
                 placeholder={ph}
-                className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm
-                  focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream
+                  focus:outline-none focus:border-gold"/>
             </div>
           ))}
         </div>
@@ -268,7 +268,7 @@ export default function CardsHubPage({ params }) {
             <p className="text-xs font-semibold text-gray-600 mb-2">Functions in this wedding:</p>
             <div className="flex flex-wrap gap-2">
               {functions.map(fn => (
-                <div key={fn.id} className="px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-700">
+                <div key={fn.id} className="px-3 py-1.5 bg-cream border border-sand rounded-xl text-xs text-navy">
                   <span className="font-semibold">{fn.name}</span>
                   {fn.function_date && <span className="opacity-60 ml-1">· {fn.function_date}</span>}
                   {fn.start_time    && <span className="opacity-60 ml-1">· {fn.start_time}</span>}
@@ -281,10 +281,10 @@ export default function CardsHubPage({ params }) {
       </section>
 
       {/* ── SECTION 2: BULK EMAIL SEND ── */}
-      <section className="bg-white rounded-2xl border border-blue-100 shadow-sm p-6 space-y-4">
+      <section className="bg-white rounded-xl border border-sand p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+            <span className="w-6 h-6 rounded-full bg-crimson text-white text-xs flex items-center justify-center font-bold">2</span>
             Bulk Email Send
           </h2>
           <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -304,25 +304,25 @@ export default function CardsHubPage({ params }) {
               <input type="text" value={bulkSearch}
                 onChange={e => setBulkSearch(e.target.value)}
                 placeholder="Search guests…"
-                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm
-                  focus:ring-2 focus:ring-blue-400 focus:outline-none"/>
+                className="flex-1 px-3 py-2 border border-sand rounded-lg text-sm bg-cream
+                  focus:outline-none focus:border-gold"/>
               <button type="button" onClick={toggleAllBulk}
-                className="px-3 py-2 text-xs font-medium border border-gray-200
-                  rounded-lg hover:bg-gray-50 text-gray-600 transition whitespace-nowrap">
+                className="px-3 py-2 text-xs font-medium border border-sand
+                  rounded-lg hover:bg-cream text-steel transition whitespace-nowrap">
                 {bulkSelected.length === bulkFilteredGuests.length ? "Deselect All" : "Select All"}
               </button>
             </div>
 
             {/* Guest checkboxes */}
-            <div className="border border-gray-100 rounded-xl overflow-hidden divide-y divide-gray-50 max-h-72 overflow-y-auto">
+            <div className="border border-sand rounded-xl overflow-hidden divide-y divide-gray-50 max-h-72 overflow-y-auto bg-white">
               {bulkFilteredGuests.map(guest => (
                 <div key={guest.id}
                   onClick={() => toggleBulk(guest.id)}
                   className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition
-                    ${bulkSelected.includes(guest.id) ? "bg-blue-50" : "hover:bg-gray-50"}`}>
+                    ${bulkSelected.includes(guest.id) ? "bg-cream" : "hover:bg-cream"}`}>
                   {/* Checkbox */}
                   <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition
-                    ${bulkSelected.includes(guest.id) ? "border-blue-600 bg-blue-600" : "border-gray-300"}`}>
+                    ${bulkSelected.includes(guest.id) ? "border-crimson bg-crimson" : "border-sand bg-white"}`}>
                     {bulkSelected.includes(guest.id) && (
                       <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/>
@@ -352,7 +352,7 @@ export default function CardsHubPage({ params }) {
             {bulkSending && (
               <div className="space-y-2">
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                  <div className="h-full bg-gold rounded-full transition-all duration-300"
                     style={{ width: `${bulkProgress}%` }}/>
                 </div>
                 <p className="text-xs text-gray-500 text-center">
@@ -387,7 +387,7 @@ export default function CardsHubPage({ params }) {
             <button type="button" onClick={handleBulkSend}
               disabled={bulkSelected.length === 0 || bulkSending}
               className="w-full flex items-center justify-center gap-2 py-3.5
-                bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed
+                bg-crimson hover:bg-opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed
                 text-white font-bold text-sm rounded-xl transition">
               {bulkSending ? (
                 <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -407,24 +407,24 @@ export default function CardsHubPage({ params }) {
       </section>
 
       {/* ── BULK CARD SENDER LINK ── */}
-      <section className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl p-6 flex items-center justify-between gap-4">
+      <section className="bg-white border border-sand rounded-xl p-6 flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-bold text-white">Bulk Card Sender</h2>
-          <p className="text-sm text-indigo-100 mt-1">
+          <h2 className="text-base font-semibold text-navy">Bulk Card Sender</h2>
+          <p className="text-sm text-steel mt-1">
             Pick a card style → select all guests → send designed cards to everyone at once via Email or WhatsApp.
           </p>
         </div>
         <button type="button"
           onClick={() => router.push(`/dashboard/${weddingId}/cards/bulk`)}
-          className="flex-shrink-0 px-5 py-3 bg-white text-indigo-700 font-bold text-sm rounded-xl hover:bg-indigo-50 transition">
+          className="flex-shrink-0 px-5 py-3 bg-crimson text-white font-semibold text-sm rounded-lg hover:bg-opacity-90 transition-colors">
           Open Bulk Sender →
         </button>
       </section>
 
       {/* ── SECTION 3: Pick Single Guest for Custom Card ── */}
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+      <section className="bg-white rounded-xl border border-sand p-6 space-y-4">
         <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">3</span>
+          <span className="w-6 h-6 rounded-full bg-crimson text-white text-xs flex items-center justify-center font-bold">3</span>
           Custom Card Builder
         </h2>
         <p className="text-xs text-gray-400">
@@ -435,26 +435,26 @@ export default function CardsHubPage({ params }) {
           <input type="text" value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search name or phone…"
-            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm
-              focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+            className="flex-1 px-3 py-2 border border-sand rounded-lg text-sm bg-cream
+              focus:outline-none focus:border-gold"/>
           <select value={filterGroup} onChange={e => setFilterGroup(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white
-              focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+            className="px-3 py-2 border border-sand rounded-lg text-sm bg-white
+              focus:outline-none focus:border-gold">
             <option value="">All Groups</option>
             {uniqueGroups.map(g => <option key={g} value={g}>{g}</option>)}
           </select>
         </div>
 
-        <div className="border border-gray-100 rounded-xl overflow-hidden divide-y divide-gray-50 max-h-96 overflow-y-auto">
+        <div className="border border-sand rounded-xl overflow-hidden divide-y divide-gray-50 max-h-96 overflow-y-auto bg-white">
           {filteredGuests.length === 0 ? (
             <div className="text-center py-10 text-gray-400 text-sm">No guests found.</div>
           ) : filteredGuests.map(guest => (
             <div key={guest.id}
               onClick={() => setSelectedGuest(selectedGuest?.id === guest.id ? null : guest)}
               className={`flex items-start gap-3 px-4 py-3 cursor-pointer transition
-                ${selectedGuest?.id === guest.id ? "bg-indigo-50" : "hover:bg-gray-50"}`}>
+                ${selectedGuest?.id === guest.id ? "bg-cream" : "hover:bg-cream"}`}>
               <span className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5
-                ${selectedGuest?.id === guest.id ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600"}`}>
+                ${selectedGuest?.id === guest.id ? "bg-crimson text-white" : "bg-cream text-navy"}`}>
                 {guest.full_name?.[0]?.toUpperCase() ?? "?"}
               </span>
               <div className="flex-1 min-w-0">
@@ -479,7 +479,7 @@ export default function CardsHubPage({ params }) {
                 </div>
               </div>
               <div className={`w-5 h-5 rounded-full border-2 mt-1 flex-shrink-0 flex items-center justify-center transition
-                ${selectedGuest?.id === guest.id ? "border-indigo-600 bg-indigo-600" : "border-gray-300"}`}>
+                ${selectedGuest?.id === guest.id ? "border-crimson bg-crimson" : "border-sand"}`}>
                 {selectedGuest?.id === guest.id && (
                   <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/>
@@ -493,21 +493,21 @@ export default function CardsHubPage({ params }) {
 
       {/* ── SECTION 4: Choose Card Mode ── */}
       {selectedGuest && (
-        <section className="bg-white rounded-2xl border border-indigo-100 shadow-sm p-6 space-y-4">
+        <section className="bg-white rounded-xl border border-sand p-6 space-y-4">
           <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">4</span>
+            <span className="w-6 h-6 rounded-full bg-crimson text-white text-xs flex items-center justify-center font-bold">4</span>
             Create Card for {selectedGuest.full_name}
           </h2>
 
-          <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
-            <p className="text-xs font-semibold text-indigo-700 mb-2">Card will show only:</p>
+          <div className="bg-cream border border-sand rounded-xl p-4">
+            <p className="text-xs font-semibold text-navy mb-2">Card will show only:</p>
             {selectedGuest.invited_functions.length === 0
               ? <p className="text-xs text-rose-500">⚠ No functions assigned. Visit Guest List to assign functions first.</p>
               : (
                 <div className="space-y-1">
                   {selectedGuest.invited_functions.map(fn => (
-                    <div key={fn.id} className="text-xs text-indigo-800 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0"/>
+                    <div key={fn.id} className="text-xs text-navy flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0"/>
                       <span className="font-semibold">{fn.name}</span>
                       {fn.function_date && <span className="opacity-60">· {fn.function_date}</span>}
                       {fn.start_time    && <span className="opacity-60">· {fn.start_time}</span>}
@@ -522,22 +522,22 @@ export default function CardsHubPage({ params }) {
           {selectedGuest.invited_functions.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button type="button" onClick={() => goManual(selectedGuest)}
-                className="flex flex-col items-center gap-3 p-6 border-2 border-gray-200
-                  hover:border-indigo-400 hover:bg-indigo-50 rounded-2xl transition group text-center">
-                <div className="w-12 h-12 rounded-2xl bg-gray-100 group-hover:bg-indigo-100 flex items-center justify-center text-2xl transition">🎨</div>
+                className="flex flex-col items-center gap-3 p-6 border-2 border-sand
+                  hover:border-gold hover:bg-cream rounded-xl transition group text-center">
+                <div className="w-12 h-12 rounded-xl bg-cream group-hover:bg-white flex items-center justify-center text-2xl transition">🎨</div>
                 <div>
                   <p className="font-bold text-gray-900 text-sm">Manual Card Builder</p>
                   <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                     12 styles · 12 palettes · 4 fonts · custom text · motifs · borders · sliders
                   </p>
                 </div>
-                <span className="text-xs text-indigo-600 font-semibold">Open Builder →</span>
+                <span className="text-xs text-crimson font-semibold">Open Builder →</span>
               </button>
 
               <button type="button" onClick={() => goAI(selectedGuest)}
-                className="flex flex-col items-center gap-3 p-6 border-2 border-gray-200
-                  hover:border-amber-400 hover:bg-amber-50 rounded-2xl transition group text-center">
-                <div className="w-12 h-12 rounded-2xl bg-gray-100 group-hover:bg-amber-100 flex items-center justify-center text-2xl transition">✨</div>
+                className="flex flex-col items-center gap-3 p-6 border-2 border-sand
+                  hover:border-gold hover:bg-cream rounded-xl transition group text-center">
+                <div className="w-12 h-12 rounded-xl bg-cream group-hover:bg-white flex items-center justify-center text-2xl transition">✨</div>
                 <div>
                   <p className="font-bold text-gray-900 text-sm">AI Card Generator</p>
                   <p className="text-xs text-gray-500 mt-1 leading-relaxed">

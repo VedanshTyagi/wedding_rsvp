@@ -9,20 +9,21 @@ export default function CheckInPage() {
   const { weddingId } = useParams()
   const supabase = createClient()
 
-  const [search, setSearch] = useState('')
-  const [results, setResults] = useState([])
-  const [functions, setFunctions] = useState([])
+  const [search,           setSearch]           = useState('')
+  const [results,          setResults]          = useState([])
+  const [functions,        setFunctions]        = useState([])
   const [selectedFunction, setSelectedFunction] = useState('')
-  const [checkedIn, setCheckedIn] = useState([])
-  const [recentArrivals, setRecentArrivals] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [checkedCount, setCheckedCount] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [checkingIn, setCheckingIn] = useState(null)
+  const [checkedIn,        setCheckedIn]        = useState([])
+  const [recentArrivals,   setRecentArrivals]   = useState([])
+  const [totalCount,       setTotalCount]       = useState(0)
+  const [checkedCount,     setCheckedCount]     = useState(0)
+  const [loading,          setLoading]          = useState(false)
+  const [checkingIn,       setCheckingIn]       = useState(null)
 
   // Load functions
   useEffect(() => {
     async function loadFunctions() {
+      if (!weddingId) return
       const { data } = await supabase
         .from('wedding_functions')
         .select('id, name, function_date')
@@ -31,12 +32,12 @@ export default function CheckInPage() {
       setFunctions(data || [])
       if (data?.length > 0) setSelectedFunction(data[0].id)
     }
-    if (weddingId) loadFunctions()
+    loadFunctions()
   }, [weddingId])
 
   // Load check-in counts + recent arrivals
   const loadStats = useCallback(async () => {
-    if (!selectedFunction) return
+    if (!selectedFunction || !weddingId) return
 
     const [{ count: total }, { count: checked }, { data: recentLogs }] = await Promise.all([
       supabase
@@ -55,7 +56,7 @@ export default function CheckInPage() {
         .limit(10),
     ])
 
-    // fetch guest details separately to avoid FK join issue
+    // Fetch guest details separately to avoid FK join issues
     let recentWithGuests = []
     if (recentLogs?.length > 0) {
       const guestIds = recentLogs.map(r => r.guest_id).filter(Boolean)
@@ -105,7 +106,7 @@ export default function CheckInPage() {
       setLoading(true)
       const { data } = await supabase
         .from('guests')
-        .select('id, full_name, phone, group_tag, dietary_pref')
+        .select('id, full_name, phone, group_tag, dietary_preference')
         .eq('wedding_id', weddingId)
         .or(`full_name.ilike.%${search}%,phone.ilike.%${search}%`)
         .limit(8)
@@ -120,9 +121,9 @@ export default function CheckInPage() {
     if (checkedIn.includes(guest.id)) return
     setCheckingIn(guest.id)
     await supabase.from('checkin_log').insert({
-      guest_id: guest.id,
+      guest_id:    guest.id,
       function_id: selectedFunction,
-      method: 'manual',
+      method:      'manual',
     })
     setCheckingIn(null)
     setSearch('')
@@ -151,7 +152,7 @@ export default function CheckInPage() {
       <select
         value={selectedFunction}
         onChange={e => setSelectedFunction(e.target.value)}
-        className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+        className="w-full px-3 py-2.5 text-sm border border-sand rounded-lg bg-white text-[#4a3728] focus:outline-none focus:border-[#c9a96e]"
       >
         <option value="">Select function...</option>
         {functions.map(f => (
@@ -160,22 +161,20 @@ export default function CheckInPage() {
       </select>
 
       {/* Live counter */}
-      <div className="border border-border rounded-xl p-5 space-y-3">
+      <div className="border border-sand rounded-xl bg-white p-5 space-y-3">
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">Arrived</p>
-            <p className="text-4xl font-display font-semibold mt-1">
+            <p className="text-xs text-[#9e8878]">Arrived</p>
+            <p className="text-4xl mt-1 text-[#2c1810]">
               {checkedCount}
-              <span className="text-lg text-muted-foreground font-normal"> / {totalCount}</span>
+              <span className="text-lg text-gray-400 font-normal"> / {totalCount}</span>
             </p>
           </div>
-          <p className="text-3xl font-display font-semibold text-primary">{percentage}%</p>
+          <p className="text-3xl text-[#4a3728]">{percentage}%</p>
         </div>
-
-        {/* Progress bar */}
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
+        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-primary rounded-full transition-all duration-500"
+            className="h-full bg-[#2c1810] rounded-full transition-all duration-500"
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -188,41 +187,36 @@ export default function CheckInPage() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by name or phone..."
-          className="w-full px-4 py-3 text-base border border-border rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full px-4 py-3 text-base border border-sand rounded-xl text-[#4a3728] focus:outline-none focus:border-[#c9a96e]"
           autoComplete="off"
         />
 
-        {/* Search results */}
-        {loading && (
-          <p className="text-xs text-muted-foreground px-1">Searching...</p>
-        )}
+        {loading && <p className="text-xs text-gray-400 px-1">Searching...</p>}
+
         {results.length > 0 && (
-          <div className="border border-border rounded-xl overflow-hidden divide-y divide-border">
+          <div className="border border-sand rounded-xl overflow-hidden divide-y divide-[#f0e8df] bg-white">
             {results.map(guest => {
               const isChecked = checkedIn.includes(guest.id)
               return (
-                <div
-                  key={guest.id}
-                  className={`flex items-center justify-between px-4 py-3 transition-colors ${
-                    isChecked ? 'bg-green-50' : 'hover:bg-muted/30'
-                  }`}
-                >
+                <div key={guest.id}
+                  className={`flex items-center justify-between px-4 py-3 transition-colors
+                    ${isChecked ? 'bg-[#f6fbf6]' : 'hover:bg-[#fdf5ee]'}`}>
                   <div>
-                    <p className="text-sm font-medium">{guest.full_name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-[#2c1810]">{guest.full_name}</p>
+                    <p className="text-xs text-[#9e8878]">
                       {guest.phone || ''}{guest.group_tag ? ` · ${guest.group_tag}` : ''}
                     </p>
                   </div>
                   {isChecked ? (
-                    <span className="text-xs font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                    <span className="text-xs text-green-700 bg-green-100 px-3 py-1 rounded-full">
                       Checked in
                     </span>
                   ) : (
                     <button
                       onClick={() => handleCheckIn(guest)}
                       disabled={checkingIn === guest.id}
-                      className="text-sm px-4 py-1.5 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-95"
-                    >
+                      className="text-sm px-4 py-1.5 bg-[#2c1810] text-white rounded-full
+                        hover:bg-[#4a3728] transition-colors disabled:opacity-50 active:scale-95">
                       {checkingIn === guest.id ? '...' : 'Check in'}
                     </button>
                   )}
@@ -236,20 +230,20 @@ export default function CheckInPage() {
       {/* Recent arrivals */}
       {recentArrivals.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Recent arrivals</h2>
-          <div className="border border-border rounded-xl overflow-hidden divide-y divide-border">
+          <h2 className="text-sm text-[#9e8878]">Recent arrivals</h2>
+          <div className="border border-sand rounded-xl overflow-hidden divide-y divide-[#f0e8df] bg-white">
             {recentArrivals.map((log, i) => (
               <div key={i} className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-medium">
+                  <div className="w-8 h-8 rounded-full bg-[#fdf5ee] flex items-center justify-center text-[#4a3728] text-xs">
                     {log.guests?.full_name?.[0] || '?'}
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{log.guests?.full_name || 'Unknown'}</p>
-                    <p className="text-xs text-muted-foreground">{log.guests?.group_tag || ''}</p>
+                    <p className="text-sm text-[#2c1810]">{log.guests?.full_name || 'Unknown'}</p>
+                    <p className="text-xs text-[#9e8878]">{log.guests?.group_tag || ''}</p>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-400">
                   {new Date(log.created_at).toLocaleTimeString('en-IN', {
                     hour: '2-digit',
                     minute: '2-digit',

@@ -295,8 +295,8 @@ export default function GuestsPage({ params }) {
             <button key={fn.id} type="button" onClick={() => toggleFn(fn.id, fnIds, setFnIds)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition
                 ${fnIds.includes(fn.id)
-                  ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                  : "border-gray-200 text-gray-500 hover:border-gray-300"}`}>
+                  ? "border-gold bg-cream text-navy"
+                  : "border-sand text-steel hover:border-gold bg-white"}`}>
               {fn.name}
             </button>
           ))}
@@ -309,18 +309,18 @@ export default function GuestsPage({ params }) {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Guest List</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{filteredGuests.length} of {guests.length} guests</p>
+          <h1 className="text-2xl font-semibold text-navy">Guest List</h1>
+          <p className="text-sm text-steel mt-1">{filteredGuests.length} of {guests.length} guests</p>
         </div>
         <div className="flex items-center gap-3">
           <button type="button"
             onClick={() => { setShowAddForm(v => !v); setAddError(""); setAddSuccess(""); }}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold transition">
+            className="flex items-center gap-2 px-4 py-2 bg-crimson hover:bg-opacity-90 text-white rounded-lg text-sm transition-colors">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
             </svg>
@@ -328,7 +328,7 @@ export default function GuestsPage({ params }) {
           </button>
           <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleCSVImport}/>
           <button type="button" onClick={() => fileInputRef.current?.click()} disabled={importing}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition">
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-sand rounded-lg text-sm text-navy hover:bg-cream disabled:opacity-50 transition-colors">
             {importing
               ? <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Importing…</>
               : <><svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</>}
@@ -338,8 +338,8 @@ export default function GuestsPage({ params }) {
 
       {/* ── ADD GUEST FORM ── */}
       {showAddForm && (
-        <div className="bg-white border border-indigo-100 rounded-2xl shadow-sm p-6 space-y-4">
-          <h2 className="text-sm font-bold text-gray-800">Add New Guest</h2>
+        <div className="bg-white border border-sand rounded-xl p-6 space-y-4">
+          <h2 className="text-sm font-semibold text-navy">Add New Guest</h2>
           <form onSubmit={handleAddGuest} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
@@ -347,28 +347,28 @@ export default function GuestsPage({ params }) {
                 <input type="text" required value={newGuest.full_name}
                   onChange={e => setNewGuest(g => ({ ...g, full_name: e.target.value }))}
                   placeholder="e.g. Priya Sharma"
-                  className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-gray-600">Phone</label>
                 <input type="tel" value={newGuest.phone}
                   onChange={e => setNewGuest(g => ({ ...g, phone: e.target.value }))}
                   placeholder="e.g. 9876543210"
-                  className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-gray-600">Email</label>
                 <input type="email" value={newGuest.email}
                   onChange={e => setNewGuest(g => ({ ...g, email: e.target.value }))}
                   placeholder="e.g. priya@email.com"
-                  className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-gray-600">Group / Side</label>
                 <input type="text" value={newGuest.group_tag}
                   onChange={e => setNewGuest(g => ({ ...g, group_tag: e.target.value }))}
                   placeholder="e.g. Bride's Side"
-                  className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                  className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
               </div>
             </div>
             <FnToggles fnIds={selectedFnIds} setFnIds={setSelectedFnIds} />
@@ -376,11 +376,11 @@ export default function GuestsPage({ params }) {
             {addSuccess && <p className="text-xs text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2">{addSuccess}</p>}
             <div className="flex gap-3">
               <button type="submit" disabled={addLoading}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-sm font-semibold rounded-xl transition">
+                className="px-5 py-2.5 bg-crimson hover:bg-opacity-90 disabled:opacity-60 text-white text-sm rounded-lg transition-colors">
                 {addLoading ? "Adding…" : "Add Guest"}
               </button>
               <button type="button" onClick={() => { setShowAddForm(false); setAddError(""); }}
-                className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-xl transition">
+                className="px-5 py-2.5 bg-white border border-sand text-steel hover:bg-cream text-sm rounded-lg transition-colors">
                 Cancel
               </button>
             </div>
@@ -391,7 +391,7 @@ export default function GuestsPage({ params }) {
       {/* ── EDIT MODAL ── */}
       {editingGuest && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4">
+          <div className="bg-white rounded-xl border border-sand w-full max-w-lg p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-gray-800">Edit Guest</h2>
               <button type="button" onClick={() => setEditingGuest(null)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
@@ -402,36 +402,36 @@ export default function GuestsPage({ params }) {
                   <label className="text-xs font-semibold text-gray-600">Full Name <span className="text-rose-500">*</span></label>
                   <input type="text" required value={editForm.full_name}
                     onChange={e => setEditForm(f => ({ ...f, full_name: e.target.value }))}
-                    className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Phone</label>
                   <input type="tel" value={editForm.phone}
                     onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
-                    className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Email</label>
                   <input type="email" value={editForm.email}
                     onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
-                    className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Group / Side</label>
                   <input type="text" value={editForm.group_tag}
                     onChange={e => setEditForm(f => ({ ...f, group_tag: e.target.value }))}
-                    className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"/>
+                    className="px-3 py-2.5 border border-sand rounded-lg text-sm bg-cream focus:outline-none focus:border-gold"/>
                 </div>
               </div>
               <FnToggles fnIds={editFnIds} setFnIds={setEditFnIds} />
               {editError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">{editError}</p>}
               <div className="flex gap-3">
                 <button type="submit" disabled={editLoading}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-sm font-semibold rounded-xl transition">
+                  className="px-5 py-2.5 bg-crimson hover:bg-opacity-90 disabled:opacity-60 text-white text-sm rounded-lg transition-colors">
                   {editLoading ? "Saving…" : "Save Changes"}
                 </button>
                 <button type="button" onClick={() => setEditingGuest(null)}
-                  className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-xl transition">
+                  className="px-5 py-2.5 bg-white border border-sand text-steel hover:bg-cream text-sm rounded-lg transition-colors">
                   Cancel
                 </button>
               </div>
@@ -443,7 +443,7 @@ export default function GuestsPage({ params }) {
       {/* ── DELETE CONFIRM MODAL ── */}
       {confirmDeleteId && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4 text-center">
+          <div className="bg-white rounded-xl border border-sand w-full max-w-sm p-6 space-y-4 text-center">
             <div className="text-3xl">🗑</div>
             <h2 className="text-base font-bold text-gray-900">Delete this guest?</h2>
             <p className="text-sm text-gray-500">This will permanently remove the guest and all their function assignments. This cannot be undone.</p>
@@ -454,7 +454,7 @@ export default function GuestsPage({ params }) {
                 {deletingId === confirmDeleteId ? "Deleting…" : "Yes, Delete"}
               </button>
               <button type="button" onClick={() => setConfirmDeleteId(null)}
-                className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-xl transition">
+                className="px-5 py-2.5 bg-white border border-sand text-steel hover:bg-cream text-sm rounded-lg transition-colors">
                 Cancel
               </button>
             </div>
@@ -478,18 +478,18 @@ export default function GuestsPage({ params }) {
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <select value={filterGroup} onChange={e => setFilterGroup(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          className="px-3 py-2 border border-sand rounded-lg text-sm bg-white text-navy focus:outline-none focus:border-gold">
           <option value="">All Groups</option>
           {uniqueGroups.map(g => <option key={g} value={g}>{g}</option>)}
         </select>
         <select value={filterFunction} onChange={e => setFilterFunction(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          className="px-3 py-2 border border-sand rounded-lg text-sm bg-white text-navy focus:outline-none focus:border-gold">
           <option value="">All Functions</option>
           {functions.map(fn => <option key={fn} value={fn}>{fn}</option>)}
         </select>
         <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
           disabled={!filterFunction}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-40">
+          className="px-3 py-2 border border-sand rounded-lg text-sm bg-white text-navy focus:outline-none focus:border-gold disabled:opacity-40">
           <option value="">All Statuses</option>
           <option value="confirmed">Confirmed</option>
           <option value="pending">Pending</option>
@@ -530,7 +530,7 @@ export default function GuestsPage({ params }) {
                 {functions.map((fn) => (
                   <th key={fn}
                     className={`px-4 py-3 text-center font-semibold text-navy ${
-                      filterFunction === fn ? "bg-indigo-50 text-indigo-700" : ""
+                      filterFunction === fn ? "bg-cream text-crimson" : ""
                     }`}>
                     {fn}
                   </th>
@@ -558,19 +558,19 @@ export default function GuestsPage({ params }) {
                     <td className="px-4 py-3">
                       {comingWith.length > 0
                         ? <div className="flex flex-col gap-0.5">{comingWith.map((item, i) => (
-                            <span key={i} className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium border border-indigo-100 w-fit">{item}</span>
+                            <span key={i} className="px-2 py-0.5 bg-cream text-navy rounded-full text-xs font-medium border border-sand w-fit">{item}</span>
                           ))}</div>
                         : <span className="text-gray-400">—</span>}
                     </td>
                     {functions.map(fn => (
-                      <td key={fn} className={`px-4 py-3 text-center ${filterFunction === fn ? "bg-indigo-50/40" : ""}`}>
+                      <td key={fn} className={`px-4 py-3 text-center ${filterFunction === fn ? "bg-cream" : ""}`}>
                         <StatusBadge status={guest.rsvp?.[fn] ?? "awaiting"} />
                       </td>
                     ))}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
                         <button type="button" onClick={() => openEdit(guest)}
-                          className="px-2.5 py-1 text-xs font-medium bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-lg transition">
+                          className="px-2.5 py-1 text-xs font-medium bg-cream text-navy hover:border-gold border border-sand rounded-lg transition-colors">
                           ✏ Edit
                         </button>
                         <button type="button" onClick={() => setConfirmDeleteId(guest.id)}

@@ -12,51 +12,79 @@ export default async function DashboardPage() {
   if (error) console.error(error)
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-steel mt-1">Your active weddings</p>
+    <div className="mx-auto max-w-6xl space-y-8">
+      <section className="relative overflow-hidden rounded-[28px] border border-[#e8ddd0] bg-[linear-gradient(135deg,#fffdf9_0%,#fdf5ee_100%)] px-8 py-8">
+        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[#f3dfc8]/40 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-32 w-32 rounded-full bg-[#edd498]/30 blur-3xl" />
+
+        <div className="relative flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <p className="mb-3 text-sm text-[#9e8878]">Wedding planner</p>
+            <h1 className="text-[34px] leading-tight text-[#2c1810]">Dashboard</h1>
+            <p className="mt-2 max-w-2xl text-base text-[#6f5a4a]">
+              A calm overview of every wedding you are actively managing.
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/new"
+            className="rounded-lg border border-[#2c1810] bg-[#2c1810] px-5 py-3 text-sm text-[#fdf8f3] transition-colors hover:bg-[#4a3728]"
+          >
+            Create new wedding
+          </Link>
         </div>
-        <Link
-          href="/dashboard/new"
-          className="bg-crimson text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 transition-colors"
-        >
-          + New wedding
-        </Link>
+      </section>
+
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl text-[#2c1810]">Active weddings</h2>
+          <p className="mt-1 text-sm text-[#9e8878]">
+            {weddings?.length ?? 0} wedding{weddings?.length === 1 ? '' : 's'} currently in progress
+          </p>
+        </div>
+
+        {weddings && weddings.length > 0 && (
+          <div className="rounded-full border border-[#e8ddd0] bg-white px-4 py-2 text-sm text-[#6f5a4a]">
+            Sorted by start date
+          </div>
+        )}
       </div>
 
-      {/* Wedding list */}
       {weddings && weddings.length > 0 ? (
-        <div className="grid gap-4">
-          {weddings.map(w => (
+        <div className="grid gap-4 md:grid-cols-2">
+          {weddings.map((w) => (
             <Link
               key={w.id}
               href={`/dashboard/${w.id}`}
-              className="bg-white border border-sand rounded-xl p-5 hover:border-gray-400 transition-colors block"
+              className="group block overflow-hidden rounded-[24px] border border-sand bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-[#c9a96e] hover:bg-[#fffdf9] hover:shadow-[0_18px_50px_rgba(74,55,40,0.08)]"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="font-semibold text-lg">{w.couple_names}</div>
-                  <div className="text-sm text-steel mt-1 flex gap-3">
+                  <div className="text-2xl leading-tight text-[#2c1810]">{w.couple_names}</div>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-[#9e8878]">
                     {w.city && <span>{w.city}</span>}
                     {w.start_date && <span>{w.start_date}</span>}
-                    {w.guest_count_est > 0 && (
-                      <span>{w.guest_count_est} guests</span>
-                    )}
+                    {w.guest_count_est > 0 && <span>{w.guest_count_est} guests</span>}
                   </div>
                 </div>
-                <span className="text-gray-300 text-lg">→</span>
+                <span className="text-xl text-[#c9a96e] transition-transform group-hover:translate-x-1">→</span>
+              </div>
+
+              <div className="mt-6 flex items-center justify-between border-t border-[#f0e8df] pt-4 text-sm text-[#6f5a4a]">
+                <span>Open wedding dashboard</span>
+                <span className="rounded-full bg-[#fdf5ee] px-3 py-1 text-[#4a3728]">
+                  View details
+                </span>
               </div>
             </Link>
           ))}
         </div>
       ) : (
-        <div className="bg-white border border-dashed border-sand rounded-xl p-12 text-center">
-          <p className="text-steel text-sm mb-4">No weddings yet</p>
+        <div className="rounded-[24px] border border-dashed border-sand bg-white p-12 text-center">
+          <p className="mb-4 text-base text-[#6f5a4a]">No weddings yet</p>
           <Link
             href="/dashboard/new"
-            className="bg-crimson text-white px-4 py-2 rounded-lg text-sm inline-block"
+            className="inline-block rounded-lg border border-[#2c1810] bg-[#2c1810] px-5 py-3 text-sm text-[#fdf8f3] transition-colors hover:bg-[#4a3728]"
           >
             Create your first wedding
           </Link>

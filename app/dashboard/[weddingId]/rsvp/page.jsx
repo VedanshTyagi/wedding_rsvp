@@ -155,7 +155,7 @@ function FunctionCard({ name, counts, total }) {
   const declinedPct  = total > 0 ? Math.round((counts.declined  / total) * 100) : 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="bg-white rounded-xl border border-sand p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-gray-900 text-base">{name}</h3>
         <span className="text-xs text-steel">{total} invited</span>
@@ -227,7 +227,7 @@ function RsvpTable({ guests, functions }) {
   );
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
+    <div className="overflow-x-auto rounded-xl border border-sand bg-white">
       <table className="min-w-full divide-y divide-gray-100 text-sm">
         <thead className="bg-cream">
           <tr>
@@ -498,12 +498,12 @@ export default function RsvpPage() {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">RSVP Tracker</h1>
+          <h1 className="text-2xl font-semibold text-navy">RSVP Tracker</h1>
           <p className="text-sm text-steel mt-1">
             {totalResponses} responses across {functions.length} functions
           </p>
@@ -512,7 +512,7 @@ export default function RsvpPage() {
         {/* Live indicator */}
         <div className="flex items-center gap-2">
           {liveUpdate && (
-            <span className="text-xs text-indigo-600 font-medium animate-pulse">
+            <span className="text-xs text-crimson font-medium animate-pulse">
               ↻ Updated
             </span>
           )}
@@ -529,8 +529,8 @@ export default function RsvpPage() {
       </div>
 
       {/* ── Overview: Donut + Overall Counts ── */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <h2 className="text-base font-bold text-gray-800 mb-6">Overall Response Rate</h2>
+      <div className="bg-white rounded-xl border border-sand p-6">
+        <h2 className="text-base font-semibold text-navy mb-6">Overall Response Rate</h2>
         <div className="flex flex-col md:flex-row items-center gap-8">
 
           {/* Donut chart */}
@@ -540,7 +540,7 @@ export default function RsvpPage() {
 
           {/* Big stat numbers */}
           <div className="flex-1 grid grid-cols-2 gap-4 w-full">
-            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+            <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
               <p className="text-3xl font-bold text-emerald-600">{overallCounts.confirmed}</p>
               <p className="text-sm text-emerald-600 mt-1 font-medium">Confirmed</p>
               <p className="text-xs text-emerald-500 mt-0.5">
@@ -549,17 +549,17 @@ export default function RsvpPage() {
                   : "0%"}
               </p>
             </div>
-            <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+            <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
               <p className="text-3xl font-bold text-amber-500">{overallCounts.pending}</p>
               <p className="text-sm text-amber-600 mt-1 font-medium">Pending</p>
               <p className="text-xs text-amber-500 mt-0.5">awaiting reply</p>
             </div>
-            <div className="p-4 bg-rose-50 rounded-2xl border border-rose-100">
+            <div className="p-4 bg-rose-50 rounded-xl border border-rose-100">
               <p className="text-3xl font-bold text-rose-500">{overallCounts.declined}</p>
               <p className="text-sm text-rose-600 mt-1 font-medium">Declined</p>
               <p className="text-xs text-rose-500 mt-0.5">won't attend</p>
             </div>
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p className="text-3xl font-bold text-slate-500">{overallCounts.awaiting}</p>
               <p className="text-sm text-slate-600 mt-1 font-medium">Awaiting</p>
               <p className="text-xs text-slate-400 mt-0.5">not contacted</p>
@@ -570,7 +570,7 @@ export default function RsvpPage() {
 
       {/* ── Per Function Cards ── */}
       <div>
-        <h2 className="text-base font-bold text-gray-800 mb-4">By Function</h2>
+        <h2 className="text-base font-semibold text-navy mb-4">By Function</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {functions.map((fn) => (
             <FunctionCard
@@ -585,7 +585,7 @@ export default function RsvpPage() {
 
       {/* ── Per Guest RSVP Table ── */}
       <div>
-        <h2 className="text-base font-bold text-gray-800 mb-4">Guest Breakdown</h2>
+        <h2 className="text-base font-semibold text-navy mb-4">Guest Breakdown</h2>
         <RsvpTable
           guests={guests}
           functions={functions.map((f) => f.name)}

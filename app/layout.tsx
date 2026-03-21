@@ -6,18 +6,6 @@ import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
-const dmSerif = DM_Serif_Display({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-display",
-});
-
-const kantumruy = Kantumruy_Pro({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-body",
-});
-
 export const metadata: Metadata = {
   title: "Wedding Planner",
   description: "Wedding management dashboard",

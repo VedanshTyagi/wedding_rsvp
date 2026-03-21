@@ -94,7 +94,85 @@
   }
 
   html {
-    @apply font-sans;
+    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  }
+
+  body {
+    background-color: var(--royal-cream);
+    /* Subtle mandala tile watermark */
+    background-image:
+      url('/mandala_gold.png');
+    background-repeat: repeat;
+    background-size: 340px 340px;
+    background-attachment: fixed;
+    color: #2c1810;
+    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  /* Cream overlay so mandala stays subtle */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(253, 247, 236, 0.88);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* All page content sits above the overlay */
+  body>* {
+    position: relative;
+    z-index: 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    font-weight: 500;
+    color: #2c1810;
+    letter-spacing: 0.02em;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: 0.04em;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+  }
+
+  h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.75rem);
+  }
+
+  p,
+  span,
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  table,
+  th,
+  td,
+  label {
+    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    color: inherit;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  strong,
+  b {
+    font-weight: 600;
   }
   .theme {
     --font-heading: var(--font-sans);
@@ -102,8 +180,92 @@
   }
 }
 
+/* ─── Royal decorative utilities ─────────────────────────────── */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Floral corner overlays — apply to a relative-positioned wrapper */
+  .royal-corners {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .royal-corners::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 260px;
+    background: url('/floral_corner_tl.png') no-repeat top left / contain;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.92;
+  }
+
+  .royal-corners::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 260px;
+    height: 260px;
+    background: url('/floral_corner_br.png') no-repeat bottom right / contain;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.92;
+  }
+
+  /* Golden divider line, like a mehndi pattern rule */
+  .royal-divider {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c9a040 30%, #e8c76a 50%, #c9a040 70%, transparent);
+    border: none;
+    margin: 1.5rem 0;
+  }
+
+  /* Marquee-style gold border card */
+  .royal-card {
+    border: 1.5px solid #c9a040;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #fffef8 0%, #fdf7ec 100%);
+    box-shadow: 0 4px 32px rgba(201, 160, 64, 0.12), 0 1px 4px rgba(0, 0, 0, 0.04);
+    position: relative;
+  }
+
+  .royal-card::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 0.7rem;
+    border: 1px solid rgba(201, 160, 64, 0.25);
+    pointer-events: none;
+  }
+
+  /* Sidebar bottom-right rounded corner */
+  .sidebar-royal {
+    border-bottom-right-radius: 2rem;
+  }
+
+  .petal {
+    display: inline-block;
+    animation: petalFloat 6s ease-in-out infinite;
+    opacity: 0.7;
+  }
+}
+
+/* Petal float animation — must live outside @layer */
+@keyframes petalFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(60px) rotate(30deg);
+    opacity: 0;
   }
 }
