@@ -4,30 +4,6 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 
 export default function LandingPage() {
-  // Apply parallax strictly to mandalas (floral borders remain normal)
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth) - 0.5;
-      const y = (e.clientY / window.innerHeight) - 0.5;
-
-      const mandalas = document.querySelectorAll<HTMLElement>('.mandala-scatter');
-      mandalas.forEach((mandala, index) => {
-        // Vary the speed of parallax slightly for each mandala to give depth
-        const depth = index % 2 === 0 ? 30 : -45;
-        mandala.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
-        mandala.style.transition = 'transform 0.1s ease-out';
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      // Reset mandalas when leaving this page
-      const mandalas = document.querySelectorAll<HTMLElement>('.mandala-scatter');
-      mandalas.forEach(m => m.style.transform = 'translate(0px, 0px)');
-    };
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center py-16 px-4 sm:px-8 relative overflow-hidden font-serif z-10 page-padding">
       <div className="max-w-5xl w-full text-center space-y-12">

@@ -1,7 +1,6 @@
 "use client";
-
 import { usePathname } from "next/navigation";
-
+import { useEffect } from "react";
 /**
  * Wraps page content with decorative floral borders (DESIGN copy.png)
  * and scattered scrollable mandala watermarks.
@@ -17,6 +16,25 @@ export default function DecorativeFrame({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  // Global parallax mouse tracker for mandalas
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) - 0.5;
+      const y = (e.clientY / window.innerHeight) - 0.5;
+      const mandalas = document.querySelectorAll<HTMLElement>('.mandala-scatter');
+      mandalas.forEach((mandala, index) => {
+        const depth = index % 2 === 0 ? 30 : -45;
+        mandala.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+        mandala.style.transition = 'transform 0.1s ease-out';
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      const mandalas = document.querySelectorAll<HTMLElement>('.mandala-scatter');
+      mandalas.forEach(m => m.style.transform = 'translate(0px, 0px)');
+    };
+  }, []);
 
   // No decoration on checkin/guest pages
   if (/\/checkin\/guest\//.test(pathname)) {

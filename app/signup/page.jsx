@@ -16,24 +16,6 @@ export default function SignupPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const x = (e.clientX / window.innerWidth) - 0.5;
-      const y = (e.clientY / window.innerHeight) - 0.5;
-      const mandalas = document.querySelectorAll('.mandala-scatter');
-      mandalas.forEach((mandala, index) => {
-        const depth = index % 2 === 0 ? 30 : -45;
-        mandala.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
-        mandala.style.transition = 'transform 0.1s ease-out';
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      const mandalas = document.querySelectorAll('.mandala-scatter');
-      mandalas.forEach(m => m.style.transform = 'translate(0px, 0px)');
-    };
-  }, []);
   async function handleSignup(e) {
     e.preventDefault()
     setError(null)

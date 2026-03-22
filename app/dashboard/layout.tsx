@@ -62,7 +62,7 @@ export default function DashboardRootLayout({
             )}
 
             {/* ── SIDEBAR ─────────────────────────────────────── */}
-      <aside className={`
+            <aside className={`
         fixed top-0 left-0 h-full w-64 z-30 flex flex-col
         transition-all duration-300 ease-in-out
         rounded-br-[2rem] overflow-hidden
@@ -153,7 +153,7 @@ export default function DashboardRootLayout({
             </aside>
 
             {/* ── MAIN ────────────────────────────────────────── */}
-            <div className="flex-1 flex flex-col min-w-0 relative">
+            <div className="flex-1 flex flex-col min-w-0">
                 {/* Mobile & Desktop top bar */}
                 <div className="flex items-center gap-3 px-4 py-3 border-b border-[#c9a040]/30"
                     style={{ background: "linear-gradient(90deg, #fffef5, #fdf7ec)", position: "sticky", top: 0, zIndex: 30 }}>
@@ -172,7 +172,26 @@ export default function DashboardRootLayout({
                         </svg>
                     </button>
                     <span className="text-sm tracking-widest uppercase font-semibold"
-                        style={{ color: "#2c1810", fontFamily: "'Cormorant Garamond', serif" }}>WedRSVP</span>
+                        style={{ color: "#2c1810" }}>WedRSVP</span>
+
+                    <div className="flex items-center gap-2 text-sm text-steel ml-4 hidden sm:flex">
+                        {pathname.split('/').filter(Boolean).map((seg, idx, arr) => {
+                            const href = "/" + arr.slice(0, idx + 1).join("/");
+                            const isLast = idx === arr.length - 1;
+                            let name = seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' ');
+                            if (seg.length > 20 && seg.includes('-')) name = "Wedding";
+                            return (
+                                <span key={href} className="flex items-center gap-2">
+                                    {idx > 0 && <span className="opacity-50">/</span>}
+                                    {isLast ? (
+                                        <span className="font-semibold text-navy">{name}</span>
+                                    ) : (
+                                        <Link href={href} className="hover:text-gold transition-colors">{name}</Link>
+                                    )}
+                                </span>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 <div className="page-frame" style={{ flex: 1 }}>
