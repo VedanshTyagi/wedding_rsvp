@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-
+import { useEffect } from 'react'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -12,6 +12,24 @@ export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const x = (e.clientX / window.innerWidth) - 0.5;
+      const y = (e.clientY / window.innerHeight) - 0.5;
+      const mandalas = document.querySelectorAll('.mandala-scatter');
+      mandalas.forEach((mandala, index) => {
+        const depth = index % 2 === 0 ? 30 : -45;
+        mandala.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+        mandala.style.transition = 'transform 0.1s ease-out';
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      const mandalas = document.querySelectorAll('.mandala-scatter');
+      mandalas.forEach(m => m.style.transform = 'translate(0px, 0px)');
+    };
+  }, []);
   async function handleLogin(e) {
     e.preventDefault()
     setLoading(true)
@@ -26,15 +44,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream relative overflow-hidden font-serif">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 z-0"
-        style={{ backgroundImage: "url('/mandala_gold.png')", backgroundSize: '400px', backgroundRepeat: 'repeat' }} />
-      <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-[#f3dfc8]/40 blur-3xl pointer-events-none z-0" />
-      <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-[#edd498]/30 blur-3xl pointer-events-none z-0" />
-
+    <div className="min-h-screen flex items-center justify-center bg-transparent relative overflow-hidden font-serif">
       <div className="relative z-10 w-full max-w-md p-6 sm:p-8">
-        <div className="royal-card bg-white p-8 md:p-10 text-center shadow-2xl">
+        <div className="royal-card p-8 md:p-10 text-center shadow-2xl rounded-2xl border border-white/80"
+          style={{
+            background: "linear-gradient(145deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.35) 100%)",
+            backdropFilter: "blur(80px) saturate(160%)",
+            WebkitBackdropFilter: "blur(80px) saturate(160%)",
+            boxShadow: "0 10px 40px -10px rgba(154, 33, 67, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 1)"
+          }}>
 
           {/* Logo / Emblem */}
           <div className="mx-auto w-14 h-14 rounded-xl flex items-center justify-center shadow-lg mb-6 border border-gold/30"
@@ -52,14 +70,14 @@ export default function LoginPage() {
               <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Email Address</label>
               <input value={email} onChange={e => setEmail(e.target.value)}
                 type="email" placeholder="you@wedding.com" required
-                className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                className="w-full px-4 py-3.5 border border-white/60 rounded-xl text-sm bg-white/40 backdrop-blur-md shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] text-navy focus:outline-none focus:bg-white/60 focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Password</label>
               <input value={password} onChange={e => setPassword(e.target.value)}
                 type="password" placeholder="••••••••" required
-                className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                className="w-full px-4 py-3.5 border border-white/60 rounded-xl text-sm bg-white/40 backdrop-blur-md shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] text-navy focus:outline-none focus:bg-white/60 focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
             </div>
 
             {error && (

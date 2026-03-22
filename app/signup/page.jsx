@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { useEffect } from 'react'
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('')
@@ -15,6 +16,24 @@ export default function SignupPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const x = (e.clientX / window.innerWidth) - 0.5;
+      const y = (e.clientY / window.innerHeight) - 0.5;
+      const mandalas = document.querySelectorAll('.mandala-scatter');
+      mandalas.forEach((mandala, index) => {
+        const depth = index % 2 === 0 ? 30 : -45;
+        mandala.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+        mandala.style.transition = 'transform 0.1s ease-out';
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      const mandalas = document.querySelectorAll('.mandala-scatter');
+      mandalas.forEach(m => m.style.transform = 'translate(0px, 0px)');
+    };
+  }, []);
   async function handleSignup(e) {
     e.preventDefault()
     setError(null)
@@ -45,14 +64,15 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream relative overflow-hidden py-10 font-serif">
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 z-0"
-        style={{ backgroundImage: "url('/mandala_gold.png')", backgroundSize: '400px', backgroundRepeat: 'repeat' }} />
-      <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-[#f3dfc8]/40 blur-3xl pointer-events-none z-0" />
-      <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-[#edd498]/30 blur-3xl pointer-events-none z-0" />
-
+    <div className="min-h-screen flex items-center justify-center bg-transparent relative overflow-hidden py-10 font-serif">
       <div className="relative z-10 w-full max-w-lg p-6 sm:p-8">
-        <div className="royal-card bg-white p-8 md:p-10 text-center shadow-2xl">
+        <div className="royal-card p-8 md:p-10 text-center shadow-2xl rounded-2xl border border-white/80"
+          style={{
+            background: "linear-gradient(145deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.35) 100%)",
+            backdropFilter: "blur(80px) saturate(160%)",
+            WebkitBackdropFilter: "blur(80px) saturate(160%)",
+            boxShadow: "0 10px 40px -10px rgba(154, 33, 67, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 1)"
+          }}>
 
           <div className="mx-auto w-12 h-12 rounded-xl flex items-center justify-center shadow-lg mb-4 border border-gold/30"
             style={{ background: "linear-gradient(135deg, #9A2143, #6b1430)" }}>
@@ -71,14 +91,14 @@ export default function SignupPage() {
                 <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Full Name <span className="text-crimson">*</span></label>
                 <input type="text" placeholder="e.g. Sneha Agarwal" required
                   value={fullName} onChange={e => setFullName(e.target.value)}
-                  className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                  className="w-full px-4 py-3.5 border border-white/60 rounded-xl text-sm bg-white/40 backdrop-blur-md shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] text-navy focus:outline-none focus:bg-white/60 focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Email <span className="text-crimson">*</span></label>
                 <input type="email" placeholder="you@weddingco.com" required
                   value={email} onChange={e => setEmail(e.target.value)}
-                  className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                  className="w-full px-4 py-3.5 border border-white/60 rounded-xl text-sm bg-white/40 backdrop-blur-md shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] text-navy focus:outline-none focus:bg-white/60 focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -86,13 +106,13 @@ export default function SignupPage() {
                   <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Password <span className="text-crimson">*</span></label>
                   <input type="password" placeholder="Min. 6 chars" required
                     value={password} onChange={e => setPassword(e.target.value)}
-                    className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                    className="w-full px-4 py-3.5 border border-white/60 rounded-xl text-sm bg-white/40 backdrop-blur-md shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] text-navy focus:outline-none focus:bg-white/60 focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-bold text-gray-500 tracking-[0.15em] uppercase px-1">Confirm <span className="text-crimson">*</span></label>
                   <input type="password" placeholder="Repeat" required
                     value={confirm} onChange={e => setConfirm(e.target.value)}
-                    className="w-full px-4 py-3.5 border border-sand rounded-xl text-sm bg-[#fdfaf5] text-navy focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
+                    className="w-full px-4 py-3.5 border border-white/60 rounded-xl text-sm bg-white/40 backdrop-blur-md shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] text-navy focus:outline-none focus:bg-white/60 focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all font-sans" />
                 </div>
               </div>
             </div>
@@ -113,7 +133,7 @@ export default function SignupPage() {
             <p className="text-sm text-steel font-sans">
               Already have an account?{' '}
               <Link href="/login" className="text-crimson font-semibold hover:text-[#6b1430] hover:underline underline-offset-4 transition-colors">
-                Sign in Document
+                Sign in
               </Link>
             </p>
           </div>
