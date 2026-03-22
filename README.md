@@ -2,7 +2,8 @@
 
 A full-stack web application for Indian wedding planners to manage guests, send personalised invites, track RSVPs, assign seating and accommodation, and run on-day check-in — all from a single dashboard.
 
-**Live Demo:** [wedding-rsvps-37xg.vercel.app](https://wedding-rsvps-37xg.vercel.app) &nbsp;·&nbsp; **Stack:** Next.js 16 · Supabase · Twilio · Resend · Tailwind CSS;
+**Live Demo:** [wedding-rsvps-37xg.vercel.app](https://wedding-rsvps-37xg.vercel.app) &nbsp;·&nbsp; **Stack:** Next.js 16 · Supabase · Twilio · Resend · Tailwind CSS
+
 **Technical Report:** https://drive.google.com/drive/folders/1i7q3qXEPKQ8ZSyioiZflHGT-s-cNn0v2?usp=sharing
 
 ---
